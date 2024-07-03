@@ -4,10 +4,13 @@ import cloud.lemonslice.silveroak.helper.ColorHelper;
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.GrassColor;
+import xueluoanping.ecliptic.Ecliptic;
 
 public class BiomeColorsHandler
 {
@@ -32,7 +35,15 @@ public class BiomeColorsHandler
                 int i = (int) ((1.0D - temperature) * 255.0D);
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
+
+               var bbs= Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+                Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getTextureLocations().stream().toList().get(0)).contents();
+                for (ResourceLocation textureLocation : bbs.getTextureLocations()) {
+                    // Ecliptic.logger(  bbs.getSprite(textureLocation).get.getPixelRGBA(0,1,1));
+                }
+                // net.minecraft.client.renderer.block.model.BakedQuad
                 return k > newGrassBuffer.length ? -65281 : newGrassBuffer[k];
+                // return 0xfffffef9;
             }).orElse(originColor);
         }
         else return -1;

@@ -22,23 +22,22 @@ import xueluoanping.ecliptic.Ecliptic;
 @Mod.EventBusSubscriber(modid = Ecliptic.MODID)
 public class CommandHandler {
     @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
+    public static void onRegisterCommands(RegisterCommandsEvent event) {
         var dispatcher = event.getDispatcher();
-        dispatcher.register(Commands.literal("solar").requires((source) -> source.hasPermission(2))
+        dispatcher.register(Commands.literal(Ecliptic.MODID).
+                then(Commands.literal("solar").requires((source) -> source.hasPermission(2))
                 .then(Commands.literal("set").then(Commands.argument("day", IntegerArgumentType.integer()).executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
-                .then(Commands.literal("add").then(Commands.argument("day", IntegerArgumentType.integer()).executes(commandContext -> addDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day"))))));
+                .then(Commands.literal("add").then(Commands.argument("day", IntegerArgumentType.integer()).executes(commandContext -> addDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day"))))))
+        );
     }
 
 
-    private static int getDay(ServerLevel worldIn)
-    {
+    private static int getDay(ServerLevel worldIn) {
         return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(CapabilitySolarTermTime.Data::getSolarTermsDay).orElse(0);
     }
 
-    public static int setDay(CommandSourceStack source, int day)
-    {
-        for (ServerLevel ServerLevel : source.getServer().getAllLevels())
-        {
+    public static int setDay(CommandSourceStack source, int day) {
+        for (ServerLevel ServerLevel : source.getServer().getAllLevels()) {
             ServerLevel.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
             {
                 data.setSolarTermsDay(day);
@@ -46,19 +45,17 @@ public class CommandHandler {
             });
         }
 
-        source.sendSuccess(()->Component.translatable("commands.teastory.solar.set", day), true);
+        source.sendSuccess(() -> Component.translatable("commands.teastory.solar.set", day), true);
         return getDay(source.getLevel());
     }
 
-    public static int addDay(CommandSourceStack source, int add)
-    {
-        for (ServerLevel ServerLevel : source.getServer().getAllLevels())
-        {
+    public static int addDay(CommandSourceStack source, int add) {
+        for (ServerLevel ServerLevel : source.getServer().getAllLevels()) {
             ServerLevel.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);
                 data.sendUpdateMessage(ServerLevel);
-                source.sendSuccess(()->Component.translatable("commands.teastory.solar.set", data.getSolarTermsDay()), true);
+                source.sendSuccess(() -> Component.translatable("commands.teastory.solar.set", data.getSolarTermsDay()), true);
             });
         }
         return getDay(source.getLevel());

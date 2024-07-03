@@ -85,11 +85,11 @@ public class ClientSetup {
     public static void onRegisterColorHandlersEvent_Block(RegisterColorHandlersEvent.Block event) {
         // Register programmable custom block color providers for LeavesPropertiesJson
 
-        BlockState birchLeaves = Blocks.BIRCH_LEAVES.defaultBlockState();
-        BlockColors blockColors = event.getBlockColors();
+        // BlockState birchLeaves = Blocks.BIRCH_LEAVES.defaultBlockState();
+        // BlockColors blockColors = event.getBlockColors();
 
-        event.register(new GrassBlockColor(),Blocks.GRASS);
-        event.register(new BirchLeavesColor(), Blocks.BIRCH_LEAVES);
+        // event.register(new GrassBlockColor(),Blocks.GRASS);
+        // event.register(new BirchLeavesColor(), Blocks.BIRCH_LEAVES);
     }
 
     @SubscribeEvent
