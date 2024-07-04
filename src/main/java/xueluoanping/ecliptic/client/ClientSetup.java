@@ -62,11 +62,16 @@ public class ClientSetup {
         // });
     }
 
+    public static Map<ResourceLocation, BakedModel> models;
 
     @SubscribeEvent
     public static void onModelBaked(ModelEvent.ModifyBakingResult event) {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
-
+        models=modelRegistry;
+        // event.getModels().entrySet().stream().filter(resourceLocationBakedModelEntry -> resourceLocationBakedModelEntry.getKey().toString().contains("grass")).collect(Collectors.toList())
+        // event.getModels().get(new ModelResourceLocation(new ResourceLocation("minecraft:grass_block"), "snowy=false"))
+        // event.getModels().get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), ""))
+        // event.getModels().put(new ModelResourceLocation(new ResourceLocation("minecraft:grass_block"), "snowy=false"),event.getModels().get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")))
         // ModContents.DREntityBlockItems.getEntries().forEach((reg) -> {
         //     ModelResourceLocation location = new ModelResourceLocation(reg.getId(), "inventory");
         //     BakedModel existingModel = modelRegistry.get(location);
@@ -83,6 +88,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void onRegisterColorHandlersEvent_Block(RegisterColorHandlersEvent.Block event) {
+        Ecliptic.logger(11);
         // Register programmable custom block color providers for LeavesPropertiesJson
 
         // BlockState birchLeaves = Blocks.BIRCH_LEAVES.defaultBlockState();

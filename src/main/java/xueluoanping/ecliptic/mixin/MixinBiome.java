@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -13,6 +14,9 @@ import xueluoanping.ecliptic.handler.WeatherHandler;
 
 @Mixin({Biome.class})
 public abstract class MixinBiome {
+    @Shadow
+    @Deprecated
+    public abstract float getTemperature(BlockPos p_47506_);
 
     @Inject(at = {@At("HEAD")}, method = {"warmEnoughToRain"}, cancellable = true)
     public void mixin_warmEnoughToRain(BlockPos p_198905_, CallbackInfoReturnable<Boolean> cir) {
@@ -24,6 +28,9 @@ public abstract class MixinBiome {
         if (p_47520_ instanceof ServerLevel level) {
             // cir.setReturnValue(WeatherHandler.onShouldSnow(level,((Biome) (Object) this),p_47521_));
             // cir.setReturnValue(true);
+            // 目前设置为不生成雪，根据香草判断一下了
+            if (!(this.getTemperature(p_47521_) >= 0.15F))
+                cir.setReturnValue(false);
         }
     }
 }

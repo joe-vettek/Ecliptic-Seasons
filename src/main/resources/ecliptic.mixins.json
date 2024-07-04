@@ -5,16 +5,19 @@
   "refmap": "ecliptic.refmap.json",
   "mixins": [
     "MixinBiome",
+    "MixinBlockRender2",
     "MixinDimensionType",
     "MixinLevelTimeAccess",
     "MixinServerLevel"
   ],
   "client": [
+    "MixinBlockRenderVanilla",
     "MixinQuard",
     "MixinTextureAltas"
   ],
   "injectors": {
     "defaultRequire": 1
   },
+  "plugin": "xueluoanping.ecliptic.mixin.EMCompatMixinPlugin",
   "minVersion": "0.8"
 }
