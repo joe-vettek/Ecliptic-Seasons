@@ -3,24 +3,36 @@ package cloud.lemonslice.teastory.capability;
 
 import cloud.lemonslice.teastory.config.ServerConfig;
 import cloud.lemonslice.teastory.environment.solar.BiomeTemperatureManager;
+import cloud.lemonslice.teastory.environment.solar.Season;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
 import cloud.lemonslice.teastory.network.SimpleNetworkHandler;
 import cloud.lemonslice.teastory.network.SolarTermsMessage;
+import net.coderbot.iris.Iris;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 
 public class CapabilitySolarTermTime {
     public static Capability<Data> WORLD_SOLAR_TIME = CapabilityManager.get(new CapabilityToken<>() {
@@ -103,6 +115,19 @@ public class CapabilitySolarTermTime {
                     player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
                 }
             }
+
+
+// ;          var map=world.getChunkSource().chunkMap;
+//             for(ChunkHolder chunkholder : map.getChunks()) {
+//                 ChunkPos chunkpos = chunkholder.getPos();
+//                 MutableObject<ClientboundLevelChunkWithLightPacket> mutableobject = new MutableObject<>();
+//                 map.getPlayers(chunkpos, false).forEach((p_214864_) -> {
+//                     SectionPos sectionpos = p_214864_.getLastSectionPos();
+//                     // boolean flag = ChunkMap.isChunkInRange(chunkpos.x, chunkpos.z, sectionpos.x(), sectionpos.z(), j);
+//                     // boolean flag1 = ChunkMap.isChunkInRange(chunkpos.x, chunkpos.z, sectionpos.x(), sectionpos.z(), map.viewDistance);
+//                     map.updateChunkTracking(p_214864_, chunkpos, mutableobject, true, false);
+//                 });
+//             }
         }
     }
 
@@ -124,7 +149,6 @@ public class CapabilitySolarTermTime {
             worldSolarTime.setSolarTermsDay(((CompoundTag) nbt).getInt("SolarTermsDay"));
             worldSolarTime.setSolarTermsTicks(((CompoundTag) nbt).getInt("SolarTermsTicks"));
         }
-
 
 
         @Override

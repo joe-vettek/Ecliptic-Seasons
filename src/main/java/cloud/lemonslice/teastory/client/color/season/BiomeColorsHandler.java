@@ -2,6 +2,7 @@ package cloud.lemonslice.teastory.client.color.season;
 
 import cloud.lemonslice.silveroak.helper.ColorHelper;
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.teastory.config.ServerConfig;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -12,21 +13,18 @@ import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.GrassColor;
 import xueluoanping.ecliptic.Ecliptic;
 
-public class BiomeColorsHandler
-{
+public class BiomeColorsHandler {
     public static int[] newFoliageBuffer = new int[65536];
     public static int[] newGrassBuffer = new int[65536];
     public static boolean needRefresh = false;
 
     public static final ColorResolver GRASS_COLOR = (biome, posX, posZ) ->
     {
-        if (Minecraft.getInstance().level != null)
-        {
+        if (Minecraft.getInstance().level != null) {
             int originColor = biome.getGrassColor(posX, posZ);
             return Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(data ->
             {
-                if (needRefresh)
-                {
+                if (needRefresh) {
                     reloadColors();
                 }
                 double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature(), 0.0F, 1.0F);
@@ -36,7 +34,7 @@ public class BiomeColorsHandler
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
 
-               var bbs= Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+                var bbs = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
                 Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getTextureLocations().stream().toList().get(0)).contents();
                 for (ResourceLocation textureLocation : bbs.getTextureLocations()) {
                     // Ecliptic.logger(  bbs.getSprite(textureLocation).get.getPixelRGBA(0,1,1));
@@ -45,19 +43,16 @@ public class BiomeColorsHandler
                 return k > newGrassBuffer.length ? -65281 : newGrassBuffer[k];
                 // return 0xfffffef9;
             }).orElse(originColor);
-        }
-        else return -1;
+        } else return -1;
     };
 
     public static final ColorResolver FOLIAGE_COLOR = (biome, posX, posZ) ->
     {
-        if (Minecraft.getInstance().level != null)
-        {
+        if (Minecraft.getInstance().level != null) {
             int originColor = biome.getFoliageColor();
             return Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(data ->
             {
-                if (needRefresh)
-                {
+                if (needRefresh) {
                     reloadColors();
                 }
                 double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature(), 0.0F, 1.0F);
@@ -68,49 +63,48 @@ public class BiomeColorsHandler
                 int k = j << 8 | i;
                 return k > newFoliageBuffer.length ? originColor : newFoliageBuffer[k];
             }).orElse(originColor);
-        }
-        else return biome.getFoliageColor();
+        } else return biome.getFoliageColor();
     };
 
-    public static void reloadColors()
-    {
-        if (Minecraft.getInstance().level != null)
-        {
+    public static void reloadColors() {
+        if (Minecraft.getInstance().level != null) {
             Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
             {
                 int[] foliageBuffer = FoliageColor.pixels;
                 int[] grassBuffer = GrassColor.pixels;
 
-                for (int i = 0; i < foliageBuffer.length; i++)
-                {
+                for (int i = 0; i < foliageBuffer.length; i++) {
                     int originColor = foliageBuffer[i];
                     SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
-                    if (solar.getColorInfo().getAlpha() == 0.0F)
-                    {
+                    if (solar.getColorInfo().getAlpha() == 0.0F) {
                         newFoliageBuffer[i] = originColor;
-                    }
-                    else
-                    {
+                    } else {
                         newFoliageBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getColor(), solar.getColorInfo().getAlpha(), originColor, 1.0F - solar.getColorInfo().getAlpha());
                     }
                 }
 
-                for (int i = 0; i < grassBuffer.length; i++)
-                {
+                for (int i = 0; i < grassBuffer.length; i++) {
                     int originColor = grassBuffer[i];
                     SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
-                    if (solar.getColorInfo().getAlpha() == 0.0F)
-                    {
+                    if (solar.getColorInfo().getAlpha() == 0.0F) {
                         newGrassBuffer[i] = originColor;
-                    }
-                    else
-                    {
+                    } else {
                         newGrassBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getColor(), solar.getColorInfo().getAlpha(), originColor, 1.0F - solar.getColorInfo().getAlpha());
                     }
                 }
 
                 needRefresh = false;
             });
+        }
+
+        // just for test
+        try {
+            if (Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
+                var cc = Minecraft.getInstance().levelRenderer;
+                cc.allChanged();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

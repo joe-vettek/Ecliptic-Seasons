@@ -4,11 +4,18 @@ package cloud.lemonslice.teastory.network;
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
 import cloud.lemonslice.teastory.client.color.season.BiomeColorsHandler;
 
+import cloud.lemonslice.teastory.config.ServerConfig;
 import cloud.lemonslice.teastory.environment.solar.BiomeTemperatureManager;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.ViewArea;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.network.FriendlyByteBuf;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
