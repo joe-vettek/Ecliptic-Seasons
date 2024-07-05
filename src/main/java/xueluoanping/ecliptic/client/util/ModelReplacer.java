@@ -1,5 +1,7 @@
 package xueluoanping.ecliptic.client.util;
 
+import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.teastory.environment.solar.Season;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -99,6 +101,7 @@ public class ModelReplacer {
         }
         result += blockAndTintGetter.getBlockState(pos.above()).is(BlockTags.SNOW) ? 15 : 0;
         result += blockAndTintGetter.getBlockState(pos).is(BlockTags.SNOW) ? -100 : 0;
+        result+=Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTerm().getSeason()== Season.WINTER?0:-100;
         return result;
     }
 }
