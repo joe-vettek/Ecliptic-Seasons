@@ -5,15 +5,16 @@
   "refmap": "ecliptic.refmap.json",
   "mixins": [
     "MixinBiome",
-    "MixinBlockRender2",
     "MixinDimensionType",
     "MixinLevelTimeAccess",
-    "MixinServerLevel"
+    "MixinServerLevel",
+    "compat.embeddium.MixinBlockRender2"
   ],
   "client": [
-    "MixinBlockRenderVanilla",
-    "MixinQuard",
-    "MixinTextureAltas"
+    "client.MixinBlockRenderVanilla",
+    "client.MixinSimpleBakedModel",
+    "experimental.MixinQuard",
+    "experimental.MixinTextureAltas"
   ],
   "injectors": {
     "defaultRequire": 1

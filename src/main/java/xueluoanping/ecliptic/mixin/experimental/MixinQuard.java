@@ -1,4 +1,4 @@
-package xueluoanping.ecliptic.mixin;
+package xueluoanping.ecliptic.mixin.experimental;
 
 
 import net.minecraft.client.renderer.block.model.BakedQuad;

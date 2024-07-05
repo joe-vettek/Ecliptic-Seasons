@@ -29,7 +29,7 @@ public abstract class MixinBiome {
             // cir.setReturnValue(WeatherHandler.onShouldSnow(level,((Biome) (Object) this),p_47521_));
             // cir.setReturnValue(true);
             // 目前设置为不生成雪，根据香草判断一下了
-            if (!(this.getTemperature(p_47521_) >= 0.15F))
+            if ((this.getTemperature(p_47521_) >= 0.15F))
                 cir.setReturnValue(false);
         }
     }

@@ -1,4 +1,4 @@
-package xueluoanping.ecliptic.mixin;
+package xueluoanping.ecliptic.mixin.client;
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xueluoanping.ecliptic.client.ClientSetup;
+import xueluoanping.ecliptic.client.util.ModelReplacer;
 
 import java.util.BitSet;
 import java.util.List;
@@ -45,14 +46,12 @@ public abstract class MixinBlockRenderVanilla {
         ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
         BlockPos.MutableBlockPos blockpos$mutableblockpos = p_111082_.mutable();
 
-        var newmodel=p_111080_;
-        if (p_111081_.getBlock() instanceof GrassBlock&& p_111079_.getBlockState(p_111082_.above()).isAir()){
-            newmodel= ClientSetup.models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), ""));
-        }
+        var newmodel=ModelReplacer.checkAndUpdate(p_111079_,p_111081_,p_111082_,Direction.UP,p_111080_);
 
         for(Direction direction : DIRECTIONS) {
             p_111086_.setSeed(p_111087_);
             List<BakedQuad> list = (direction==Direction.UP?newmodel:p_111080_).getQuads(p_111081_, direction, p_111086_, modelData, renderType);
+            list=ModelReplacer.appendOverlay(p_111079_,p_111081_,p_111082_,direction,list);
             if (!list.isEmpty()) {
                 blockpos$mutableblockpos.setWithOffset(p_111082_, direction);
                 if (!p_111085_ || Block.shouldRenderFace(p_111081_, p_111079_, p_111082_, direction, blockpos$mutableblockpos)) {

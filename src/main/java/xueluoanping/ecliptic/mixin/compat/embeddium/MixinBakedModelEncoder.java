@@ -1,4 +1,4 @@
-package xueluoanping.ecliptic.mixin;
+package xueluoanping.ecliptic.mixin.compat.embeddium;
 
 
 // @Mixin({BakedModelEncoder.class})

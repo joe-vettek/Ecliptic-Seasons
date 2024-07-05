@@ -1,4 +1,4 @@
-package xueluoanping.ecliptic.mixin;
+package xueluoanping.ecliptic.mixin.compat.embeddium;
 
 
 import me.jellysquid.mods.sodium.client.model.color.ColorProvider;
@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xueluoanping.ecliptic.client.BakedModelEncoderFixer;
 import xueluoanping.ecliptic.client.ClientSetup;
+import xueluoanping.ecliptic.client.util.ModelReplacer;
 
 import java.util.List;
 
@@ -40,10 +41,8 @@ public abstract class MixinBlockRender2 {
     private void mixin_renderQuadList(BlockRenderContext ctx, Direction face, CallbackInfoReturnable<List<BakedQuad>> cir) {
         RandomSource random = this.random;
         random.setSeed(ctx.seed());
-        var bakes=ctx.model().getQuads(ctx.state(), face, random, ctx.modelData(), ctx.renderLayer());
-        if (ctx.state().getBlock() instanceof GrassBlock&& ctx.world().world.isEmptyBlock(ctx.pos().above())){
-            bakes= ClientSetup.models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")).getQuads(ctx.state(), face, random, ctx.modelData(), ctx.renderLayer());
-        }
+        var model= ModelReplacer.checkDirectionAndUpdate(ctx.world(),ctx.state(),ctx.pos(),face,ctx.model());
+        var bakes=model.getQuads(ctx.state(), face, random, ctx.modelData(), ctx.renderLayer());
         cir.setReturnValue(bakes);
     }
 

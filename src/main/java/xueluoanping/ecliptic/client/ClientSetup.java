@@ -3,21 +3,18 @@ package xueluoanping.ecliptic.client;
 
 // import com.jaquadro.minecraft.storagedrawers.client.renderer.TileEntityDrawersRenderer;
 
-import cloud.lemonslice.teastory.client.color.block.BirchLeavesColor;
-import cloud.lemonslice.teastory.client.color.block.GrassBlockColor;
 import cloud.lemonslice.teastory.client.color.season.BiomeColorsHandler;
-import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -63,27 +60,31 @@ public class ClientSetup {
     }
 
     public static Map<ResourceLocation, BakedModel> models;
+    public static
+    LazyOptional<net.minecraft.client.resources.model.BakedModel> snowModel=
+            LazyOptional.of(()->models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
+
+    public static
+    LazyOptional<net.minecraft.client.resources.model.BakedModel> snowOverlayBlock =
+            LazyOptional.of(()->models.get(new ModelResourceLocation(Ecliptic.ModContents.snowyBlock.getId(), "")));
+    public static
+    LazyOptional<net.minecraft.client.resources.model.BakedModel> snowySlabBottom =
+            LazyOptional.of(()->models.get(new ModelResourceLocation(Ecliptic.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
 
     @SubscribeEvent
     public static void onModelBaked(ModelEvent.ModifyBakingResult event) {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
-        models=modelRegistry;
+        models = modelRegistry;
+        snowModel.resolve();
+        snowySlabBottom.resolve();
+        var test= snowOverlayBlock.resolve().get();
+        Ecliptic.logger(test);
+        // models.entrySet().stream().filter(e->e.getKey().namespace.equals(Ecliptic.MODID)&&e.getKey().toString().contains("slab")).toList();
+
         // event.getModels().entrySet().stream().filter(resourceLocationBakedModelEntry -> resourceLocationBakedModelEntry.getKey().toString().contains("grass")).collect(Collectors.toList())
         // event.getModels().get(new ModelResourceLocation(new ResourceLocation("minecraft:grass_block"), "snowy=false"))
         // event.getModels().get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), ""))
         // event.getModels().put(new ModelResourceLocation(new ResourceLocation("minecraft:grass_block"), "snowy=false"),event.getModels().get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")))
-        // ModContents.DREntityBlockItems.getEntries().forEach((reg) -> {
-        //     ModelResourceLocation location = new ModelResourceLocation(reg.getId(), "inventory");
-        //     BakedModel existingModel = modelRegistry.get(location);
-        //     if (existingModel == null) {
-        //         throw new RuntimeException("Did not find in registry");
-        //     } else if (existingModel instanceof BakedModelFluidDrawer) {
-        //         throw new RuntimeException("Tried to replace twice");
-        //     } else {
-        //         BakedModelFluidDrawer model = new BakedModelFluidDrawer(existingModel);
-        //         modelRegistry.put(location, model);
-        //     }
-        // });
     }
 
     @SubscribeEvent

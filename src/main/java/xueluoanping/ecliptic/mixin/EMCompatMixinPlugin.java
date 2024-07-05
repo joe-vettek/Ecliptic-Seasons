@@ -25,7 +25,7 @@ public class EMCompatMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return FMLLoader.getLoadingModList().getModFileById("embeddium") != null|| !mixinClassName.contains("MixinBlockRender2");
+		return FMLLoader.getLoadingModList().getModFileById("embeddium") != null|| !mixinClassName.endsWith("MixinBlockRender2");
 	}
 
 	@Override
