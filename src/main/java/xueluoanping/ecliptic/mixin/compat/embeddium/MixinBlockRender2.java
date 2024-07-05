@@ -31,6 +31,7 @@ import xueluoanping.ecliptic.client.BakedModelEncoderFixer;
 import xueluoanping.ecliptic.client.ClientSetup;
 import xueluoanping.ecliptic.client.util.ModelReplacer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mixin({BlockRenderer.class})
@@ -43,6 +44,7 @@ public abstract class MixinBlockRender2 {
         random.setSeed(ctx.seed());
         var model= ModelReplacer.checkDirectionAndUpdate(ctx.world(),ctx.state(),ctx.pos(),face,ctx.model());
         var bakes=model.getQuads(ctx.state(), face, random, ctx.modelData(), ctx.renderLayer());
+        bakes=ModelReplacer.appendOverlay(ctx.world(),ctx.state(),ctx.pos(),face,bakes);
         cir.setReturnValue(bakes);
     }
 

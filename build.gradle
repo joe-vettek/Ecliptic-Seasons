@@ -193,15 +193,16 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_min_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-//    implementation fg.deobf("curse.maven:jei-238222:4644453")
+    implementation fg.deobf("curse.maven:jei-238222:4644453")
 //    implementation fg.deobf("curse.maven:jade-324717:4654448")
-//    implementation fg.deobf("curse.maven:jade-324717:5072729-deobf-sources-api")
+    implementation fg.deobf("curse.maven:jade-324717:5072729-deobf-sources-api")
 
 //    implementation fg.deobf("curse.maven:create-328085:4835191-deobf-sources-api")
     compileOnly fg.deobf("curse.maven:embeddium-908741:4949986")
-//    implementation fg.deobf("curse.maven:oculus-581495:4952626")
+    implementation fg.deobf("curse.maven:embeddium-908741:4949986")
+    implementation fg.deobf("curse.maven:oculus-581495:4952626")
 
-//    onlyMainRuntimeOnly fg.deobf("curse.maven:journeymap-32274:4873863")
+    onlyMainRuntimeOnly fg.deobf("curse.maven:journeymap-32274:4873863")
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency

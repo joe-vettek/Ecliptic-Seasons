@@ -34,7 +34,7 @@ public class ServerConfig
         {
             builder.push("Temperature");
             iceMelt = builder.comment("Ice or snow layer will melt in warm place..")
-                    .define("IceAndSnowMelt", true);
+                    .define("IceAndSnowMelt", false);
             builder.pop();
         }
     }

@@ -1,5 +1,6 @@
 {
 	"credit": "Made by Snownee",
+	"render_type": "cutout_mipped",
 	"textures": {
 		"1": "block/snow",
 		"2": "ecliptic:block/snow_overlay",

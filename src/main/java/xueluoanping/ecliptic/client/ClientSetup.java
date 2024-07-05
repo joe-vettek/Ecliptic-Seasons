@@ -4,11 +4,16 @@ package xueluoanping.ecliptic.client;
 // import com.jaquadro.minecraft.storagedrawers.client.renderer.TileEntityDrawersRenderer;
 
 import cloud.lemonslice.teastory.client.color.season.BiomeColorsHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -20,6 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import xueluoanping.ecliptic.Ecliptic;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -31,6 +37,26 @@ public class ClientSetup {
         return layerToCheck == RenderType.cutoutMipped() || layerToCheck == RenderType.translucent();
     }
 
+    @SubscribeEvent
+    public static void registerExtraModels(ModelEvent.RegisterAdditional event) {
+        // event.register(SnowClient.OVERLAY_MODEL);
+        //
+        // SnowClient.snowVariantMapping.clear();
+        // ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+        // ModelBakery.MODEL_LISTER.listMatchingResources(resourceManager).forEach((key, resource) -> {
+        //     ModelDefinition def;
+        //     try {
+        //         def = resource.metadata().getSection(SnowVariantMetadataSectionSerializer.SERIALIZER).orElse(null);
+        //     } catch (IOException e) {
+        //         return;
+        //     }
+        //     if (def == null || def.model == null) {
+        //         return;
+        //     }
+        //     SnowClient.snowVariantMapping.put(ModelBakery.MODEL_LISTER.fileToId(key), def);
+        //     event.register(def.model);
+        // });
+    }
 
     @SubscribeEvent
     public static void onClientEvent(FMLClientSetupEvent event) {
@@ -39,7 +65,7 @@ public class ClientSetup {
             // ItemBlockRenderTypes.setRenderLayer(ModContents.fluiddrawer.get(), ClientSetup::isGlassLanternValidLayer);
             // MenuScreens.register(ModContents.containerType.get(), Screen.Slot1::new);
             //
-            // ItemBlockRenderTypes.setRenderLayer(ModContents.ricePlant.get(),RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(Blocks.BAMBOO_BLOCK,RenderType.cutoutMipped());
             // ItemBlockRenderTypes.setRenderLayer(ModContents.RiceSeedlingBlock.get(),RenderType.cutout());
             // fix json file instead
             BiomeColors.GRASS_COLOR_RESOLVER = BiomeColorsHandler.GRASS_COLOR;
