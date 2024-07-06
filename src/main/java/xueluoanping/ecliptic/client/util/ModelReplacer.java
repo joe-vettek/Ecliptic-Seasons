@@ -20,11 +20,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.fml.loading.FMLLoader;
+import xueluoanping.ecliptic.Ecliptic;
 import xueluoanping.ecliptic.client.ClientSetup;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ModelReplacer {
     // if (state.getBlock() instanceof GrassBlock&& blockAndTintGetter.getBlockState(pos.above()).isAir()
@@ -90,6 +92,7 @@ public class ModelReplacer {
 
 
     public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos) {
+        // Ecliptic.logger(pos);
         int result = 0;
         if (FMLLoader.getLoadingModList().getModFileById("embeddium") != null) {
             if (blockAndTintGetter instanceof WorldSlice worldSlice) {
@@ -102,6 +105,9 @@ public class ModelReplacer {
         result += blockAndTintGetter.getBlockState(pos.above()).is(BlockTags.SNOW) ? 15 : 0;
         result += blockAndTintGetter.getBlockState(pos).is(BlockTags.SNOW) ? -100 : 0;
         result+=Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTerm().getSeason()== Season.WINTER?0:-100;
+        if (result>=15){
+            result+=(Minecraft.getInstance().level.getDayTime()%2000/2000.f>=new Random(pos.asLong()).nextFloat())?100:-100;
+        }
         return result;
     }
 }

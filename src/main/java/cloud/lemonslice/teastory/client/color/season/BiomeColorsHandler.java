@@ -5,6 +5,7 @@ import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
 import cloud.lemonslice.teastory.config.ServerConfig;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -98,13 +99,6 @@ public class BiomeColorsHandler {
         }
 
         // just for test
-        try {
-            if (Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
-                var cc = Minecraft.getInstance().levelRenderer;
-                cc.allChanged();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 }

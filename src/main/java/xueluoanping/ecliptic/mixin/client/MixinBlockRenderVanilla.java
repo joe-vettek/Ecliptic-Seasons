@@ -1,6 +1,7 @@
 package xueluoanping.ecliptic.mixin.client;
 
 
+import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
@@ -56,7 +57,7 @@ public abstract class MixinBlockRenderVanilla {
         for (Direction direction : DIRECTIONS) {
             randomSource.setSeed(p_111087_);
             List<BakedQuad> list = (direction == Direction.UP ? newmodel : bakedModel).getQuads(state, direction, randomSource, modelData, renderType);
-
+            if(randomSource.nextFloat()<=Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTermsTicks()*1.0f/24000.0)
             list=ModelReplacer.appendOverlay(blockAndTintGetter,state,pos,direction,list);
             if (!list.isEmpty()) {
                 blockpos$mutableblockpos.setWithOffset(pos, direction);

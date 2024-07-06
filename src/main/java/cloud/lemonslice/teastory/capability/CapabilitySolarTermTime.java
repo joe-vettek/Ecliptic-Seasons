@@ -113,8 +113,17 @@ public class CapabilitySolarTermTime {
                 SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(solarTermsDay));
                 if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                     player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
+                    // MutableObject<ClientboundLevelChunkWithLightPacket> mutableobject = new MutableObject<>();
+                    // var map = world.getChunkSource().chunkMap;
+                    // for (ChunkHolder chunkholder : map.getChunks()) {
+                    //     if (chunkholder.getFullChunk() != null)
+                    //         map.playerLoadedChunk(player, mutableobject, chunkholder.getFullChunk());
+                    // }
+
+
                 }
             }
+            // world.getChunkSource().tick(()->false,true);
 
 
 // ;          var map=world.getChunkSource().chunkMap;

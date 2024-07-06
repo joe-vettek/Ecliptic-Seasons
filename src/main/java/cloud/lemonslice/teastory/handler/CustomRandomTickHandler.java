@@ -2,21 +2,31 @@ package cloud.lemonslice.teastory.handler;
 
 
 import cloud.lemonslice.teastory.config.ServerConfig;
+import cloud.lemonslice.teastory.environment.solar.SolarTerm;
+import cloud.lemonslice.teastory.network.SimpleNetworkHandler;
+import cloud.lemonslice.teastory.network.SolarTermsMessage;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 import xueluoanping.ecliptic.Ecliptic;
 import xueluoanping.ecliptic.handler.WeatherHandler;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +85,25 @@ public final class CustomRandomTickHandler {
                         }
                     }
                 });
+            }
+        }
+
+        if (!event.level.isClientSide() && event.phase.equals(TickEvent.Phase.END) && event.level.dimension() == Level.OVERWORLD) {
+            // for (ServerPlayer player : event.level.getServer().getPlayerList().getPlayers()) {
+            //
+            // }
+
+            // refresh local
+            if (event.level.getDayTime() % 1000 == 0) {
+                // player.connection.send();
+                var a = new ArrayList<ChunkAccess>();
+                for (ChunkHolder chunk : ((ServerLevel) event.level).getChunkSource().chunkMap.getChunks()) {
+                    var cs = chunk.getLastAvailable();
+                    if (cs != null)
+                        a.add(chunk.getLastAvailable());
+                }
+                ((ServerLevel) event.level).getChunkSource().chunkMap.resendBiomesForChunks(a);
+                Ecliptic.logger(event.level.getDayTime(), "滴滴滴");
             }
         }
     }
