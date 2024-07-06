@@ -75,7 +75,7 @@ minecraft {
             // use for logger control
             property 'forgegradle.runs.dev', 'true'
 
-            jvmArgs "-Xmx2048M"
+//            jvmArgs "-Xmx2048M"
             mods {
                 "${mod_id}" {
                     source sourceSets.main
