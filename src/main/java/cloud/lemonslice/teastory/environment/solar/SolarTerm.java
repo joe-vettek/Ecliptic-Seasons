@@ -71,7 +71,7 @@ public enum SolarTerm
         return values()[index];
     }
 
-    @OnlyIn(Dist.CLIENT)
+
     public SolarTermColors getColorInfo()
     {
         return SolarTermColors.values()[this.ordinal()];

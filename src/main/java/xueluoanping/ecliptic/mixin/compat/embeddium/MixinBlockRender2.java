@@ -44,7 +44,7 @@ public abstract class MixinBlockRender2 {
         random.setSeed(ctx.seed());
         var model= ModelReplacer.checkDirectionAndUpdate(ctx.world(),ctx.state(),ctx.pos(),face,ctx.model());
         var bakes=model.getQuads(ctx.state(), face, random, ctx.modelData(), ctx.renderLayer());
-        bakes=ModelReplacer.appendOverlay(ctx.world(),ctx.state(),ctx.pos(),face,bakes);
+        bakes=ModelReplacer.appendOverlay(ctx.world(),ctx.state(),ctx.pos(),face,random,bakes);
         cir.setReturnValue(bakes);
     }
 

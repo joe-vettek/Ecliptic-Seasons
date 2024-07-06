@@ -94,17 +94,18 @@ public final class CustomRandomTickHandler {
             // }
 
             // refresh local
-            if (event.level.getDayTime() % 1000 == 0) {
-                // player.connection.send();
-                var a = new ArrayList<ChunkAccess>();
-                for (ChunkHolder chunk : ((ServerLevel) event.level).getChunkSource().chunkMap.getChunks()) {
-                    var cs = chunk.getLastAvailable();
-                    if (cs != null)
-                        a.add(chunk.getLastAvailable());
-                }
-                ((ServerLevel) event.level).getChunkSource().chunkMap.resendBiomesForChunks(a);
-                Ecliptic.logger(event.level.getDayTime(), "滴滴滴");
-            }
+            // 目前仅仅作为一个测试选项，强制发包给客户端刷新渲染（通过发送群系更新
+            // if (event.level.getDayTime() % 1000 == 0) {
+            //     // player.connection.send();
+            //     var a = new ArrayList<ChunkAccess>();
+            //     for (ChunkHolder chunk : ((ServerLevel) event.level).getChunkSource().chunkMap.getChunks()) {
+            //         var cs = chunk.getLastAvailable();
+            //         if (cs != null)
+            //             a.add(chunk.getLastAvailable());
+            //     }
+            //     ((ServerLevel) event.level).getChunkSource().chunkMap.resendBiomesForChunks(a);
+            //     Ecliptic.logger(event.level.getDayTime(), "滴滴滴");
+            // }
         }
     }
 

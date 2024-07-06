@@ -1,18 +1,11 @@
 package xueluoanping.ecliptic.handler;
 
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.teastory.capability.SolarData;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -33,7 +26,7 @@ public class CommandHandler {
 
 
     private static int getDay(ServerLevel worldIn) {
-        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(CapabilitySolarTermTime.Data::getSolarTermsDay).orElse(0);
+        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarData::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {

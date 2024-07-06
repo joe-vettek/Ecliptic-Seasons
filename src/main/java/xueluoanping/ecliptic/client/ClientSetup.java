@@ -26,6 +26,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import xueluoanping.ecliptic.Ecliptic;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -96,6 +97,8 @@ public class ClientSetup {
     public static
     LazyOptional<net.minecraft.client.resources.model.BakedModel> snowySlabBottom =
             LazyOptional.of(()->models.get(new ModelResourceLocation(Ecliptic.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
+
+    // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
 
     @SubscribeEvent
     public static void onModelBaked(ModelEvent.ModifyBakingResult event) {

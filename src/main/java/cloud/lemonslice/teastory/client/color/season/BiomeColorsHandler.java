@@ -77,20 +77,20 @@ public class BiomeColorsHandler {
                 for (int i = 0; i < foliageBuffer.length; i++) {
                     int originColor = foliageBuffer[i];
                     SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
-                    if (solar.getColorInfo().getAlpha() == 0.0F) {
+                    if (solar.getColorInfo().getTemperateMix() == 0.0F) {
                         newFoliageBuffer[i] = originColor;
                     } else {
-                        newFoliageBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getColor(), solar.getColorInfo().getAlpha(), originColor, 1.0F - solar.getColorInfo().getAlpha());
+                        newFoliageBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getBirchColor(), solar.getColorInfo().getTemperateMix(), originColor, 1.0F - solar.getColorInfo().getTemperateMix());
                     }
                 }
 
                 for (int i = 0; i < grassBuffer.length; i++) {
                     int originColor = grassBuffer[i];
                     SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
-                    if (solar.getColorInfo().getAlpha() == 0.0F) {
+                    if (solar.getColorInfo().getTemperateMix() == 0.0F) {
                         newGrassBuffer[i] = originColor;
                     } else {
-                        newGrassBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getColor(), solar.getColorInfo().getAlpha(), originColor, 1.0F - solar.getColorInfo().getAlpha());
+                        newGrassBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getTemperateColor(), solar.getColorInfo().getTemperateMix(), originColor, 1.0F - solar.getColorInfo().getTemperateMix());
                     }
                 }
 

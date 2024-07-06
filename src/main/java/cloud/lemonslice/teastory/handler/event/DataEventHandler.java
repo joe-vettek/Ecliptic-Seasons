@@ -2,6 +2,7 @@ package cloud.lemonslice.teastory.handler.event;
 
 
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.teastory.capability.SolarProvider;
 import cloud.lemonslice.teastory.config.ServerConfig;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
 import cloud.lemonslice.teastory.network.SimpleNetworkHandler;
@@ -23,7 +24,7 @@ import xueluoanping.ecliptic.Ecliptic;
 
 @Mod.EventBusSubscriber(modid = Ecliptic.MODID)
 public final class DataEventHandler {
-    public static LazyOptional<CapabilitySolarTermTime.Provider> provider = LazyOptional.empty();
+    public static LazyOptional<SolarProvider> provider = LazyOptional.empty();
 
     @SubscribeEvent
     public static void onAttachCapabilitiesEntity(AttachCapabilitiesEvent<Entity> event) {
@@ -33,7 +34,7 @@ public final class DataEventHandler {
     @SubscribeEvent
     public static void onAttachCapabilitiesWorld(AttachCapabilitiesEvent<Level> event) {
         if (ServerConfig.Season.enable.get() && event.getObject().dimension() == Level.OVERWORLD) {
-            var cc = new CapabilitySolarTermTime.Provider();
+            var cc = new SolarProvider();
             provider = LazyOptional.of(() -> cc);
             event.addCapability(new ResourceLocation(Ecliptic.MODID, "world_solar_terms"), cc);
         }
@@ -46,7 +47,7 @@ public final class DataEventHandler {
             if (ServerConfig.Season.enable.get()) {
                 event.getEntity().level().getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(t ->
                 {
-                    SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new SolarTermsMessage(t.getSolarTermsDay()));
+                    SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new SolarTermsMessage(t));
                     if (t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                         ((ServerPlayer) event.getEntity()).sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
                     }

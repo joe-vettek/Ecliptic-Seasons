@@ -2,6 +2,7 @@ package cloud.lemonslice.teastory.helper;
 
 
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.teastory.capability.SolarData;
 import cloud.lemonslice.teastory.environment.solar.Season;
 import cloud.lemonslice.teastory.environment.solar.SolarTerm;
 import net.minecraft.world.level.Level;
@@ -16,6 +17,6 @@ public final class SeasonHelper
 
     public static SolarTerm getSolarTerm(Level world)
     {
-        return world.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(CapabilitySolarTermTime.Data::getSolarTerm).orElse(SolarTerm.NONE);
+        return world.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarData::getSolarTerm).orElse(SolarTerm.NONE);
     }
 }

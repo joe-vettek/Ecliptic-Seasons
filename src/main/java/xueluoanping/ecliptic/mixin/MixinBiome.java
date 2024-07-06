@@ -20,6 +20,17 @@ public abstract class MixinBiome {
     @Deprecated
     public abstract float getTemperature(BlockPos p_47506_);
 
+    // 阻止非寒冷群系结冰
+    @Inject(at = {@At("HEAD")}, method = {"shouldFreeze(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;)Z"}, cancellable = true)
+    public void mixin_shouldFreeze(LevelReader p_47520_, BlockPos p_47521_, CallbackInfoReturnable<Boolean> cir) {
+        if (p_47520_ instanceof ServerLevel level) {
+            // 目前设置为不生成雪，根据香草判断一下了
+            if ((this.getTemperature(p_47521_) >= 0.15F))
+                cir.setReturnValue(false);
+        }
+    }
+
+
     @Inject(at = {@At("HEAD")}, method = {"warmEnoughToRain"}, cancellable = true)
     public void mixin_warmEnoughToRain(BlockPos p_198905_, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(WeatherHandler.onCheckWarm(p_198905_));

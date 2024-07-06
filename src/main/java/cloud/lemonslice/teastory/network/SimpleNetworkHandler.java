@@ -32,4 +32,5 @@ public final class SimpleNetworkHandler
             context.get().setPacketHandled(true);
         });
     }
+
 }

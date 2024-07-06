@@ -1,25 +1,17 @@
 package xueluoanping.ecliptic.mixin.client;
 
 
-import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.GrassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import org.spongepowered.asm.mixin.Final;
@@ -28,11 +20,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xueluoanping.ecliptic.client.ClientSetup;
 import xueluoanping.ecliptic.client.util.ModelReplacer;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
@@ -57,8 +46,7 @@ public abstract class MixinBlockRenderVanilla {
         for (Direction direction : DIRECTIONS) {
             randomSource.setSeed(p_111087_);
             List<BakedQuad> list = (direction == Direction.UP ? newmodel : bakedModel).getQuads(state, direction, randomSource, modelData, renderType);
-            if(randomSource.nextFloat()<=Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTermsTicks()*1.0f/24000.0)
-            list=ModelReplacer.appendOverlay(blockAndTintGetter,state,pos,direction,list);
+            list=ModelReplacer.appendOverlay(blockAndTintGetter,state,pos,direction, randomSource, list);
             if (!list.isEmpty()) {
                 blockpos$mutableblockpos.setWithOffset(pos, direction);
                 if (!p_111085_ || Block.shouldRenderFace(state, blockAndTintGetter, pos, direction, blockpos$mutableblockpos)) {

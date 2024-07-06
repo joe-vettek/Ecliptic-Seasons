@@ -3,6 +3,7 @@ package cloud.lemonslice.teastory.client.hud;
 
 import cloud.lemonslice.silveroak.environment.Humidity;
 import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.teastory.capability.SolarData;
 import cloud.lemonslice.teastory.config.ClientConfig;
 import cloud.lemonslice.teastory.handler.AsmHandler;
 import net.minecraft.client.Minecraft;
@@ -30,7 +31,7 @@ public final class OverlayEventHandler {
             // if(event.getOverlay().id().getPath().equals("all"))
             {
                 if (ClientConfig.GUI.debugInfo.get()) {
-                    int solar = clientPlayer.level().getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).orElse(new CapabilitySolarTermTime.Data()).getSolarTermsDay();
+                    int solar = clientPlayer.level().getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).orElse(new SolarData()).getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);

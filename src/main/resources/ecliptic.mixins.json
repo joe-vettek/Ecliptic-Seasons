@@ -13,6 +13,8 @@
   "client": [
     "client.ItemBlockRenderTypes",
     "client.MixinBlockRenderVanilla",
+    "client.MixinClientLevel",
+    "client.MixinClientLevelData",
     "client.MixinSimpleBakedModel",
     "experimental.MixinQuard",
     "experimental.MixinTextureAltas"

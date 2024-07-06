@@ -16,6 +16,7 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.data.ModelData;
@@ -39,7 +40,7 @@ public abstract class ItemBlockRenderTypes {
     @Inject(at = {@At("HEAD")}, method = {"getRenderLayers"}, cancellable = true, remap = false)
     private static void mixin_getRenderLayers(BlockState state, CallbackInfoReturnable<ChunkRenderTypeSet> cir) {
         if (Minecraft.getInstance().level != null)
-            if (state.getBlock() instanceof SlabBlock
+            if (state.getBlock() instanceof SlabBlock||state.getBlock() instanceof StairBlock
                     || state.getBlock().isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, new BlockPos(0, 0, 0))) {
                 cir.setReturnValue(ChunkRenderTypeSet.of(RenderType.cutoutMipped()));
             }
