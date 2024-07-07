@@ -1,5 +1,6 @@
 package xueluoanping.ecliptic.client.util;
 
+import com.ferreusveritas.dynamictrees.block.leaves.DynamicLeavesBlock;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -8,13 +9,18 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 import xueluoanping.ecliptic.Ecliptic;
 import xueluoanping.ecliptic.client.ClientSetup;
@@ -23,7 +29,7 @@ import xueluoanping.ecliptic.util.SolarUtil;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ModelReplacer {
+public class ModelManager {
     // if (state.getBlock() instanceof GrassBlock&& blockAndTintGetter.getBlockState(pos.above()).isAir()
     public static BakedModel checkAndUpdate(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, BakedModel bakedModel) {
         var out = bakedModel;
@@ -65,44 +71,128 @@ public class ModelReplacer {
         return outBakedQuads;
     }
 
+    public static class ChunkHeightMap {
+        private final int[][] matrix = new int[16][16];
+        private final Object[][] lockArray = new Object[16][16];
+
+        public ChunkHeightMap() {
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 16; j++) {
+                    matrix[i][j] = Integer.MIN_VALUE;
+                    lockArray[i][j] = new Object();
+                }
+            }
+        }
+
+        public int getHeight(int x, int z) {
+            x = getChunkValue(x);
+            z = getChunkValue(z);
+            return matrix[x][z];
+        }
+
+        public int getHeight(BlockPos pos) {
+            return getHeight(pos.getX(), pos.getZ());
+        }
+
+        public int updateHeight(int x, int z, int y) {
+            x = getChunkValue(x);
+            z = getChunkValue(z);
+            int old;
+            synchronized (lockArray[x][z]) {
+                old = matrix[x][z];
+                matrix[x][z] = y;
+            }
+            return old;
+        }
+
+        public int updateHeight(BlockPos pos, int y) {
+            return updateHeight(pos.getX(), pos.getZ(), y);
+        }
+    }
+
+    // 获取chunk内部位置
+    public static int getChunkValue(int i) {
+        return i & 15;
+    }
+
+    // 获取chunk位置
+    public static int blockToSectionCoord(int i) {
+        return i >> 4;
+    }
 
     // TODO:内存更新，双链表+Hash，用LRU
     public static Map<Long, Boolean> blockMap = new ConcurrentHashMap<>();
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new ConcurrentHashMap<>();
+    public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>();
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>();
 
+    private static final int PACKED_X_LENGTH = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
+    private static final int PACKED_Z_LENGTH = PACKED_X_LENGTH;
+    private static final long PACKED_X_MASK = (1L << PACKED_X_LENGTH) - 1L;
+    private static final long PACKED_Z_MASK = (1L << PACKED_Z_LENGTH) - 1L;
+    private static final int Z_OFFSET = PACKED_X_LENGTH;
+
+    public static long asLongPos(BlockPos pos) {
+        long i = 0L;
+        i |= ((long) pos.getX() & PACKED_X_MASK);
+        return i | ((long) pos.getZ() & PACKED_Z_MASK) << Z_OFFSET;
+    }
+
+    public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
+        ChunkPos chunkPos = new ChunkPos(pos);
+        if (ChunkMap.containsKey(chunkPos)) {
+            var map = ChunkMap.get(chunkPos);
+            int h = map.getHeight(pos);
+            if (h == Integer.MIN_VALUE || shouldUpdate) {
+                map.updateHeight(pos, Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1);
+                h = map.getHeight(pos);
+            }
+            return h;
+        } else {
+            var map = new ChunkHeightMap();
+            ChunkMap.put(chunkPos, map);
+            int h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
+            map.updateHeight(pos, h);
+            return h;
+        }
+    }
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, List<BakedQuad> list) {
         // Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING,pos);
         // 不处理空列表，这代表着不处理这个方向
-        if (direction != Direction.DOWN &&!list.isEmpty()) {
+        if (direction != Direction.DOWN && !list.isEmpty()) {
             boolean isLight = false;
-            long blockLong = pos.asLong();
-            if (blockMap.containsKey(blockLong)) {
-                isLight = blockMap.get(pos.asLong());
-            } else {
-                if (Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).asLong() != pos.above().asLong())
-                    return list;
-                boolean checkIsLight = getLight(blockAndTintGetter, pos, state, random) >= blockAndTintGetter.getMaxLightLevel();
-                isLight = checkIsLight;
-                blockMap.put(blockLong, checkIsLight);
-            }
-            if (blockMap.size()>50000){
+            // long blockLong = asLongPos(pos);
 
-            }
-
-            if (isLight) {
+            isLight = (getHeightOrUpdate(pos, false) == pos.getY());
+            // var map = ChunkMap.get(chunkPos);
+            //     long time = System.currentTimeMillis();
+            //     for (int i = 0; i < 100000*100; i++) {
+            //         map.getHeight(pos);
+            //     }
+            //     var t1 = System.currentTimeMillis() - time;
+            //     Ecliptic.logger(t1);
+            if (isLight
+                    && shouldSnowAt(blockAndTintGetter, pos, state, random)
+            ) {
+                // DynamicLeavesBlock
                 if (quadMap.containsKey(list)) {
+                    // long time = System.currentTimeMillis();
+                    // for (int i = 0; i < 100000*100; i++) {
+                    //     quadMap.get(list);
+                    // }
+                    // var t1 = System.currentTimeMillis() - time;
+                    // Ecliptic.logger(t1);
                     return quadMap.get(list);
                 } else {
                     BakedModel snowModel = null;
                     BlockState snowState = null;
                     if (ClientSetup.snowOverlayBlock.resolve().isPresent() && (state.isSolidRender(blockAndTintGetter, pos)
                             || state.is(BlockTags.LEAVES)
-                            || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP))) {
+                            || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
+                            || (state.getBlock() instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
                         snowModel = ClientSetup.snowOverlayBlock.resolve().get();
                     } else if (ClientSetup.snowySlabBottom.resolve().isPresent() && state.getBlock() instanceof SlabBlock) {
-                        list = new ArrayList<>(list);
                         snowModel = ClientSetup.snowySlabBottom.resolve().get();
                     } else if (ClientSetup.models != null && state.getBlock() instanceof StairBlock) {
                         snowState = Ecliptic.ModContents.snowyStairs.get().defaultBlockState()
@@ -148,6 +238,10 @@ public class ModelReplacer {
         return list;
     }
 
+    // TODO:感觉用随机表性能更高
+    public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
+        return (SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer() * 100 >= random.nextInt(100));
+    }
 
     public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
         // Ecliptic.logger(pos);
@@ -167,7 +261,7 @@ public class ModelReplacer {
         if (result >= 15) {
             // TODO:未来设置为降雨
             // Ecliptic.logger(SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer());
-            result += (SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer() >= random.nextFloat()) ? 0 : -100;
+            result += shouldSnowAt(blockAndTintGetter, pos, state, random) ? 0 : -100;
             // result+=blockAndTintGetter.getBlockState(pos.above()).isAir() ? 0 : -100;
         }
         return result;

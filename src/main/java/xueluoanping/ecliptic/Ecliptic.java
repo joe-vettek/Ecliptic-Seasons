@@ -5,6 +5,7 @@ import cloud.lemonslice.teastory.config.NormalConfigs;
 import cloud.lemonslice.teastory.environment.solar.BiomeTemperatureManager;
 import cloud.lemonslice.teastory.network.SimpleNetworkHandler;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
@@ -24,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Random;
 // import xueluoanping.fluiddrawerslegacy.handler.ControllerFluidCapabilityHandler;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -86,6 +88,9 @@ public class Ecliptic {
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NormalConfigs.SERVER_CONFIG);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NormalConfigs.CLIENT_CONFIG);
+
+
+
     }
 
 

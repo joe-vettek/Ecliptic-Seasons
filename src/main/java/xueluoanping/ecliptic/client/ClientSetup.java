@@ -4,16 +4,13 @@ package xueluoanping.ecliptic.client;
 // import com.jaquadro.minecraft.storagedrawers.client.renderer.TileEntityDrawersRenderer;
 
 import cloud.lemonslice.teastory.client.color.season.BiomeColorsHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -25,8 +22,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import xueluoanping.ecliptic.Ecliptic;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -66,7 +61,7 @@ public class ClientSetup {
             // ItemBlockRenderTypes.setRenderLayer(ModContents.fluiddrawer.get(), ClientSetup::isGlassLanternValidLayer);
             // MenuScreens.register(ModContents.containerType.get(), Screen.Slot1::new);
             //
-            ItemBlockRenderTypes.setRenderLayer(Blocks.BAMBOO_BLOCK,RenderType.cutoutMipped());
+            ItemBlockRenderTypes.setRenderLayer(Blocks.BAMBOO_BLOCK, RenderType.cutoutMipped());
             // ItemBlockRenderTypes.setRenderLayer(ModContents.RiceSeedlingBlock.get(),RenderType.cutout());
             // fix json file instead
             BiomeColors.GRASS_COLOR_RESOLVER = BiomeColorsHandler.GRASS_COLOR;
@@ -87,16 +82,16 @@ public class ClientSetup {
     }
 
     public static Map<ResourceLocation, BakedModel> models;
-    public static
-    LazyOptional<net.minecraft.client.resources.model.BakedModel> snowModel=
-            LazyOptional.of(()->models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
+    // public static
+    // LazyOptional<net.minecraft.client.resources.model.BakedModel> snowModel =
+    //         LazyOptional.of(() -> models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
 
     public static
     LazyOptional<net.minecraft.client.resources.model.BakedModel> snowOverlayBlock =
-            LazyOptional.of(()->models.get(new ModelResourceLocation(Ecliptic.ModContents.snowyBlock.getId(), "")));
+            LazyOptional.of(() -> models.get(new ModelResourceLocation(Ecliptic.ModContents.snowyBlock.getId(), "")));
     public static
     LazyOptional<net.minecraft.client.resources.model.BakedModel> snowySlabBottom =
-            LazyOptional.of(()->models.get(new ModelResourceLocation(Ecliptic.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
+            LazyOptional.of(() -> models.get(new ModelResourceLocation(Ecliptic.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
 
     // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
 
@@ -104,10 +99,66 @@ public class ClientSetup {
     public static void onModelBaked(ModelEvent.ModifyBakingResult event) {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
         models = modelRegistry;
-        snowModel.resolve();
+        // snowModel.resolve();
         snowySlabBottom.resolve();
-        var test= snowOverlayBlock.resolve().get();
+        var test = snowOverlayBlock.resolve().get();
         Ecliptic.logger(test);
+
+        // for (Map.Entry<ResourceKey<Block>, Block> resourceKeyBlockEntry : BuiltInRegistries.BLOCK.entrySet()) {
+        //     Block block = resourceKeyBlockEntry.getValue();
+        //     for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+        //         for (Direction direction : List.of(Direction.UP, Direction.NORTH, Direction.WEST, Direction.SOUTH, Direction.EAST, Direction.DOWN)) {
+        //             // 用这个取代向下的情况。因为List of不能为空
+        //             if (direction == Direction.DOWN) {
+        //                 direction = null;
+        //             }
+        //             // TODO:这里有随机权重源的问题
+        //             var ran = RandomSource.create();
+        //             var list = models.get(BlockModelShaper.stateToModelLocation(state)).getQuads(state, direction, ran);
+        //             LazyOptional<net.minecraft.client.resources.model.BakedModel> snowModel = LazyOptional.empty();
+        //             BlockState snowState;
+        //             boolean flag_shape = false;
+        //             try {
+        //                 flag_shape = state.getShape(null, new BlockPos(0, 0, 0)).bounds()
+        //                         == Block.box(0D, 0D, 0D, 16D, 16D, 16D).bounds();
+        //             } catch (Exception e) {
+        //                 Ecliptic.logger("Special Shape with", state);
+        //             }
+        //
+        //             if (flag_shape
+        //                     || state.getBlock() instanceof LeavesBlock
+        //                     || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)) {
+        //                 snowState = null;
+        //                 snowModel = ClientSetup.snowOverlayBlock;
+        //             } else if (state.getBlock() instanceof SlabBlock) {
+        //                 snowState = null;
+        //                 snowModel = ClientSetup.snowySlabBottom;
+        //             } else if (state.getBlock() instanceof StairBlock) {
+        //                 snowState = Ecliptic.ModContents.snowyStairs.get().defaultBlockState()
+        //                         .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
+        //                         .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
+        //                         .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
+        //                 // ClientSetup.models.get(new ModelResourceLocation(Ecliptic.ModContents.snowyStairs.getId(),"facing=north,half=bottom,shape=outer_left,waterlogged=true"))
+        //                 // 楼梯的方向是无
+        //                 snowModel = LazyOptional.of(() -> ClientSetup.models.get(BlockModelShaper.stateToModelLocation(snowState)));
+        //             } else {
+        //                 snowState = null;
+        //             }
+        //
+        //             if (snowModel.resolve().isPresent()) {
+        //                 int size = list.size();
+        //                 var snowList = snowModel.resolve().get().getQuads(snowState, direction, ran);
+        //                 var newList = new ArrayList<BakedQuad>(size + snowList.size());
+        //                 newList.addAll(list);
+        //                 newList.addAll(snowList);
+        //                 if (!list.isEmpty())
+        //                     ModelReplacer.quadMap.put(list, newList);
+        //                 // list = newList;
+        //             }
+        //         }
+        //     }
+        // }
+
         // models.entrySet().stream().filter(e->e.getKey().namespace.equals(Ecliptic.MODID)&&e.getKey().toString().contains("slab")).toList();
 
         // event.getModels().entrySet().stream().filter(resourceLocationBakedModelEntry -> resourceLocationBakedModelEntry.getKey().toString().contains("grass")).collect(Collectors.toList())

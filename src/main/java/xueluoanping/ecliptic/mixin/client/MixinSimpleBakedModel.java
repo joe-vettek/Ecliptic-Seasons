@@ -1,8 +1,6 @@
 package xueluoanping.ecliptic.mixin.client;
 
 
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.Direction;
@@ -14,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xueluoanping.ecliptic.client.util.ModelReplacer;
+import xueluoanping.ecliptic.client.util.ModelManager;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +24,8 @@ public class MixinSimpleBakedModel {
     @Inject(at = {@At("HEAD")}, method = {"getQuads"}, cancellable = true)
     private void mixin_renderQuadList(BlockState p_235054_, Direction p_235055_, RandomSource p_235056_, CallbackInfoReturnable<List<BakedQuad>> cir) {
 
-        if( ModelReplacer.ShouldReplaceQuads(p_235054_,p_235055_,p_235056_)){
-            cir.setReturnValue( ModelReplacer.getReplacedQuads(culledFaces,p_235054_,p_235055_,p_235056_));
+        if( ModelManager.ShouldReplaceQuads(p_235054_,p_235055_,p_235056_)){
+            cir.setReturnValue( ModelManager.getReplacedQuads(culledFaces,p_235054_,p_235055_,p_235056_));
         }
 
     }

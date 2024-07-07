@@ -6,9 +6,9 @@
   "mixins": [
     "MixinBiome",
     "MixinDimensionType",
+    "MixinLevelChunk",
     "MixinLevelTimeAccess",
-    "MixinServerLevel",
-    "compat.embeddium.MixinBlockRender2"
+    "MixinServerLevel"
   ],
   "client": [
     "client.ItemBlockRenderTypes",
@@ -17,11 +17,13 @@
     "client.MixinClientLevelData",
     "client.MixinSimpleBakedModel",
     "experimental.MixinQuard",
-    "experimental.MixinTextureAltas"
+    "experimental.MixinTextureAltas",
+    "compat.dynamictrees.HeightmapTypes",
+    "compat.embeddium.MixinBlockRender2"
   ],
   "injectors": {
     "defaultRequire": 1
   },
-  "plugin": "xueluoanping.ecliptic.mixin.EMCompatMixinPlugin",
+  "plugin": "xueluoanping.ecliptic.mixin.EclipticMixinPlugin",
   "minVersion": "0.8"
 }

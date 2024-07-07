@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xueluoanping.ecliptic.client.util.ModelReplacer;
+import xueluoanping.ecliptic.client.util.ModelManager;
 
 import java.util.BitSet;
 import java.util.List;
@@ -42,11 +42,11 @@ public abstract class MixinBlockRenderVanilla {
         ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
         BlockPos.MutableBlockPos blockpos$mutableblockpos = pos.mutable();
 
-        var newmodel = ModelReplacer.checkAndUpdate(blockAndTintGetter, state, pos, Direction.UP, bakedModel);
+        var newmodel = ModelManager.checkAndUpdate(blockAndTintGetter, state, pos, Direction.UP, bakedModel);
         for (Direction direction : DIRECTIONS) {
             randomSource.setSeed(p_111087_);
             List<BakedQuad> list = (direction == Direction.UP ? newmodel : bakedModel).getQuads(state, direction, randomSource, modelData, renderType);
-            list=ModelReplacer.appendOverlay(blockAndTintGetter,state,pos,direction, randomSource, list);
+            list= ModelManager.appendOverlay(blockAndTintGetter,state,pos,direction, randomSource, list);
             if (!list.isEmpty()) {
                 blockpos$mutableblockpos.setWithOffset(pos, direction);
                 if (!p_111085_ || Block.shouldRenderFace(state, blockAndTintGetter, pos, direction, blockpos$mutableblockpos)) {
