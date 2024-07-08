@@ -32,12 +32,12 @@ public class HeightmapTypes {
     // }
 
     // ctx.world().world.getBlockState(ctx.pos)
-    @Inject(at = {@At("HEAD")}, method = {"isOpaque"}, cancellable = true)
-    private void mixin_renderQuadList(CallbackInfoReturnable<Predicate<BlockState>> cir) {
-      if ((Heightmap.Types)(Object)this == Heightmap.Types.MOTION_BLOCKING){
-          cir.setReturnValue( (state) -> state.blocksMotion() || !state.getFluidState().isEmpty()
-                                  || state.getBlock() instanceof DynamicLeavesBlock);
-      }
-    }
+    // @Inject(at = {@At("HEAD")}, method = {"isOpaque"}, cancellable = true)
+    // private void mixin_isOpaque(CallbackInfoReturnable<Predicate<BlockState>> cir) {
+    //   if ((Heightmap.Types)(Object)this == Heightmap.Types.MOTION_BLOCKING){
+    //       cir.setReturnValue( (state) -> state.blocksMotion() || !state.getFluidState().isEmpty()
+    //                               || state.getBlock() instanceof DynamicLeavesBlock);
+    //   }
+    // }
 
 }

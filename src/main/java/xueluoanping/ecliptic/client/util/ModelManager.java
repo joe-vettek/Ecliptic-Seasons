@@ -24,6 +24,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
 import xueluoanping.ecliptic.Ecliptic;
 import xueluoanping.ecliptic.client.ClientSetup;
+import xueluoanping.ecliptic.client.model.BakedQuadRetextured;
 import xueluoanping.ecliptic.util.SolarUtil;
 
 import java.util.*;
@@ -160,6 +161,11 @@ public class ModelManager {
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, List<BakedQuad> list) {
         // Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING,pos);
         // 不处理空列表，这代表着不处理这个方向
+        // if (state.is(BlockTags.LEAVES)&&!list.isEmpty()){
+        //     return List.of(new BakedQuadRetextured(list.get(0),
+        //             ClientSetup.snowOverlayBlock.resolve().get().getQuads(null,Direction.UP,null).get(0).getSprite()));
+        // }
+
         if (direction != Direction.DOWN && !list.isEmpty()) {
             boolean isLight = false;
             // long blockLong = asLongPos(pos);
@@ -240,7 +246,8 @@ public class ModelManager {
 
     // TODO:感觉用随机表性能更高
     public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
-        return (SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer() * 100 >= random.nextInt(100));
+        return (SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer() * 100
+                >= random.nextInt(100));
     }
 
     public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
