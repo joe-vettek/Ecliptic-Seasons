@@ -169,10 +169,11 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if (direction != Direction.DOWN && !list.isEmpty()) {
+        if (SolarClientUtil.getSnowLayer() > 0 && direction != Direction.DOWN && !list.isEmpty()) {
 
             int flag = 0;
-            if ((state.isSolid()
+            if ((state.isSolidRender(blockAndTintGetter, pos)
+                    // state.isSolid()
                     || state.getBlock() instanceof LeavesBlock
                     || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
                     || (state.getBlock() instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
@@ -183,20 +184,17 @@ public class ModelManager {
                 flag = 3;
             } else return list;
 
-            boolean isLight = false;
+            boolean isLight = getHeightOrUpdate(pos,false)==pos.getY();
             // long blockLong = asLongPos(pos);
 
-            isLight = (getHeightOrUpdate(pos, false) == pos.getY());
-            // var map = ChunkMap.get(chunkPos);
-            //     long time = System.currentTimeMillis();
-            //     for (int i = 0; i < 100000*100; i++) {
-            //
-            //     }
-            //     var t1 = System.currentTimeMillis() - time;
-            //     Ecliptic.logger(t1);
-            if (isLight
-                    && shouldSnowAt(blockAndTintGetter, pos, state, random)
-            ) {
+            // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
+            // long time = System.currentTimeMillis();
+            // for (int i = 0; i < 100000 * 100; i++) {
+                // state.isSolidRender(blockAndTintGetter, pos);
+            // }
+            // var t1 = System.currentTimeMillis() - time;
+            // Ecliptic.logger(t1);
+            if (isLight && shouldSnowAt(blockAndTintGetter, pos, state, random)) {
                 // DynamicLeavesBlock
                 var cc = quadMap.getOrDefault(list, null);
                 if (cc != null) {
@@ -222,7 +220,7 @@ public class ModelManager {
                         int size = list.size();
                         var snowList = snowModel.getQuads(snowState, direction, null);
                         ArrayList<BakedQuad> newList;
-                        if (direction == Direction.UP) {
+                        if ( direction == Direction.UP) {
                             newList = (ArrayList<BakedQuad>) snowList;
                         } else {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());
