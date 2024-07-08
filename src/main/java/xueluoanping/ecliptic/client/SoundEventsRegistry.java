@@ -2,6 +2,7 @@ package xueluoanping.ecliptic.client;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +24,7 @@ public class SoundEventsRegistry {
 
     @SubscribeEvent
     public static void blockRegister(RegisterEvent event) {
+        // MultiPackResourceManager
         event.register(Registries.SOUND_EVENT, soundEventRegisterHelper -> {
             soundEventRegisterHelper.register(CUP_BROKEN.getLocation(), CUP_BROKEN);
             soundEventRegisterHelper.register(RECORD_MOVING_UP.getLocation(), RECORD_MOVING_UP);

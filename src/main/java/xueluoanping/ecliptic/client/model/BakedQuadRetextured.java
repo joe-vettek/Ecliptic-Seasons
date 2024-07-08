@@ -3,7 +3,11 @@ package xueluoanping.ecliptic.client.model;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.FaceBakery;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.resources.ResourceLocation;
+import xueluoanping.ecliptic.Ecliptic;
 
 import java.util.Arrays;
 
@@ -11,10 +15,13 @@ import java.util.Arrays;
 // From dynamictrees, thanks DT team
 public class BakedQuadRetextured extends BakedQuad {
     private final TextureAtlasSprite texture;
+    // ModelBakery
+    public static final Material FIRE_0 = new Material(TextureAtlas.LOCATION_BLOCKS, Ecliptic.rl("block/snow_overlay"));
 
     public BakedQuadRetextured(BakedQuad quad, TextureAtlasSprite textureIn) {
         super(Arrays.copyOf(quad.getVertices(), quad.getVertices().length), quad.getTintIndex(), FaceBakery.calculateFacing(quad.getVertices()), quad.getSprite(), quad.isShade());
-        this.texture = textureIn;
+        // this.texture = textureIn;
+        this.texture=FIRE_0.sprite();
         this.remapQuad();
     }
 

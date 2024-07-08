@@ -200,6 +200,7 @@ dependencies {
 
 //    implementation fg.deobf("curse.maven:distant-horizons-508933:5474790")
 
+        implementation fg.deobf("curse.maven:selene-499980:5478857-deobf-sources-api")
 //    implementation fg.deobf("curse.maven:create-328085:4835191-deobf-sources-api")
     compileOnly fg.deobf("curse.maven:embeddium-908741:4949986")
     implementation fg.deobf("curse.maven:embeddium-908741:4949986")

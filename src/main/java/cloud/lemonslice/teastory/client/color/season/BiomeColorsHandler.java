@@ -35,11 +35,11 @@ public class BiomeColorsHandler {
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
 
-                var bbs = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
-                Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getTextureLocations().stream().toList().get(0)).contents();
-                for (ResourceLocation textureLocation : bbs.getTextureLocations()) {
-                    // Ecliptic.logger(  bbs.getSprite(textureLocation).get.getPixelRGBA(0,1,1));
-                }
+                // var bbs = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+                // // Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getSprite(Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS).getTextureLocations().stream().toList().get(0)).contents();
+                // for (ResourceLocation textureLocation : bbs.getTextureLocations()) {
+                //     // Ecliptic.logger(  bbs.getSprite(textureLocation).get.getPixelRGBA(0,1,1));
+                // }
                 // net.minecraft.client.renderer.block.model.BakedQuad
                 return k > newGrassBuffer.length ? -65281 : newGrassBuffer[k];
                 // return 0xfffffef9;

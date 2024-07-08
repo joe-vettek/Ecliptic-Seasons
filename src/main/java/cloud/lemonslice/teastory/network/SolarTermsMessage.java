@@ -15,6 +15,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import xueluoanping.ecliptic.util.SolarClientUtil;
 
 import java.util.function.Supplier;
 
@@ -67,6 +68,7 @@ public class SolarTermsMessage implements INormalMessage {
                                     }
                             );
                             BiomeColorsHandler.needRefresh = true;
+                            SolarClientUtil.updateSnowLayer(data.getSnowLayer());
                         }
                 );
                 try {

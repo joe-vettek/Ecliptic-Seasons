@@ -103,6 +103,9 @@ public class ClientSetup {
         snowySlabBottom.resolve();
         var test = snowOverlayBlock.resolve().get();
         Ecliptic.logger(test);
+        // net.minecraft.client.resources.model.ModelManager.reload
+        // p_251134_.listPacks().toList().get(0).getResource(PackType.CLIENT_RESOURCES, completablefuture.get().entrySet().stream().toList().get(0).getKey()).get().readAllBytes()
+        // p_251134_.listPacks().toList().get(1).getResource(PackType.CLIENT_RESOURCES, Ecliptic.rl("textures/block/icon.png")).get().readAllBytes()
 
         // for (Map.Entry<ResourceKey<Block>, Block> resourceKeyBlockEntry : BuiltInRegistries.BLOCK.entrySet()) {
         //     Block block = resourceKeyBlockEntry.getValue();

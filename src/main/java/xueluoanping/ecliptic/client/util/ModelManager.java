@@ -14,6 +14,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,6 +26,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import xueluoanping.ecliptic.Ecliptic;
 import xueluoanping.ecliptic.client.ClientSetup;
 import xueluoanping.ecliptic.client.model.BakedQuadRetextured;
+import xueluoanping.ecliptic.util.SolarClientUtil;
 import xueluoanping.ecliptic.util.SolarUtil;
 
 import java.util.*;
@@ -124,7 +126,7 @@ public class ModelManager {
     // TODO:内存更新，双链表+Hash，用LRU
     public static Map<Long, Boolean> blockMap = new ConcurrentHashMap<>();
     public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>();
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>();
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024, 0.5f);
 
     private static final int PACKED_X_LENGTH = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
     private static final int PACKED_Z_LENGTH = PACKED_X_LENGTH;
@@ -140,8 +142,8 @@ public class ModelManager {
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
         ChunkPos chunkPos = new ChunkPos(pos);
-        if (ChunkMap.containsKey(chunkPos)) {
-            var map = ChunkMap.get(chunkPos);
+        var map = ChunkMap.getOrDefault(chunkPos, null);
+        if (map != null) {
             int h = map.getHeight(pos);
             if (h == Integer.MIN_VALUE || shouldUpdate) {
                 map.updateHeight(pos, Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1);
@@ -149,7 +151,7 @@ public class ModelManager {
             }
             return h;
         } else {
-            var map = new ChunkHeightMap();
+            map = new ChunkHeightMap();
             ChunkMap.put(chunkPos, map);
             int h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
             map.updateHeight(pos, h);
@@ -161,12 +163,26 @@ public class ModelManager {
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, List<BakedQuad> list) {
         // Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING,pos);
         // 不处理空列表，这代表着不处理这个方向
-        // if (state.is(BlockTags.LEAVES)&&!list.isEmpty()){
+        // if (state.is(BlockTags.LEAVES) && !list.isEmpty()) {
         //     return List.of(new BakedQuadRetextured(list.get(0),
-        //             ClientSetup.snowOverlayBlock.resolve().get().getQuads(null,Direction.UP,null).get(0).getSprite()));
+        //             ClientSetup.snowOverlayBlock.resolve().get().getQuads(null, Direction.UP, null).get(0).getSprite()));
         // }
+        // if (true)return list;
 
         if (direction != Direction.DOWN && !list.isEmpty()) {
+
+            int flag = 0;
+            if ((state.isSolid()
+                    || state.getBlock() instanceof LeavesBlock
+                    || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
+                    || (state.getBlock() instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
+                flag = 1;
+            } else if (state.getBlock() instanceof SlabBlock) {
+                flag = 2;
+            } else if (state.getBlock() instanceof StairBlock) {
+                flag = 3;
+            } else return list;
+
             boolean isLight = false;
             // long blockLong = asLongPos(pos);
 
@@ -174,7 +190,7 @@ public class ModelManager {
             // var map = ChunkMap.get(chunkPos);
             //     long time = System.currentTimeMillis();
             //     for (int i = 0; i < 100000*100; i++) {
-            //         map.getHeight(pos);
+            //
             //     }
             //     var t1 = System.currentTimeMillis() - time;
             //     Ecliptic.logger(t1);
@@ -182,25 +198,17 @@ public class ModelManager {
                     && shouldSnowAt(blockAndTintGetter, pos, state, random)
             ) {
                 // DynamicLeavesBlock
-                if (quadMap.containsKey(list)) {
-                    // long time = System.currentTimeMillis();
-                    // for (int i = 0; i < 100000*100; i++) {
-                    //     quadMap.get(list);
-                    // }
-                    // var t1 = System.currentTimeMillis() - time;
-                    // Ecliptic.logger(t1);
-                    return quadMap.get(list);
+                var cc = quadMap.getOrDefault(list, null);
+                if (cc != null) {
+                    return cc;
                 } else {
                     BakedModel snowModel = null;
                     BlockState snowState = null;
-                    if (ClientSetup.snowOverlayBlock.resolve().isPresent() && (state.isSolidRender(blockAndTintGetter, pos)
-                            || state.is(BlockTags.LEAVES)
-                            || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
-                            || (state.getBlock() instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
+                    if (ClientSetup.snowOverlayBlock.resolve().isPresent() && flag == 1) {
                         snowModel = ClientSetup.snowOverlayBlock.resolve().get();
-                    } else if (ClientSetup.snowySlabBottom.resolve().isPresent() && state.getBlock() instanceof SlabBlock) {
+                    } else if (ClientSetup.snowySlabBottom.resolve().isPresent() && flag == 2) {
                         snowModel = ClientSetup.snowySlabBottom.resolve().get();
-                    } else if (ClientSetup.models != null && state.getBlock() instanceof StairBlock) {
+                    } else if (ClientSetup.models != null && flag == 3) {
                         snowState = Ecliptic.ModContents.snowyStairs.get().defaultBlockState()
                                 .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
                                 .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
@@ -209,12 +217,18 @@ public class ModelManager {
                         // 楼梯的方向是无
                         snowModel = ClientSetup.models.get(BlockModelShaper.stateToModelLocation(snowState));
                     }
+
                     if (snowModel != null) {
                         int size = list.size();
                         var snowList = snowModel.getQuads(snowState, direction, null);
-                        var newList = new ArrayList<BakedQuad>(size + snowList.size());
-                        newList.addAll(list);
-                        newList.addAll(snowList);
+                        ArrayList<BakedQuad> newList;
+                        if (direction == Direction.UP) {
+                            newList = (ArrayList<BakedQuad>) snowList;
+                        } else {
+                            newList = new ArrayList<BakedQuad>(size + snowList.size());
+                            newList.addAll(list);
+                            newList.addAll(snowList);
+                        }
                         quadMap.put(list, newList);
                         list = newList;
                     }
@@ -246,7 +260,7 @@ public class ModelManager {
 
     // TODO:感觉用随机表性能更高
     public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
-        return (SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer() * 100
+        return (SolarClientUtil.getSnowLayer() * 100
                 >= random.nextInt(100));
     }
 
