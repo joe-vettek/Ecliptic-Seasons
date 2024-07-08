@@ -125,7 +125,7 @@ public class ModelManager {
 
     // TODO:内存更新，双链表+Hash，用LRU
     public static Map<Long, Boolean> blockMap = new ConcurrentHashMap<>();
-    public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>();
+    public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>(512);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024, 0.5f);
 
     private static final int PACKED_X_LENGTH = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
