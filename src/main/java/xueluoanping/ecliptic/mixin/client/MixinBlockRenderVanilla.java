@@ -35,7 +35,7 @@ public abstract class MixinBlockRenderVanilla {
     protected abstract void renderModelFaceAO(BlockAndTintGetter p_111013_, BlockState p_111014_, BlockPos p_111015_, PoseStack p_111016_, VertexConsumer p_111017_, List<BakedQuad> p_111018_, float[] p_111019_, BitSet p_111020_, ModelBlockRenderer.AmbientOcclusionFace p_111021_, int p_111022_);
 
     // ctx.world().world.getBlockState(ctx.pos)
-    @Inject(at = {@At("HEAD")}, method = {"tesselateWithAO(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/ModelData;Lnet/minecraft/client/renderer/RenderType;)V"}, cancellable = true, remap = false)
+    @Inject(at = {@At("HEAD")}, method = {"tesselateWithAO(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/ModelData;Lnet/minecraft/client/renderer/RenderType;)V"}, cancellable = true)
     private void mixin_tesselateWithAO(BlockAndTintGetter blockAndTintGetter, BakedModel bakedModel, BlockState state, BlockPos pos, PoseStack poseStack, VertexConsumer vertexConsumer, boolean p_111085_, RandomSource randomSource, long p_111087_, int p_111088_, ModelData modelData, RenderType renderType, CallbackInfo ci) {
         float[] afloat = new float[DIRECTIONS.length * 2];
         BitSet bitset = new BitSet(3);

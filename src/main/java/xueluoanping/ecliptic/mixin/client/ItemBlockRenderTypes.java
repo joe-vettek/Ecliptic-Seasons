@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemBlockRenderTypes {
 
     // ctx.world().world.getBlockState(ctx.pos)
-    @Inject(at = {@At("HEAD")}, method = {"getRenderLayers"}, cancellable = true, remap = false)
+    @Inject(at = {@At("HEAD")}, method = {"getRenderLayers"}, cancellable = true)
     private static void mixin_getRenderLayers(BlockState state, CallbackInfoReturnable<ChunkRenderTypeSet> cir) {
         if (Minecraft.getInstance().level != null)
             if (state.getBlock() instanceof SlabBlock||state.getBlock() instanceof StairBlock

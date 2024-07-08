@@ -12,7 +12,7 @@ import xueluoanping.ecliptic.client.util.WeatherChecker;
 
 @Mixin(ClientLevel.ClientLevelData.class)
 public class MixinClientLevelData {
-    @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true, remap = false)
+    @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true)
     private void mixin_getRenderLayers(CallbackInfoReturnable<Boolean> cir) {
         // if ((Object) this instanceof ClientLevel.ClientLevelData clientLevel)
         // {

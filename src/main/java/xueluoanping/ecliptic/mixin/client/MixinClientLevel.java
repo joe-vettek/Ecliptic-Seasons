@@ -21,14 +21,14 @@ import xueluoanping.ecliptic.client.util.WeatherChecker;
 public class MixinClientLevel {
 
 
-    @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true, remap = false)
+    @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true)
     private void mixin_isRaining(CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof ClientLevel clientLevel) {
             cir.setReturnValue(WeatherChecker.isRain(clientLevel));
         }
     }
 
-    @Inject(at = {@At("HEAD")}, method = {"getRainLevel"}, cancellable = true, remap = false)
+    @Inject(at = {@At("HEAD")}, method = {"getRainLevel"}, cancellable = true)
     private void mixin_getRainLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
         if ((Object) this instanceof ClientLevel clientLevel) {
             cir.setReturnValue(WeatherChecker.getRainLevel(p_46723_,clientLevel));
