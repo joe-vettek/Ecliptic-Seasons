@@ -15,11 +15,12 @@
     "client.MixinBlockRenderVanilla",
     "client.MixinClientLevel",
     "client.MixinClientLevelData",
+    "client.MixinClientLevelRender",
     "client.MixinSimpleBakedModel",
-    "experimental.MixinQuard",
-    "experimental.MixinTextureAltas",
     "compat.dynamictrees.HeightmapTypes",
-    "compat.embeddium.MixinBlockRender2"
+    "compat.embeddium.MixinBlockRender2",
+    "experimental.MixinQuard",
+    "experimental.MixinTextureAltas"
   ],
   "injectors": {
     "defaultRequire": 1

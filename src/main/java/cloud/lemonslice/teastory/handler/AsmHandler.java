@@ -45,6 +45,7 @@ public class AsmHandler {
             return ((Level) world).getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(data ->
             {
                 int dayTime = SolarTerm.get(data.getSolarTermIndex()).getDayTime();
+                // dayTime=23900;
                 int sunrise = 24000 - dayTime / 2;
                 int sunset = dayTime / 2;
                 int dayLevelTime = Math.toIntExact((worldTime + 18000) % 24000); // 0 for noon; 6000 for sunset; 18000 for sunrise.

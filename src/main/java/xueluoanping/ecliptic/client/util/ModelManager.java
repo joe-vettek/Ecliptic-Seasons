@@ -229,7 +229,8 @@ public class ModelManager {
                         ArrayList<BakedQuad> newList;
                         if ( direction == Direction.UP) {
                             newList = (ArrayList<BakedQuad>) snowList;
-                        } else {
+                        } else
+                        {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());
                             newList.addAll(list);
                             newList.addAll(snowList);

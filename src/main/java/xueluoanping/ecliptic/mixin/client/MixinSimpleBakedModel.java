@@ -19,6 +19,7 @@ import java.util.Map;
 
 @Mixin({SimpleBakedModel.class})
 public class MixinSimpleBakedModel {
+
     @Shadow @Final protected Map<Direction, List<BakedQuad>> culledFaces;
 
     @Inject(at = {@At("HEAD")}, method = {"getQuads"}, cancellable = true)
