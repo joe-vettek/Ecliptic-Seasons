@@ -159,6 +159,10 @@ public class ModelManager {
         }
     }
 
+    public static final int FLAG_BLOCK=1;
+    public static final int FLAG_SLAB=2;
+    public static final int FLAG_STAIRS=3;
+
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, List<BakedQuad> list) {
         // Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING,pos);
@@ -177,23 +181,26 @@ public class ModelManager {
                     || state.getBlock() instanceof LeavesBlock
                     || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
                     || (state.getBlock() instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
-                flag = 1;
+                flag = FLAG_BLOCK;
             } else if (state.getBlock() instanceof SlabBlock) {
-                flag = 2;
+                flag = FLAG_SLAB;
             } else if (state.getBlock() instanceof StairBlock) {
-                flag = 3;
+                flag = FLAG_STAIRS;
             } else return list;
 
             boolean isLight = getHeightOrUpdate(pos,false)==pos.getY();
+            // boolean isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
             // long blockLong = asLongPos(pos);
 
-            // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
+            // // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
             // long time = System.currentTimeMillis();
             // for (int i = 0; i < 100000 * 100; i++) {
-                // state.isSolidRender(blockAndTintGetter, pos);
+            //     // state.isSolidRender(blockAndTintGetter, pos);
+            //  isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
+            //
             // }
             // var t1 = System.currentTimeMillis() - time;
-            // Ecliptic.logger(t1);
+            // // Ecliptic.logger(t1);
             if (isLight && shouldSnowAt(blockAndTintGetter, pos, state, random)) {
                 // DynamicLeavesBlock
                 var cc = quadMap.getOrDefault(list, null);
@@ -202,11 +209,11 @@ public class ModelManager {
                 } else {
                     BakedModel snowModel = null;
                     BlockState snowState = null;
-                    if (ClientSetup.snowOverlayBlock.resolve().isPresent() && flag == 1) {
+                    if (ClientSetup.snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
                         snowModel = ClientSetup.snowOverlayBlock.resolve().get();
-                    } else if (ClientSetup.snowySlabBottom.resolve().isPresent() && flag == 2) {
+                    } else if (ClientSetup.snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
                         snowModel = ClientSetup.snowySlabBottom.resolve().get();
-                    } else if (ClientSetup.models != null && flag == 3) {
+                    } else if (ClientSetup.models != null && flag == FLAG_STAIRS) {
                         snowState = Ecliptic.ModContents.snowyStairs.get().defaultBlockState()
                                 .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
                                 .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))

@@ -206,6 +206,9 @@ dependencies {
     implementation fg.deobf("curse.maven:embeddium-908741:4949986")
     implementation fg.deobf("curse.maven:oculus-581495:4952626")
 
+    implementation fg.deobf("curse.maven:kiwi-303657:4688568")
+    implementation fg.deobf("curse.maven:snow-real-magic-308663:5139853")
+
     onlyMainRuntimeOnly fg.deobf("curse.maven:journeymap-32274:4873863")
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
