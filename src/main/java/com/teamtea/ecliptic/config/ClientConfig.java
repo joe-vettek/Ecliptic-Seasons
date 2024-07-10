@@ -5,6 +5,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class ClientConfig
 {
 
+    public static final ForgeConfigSpec CLIENT_CONFIG = new ForgeConfigSpec.Builder().configure(ClientConfig::new).getRight();
+
     protected ClientConfig(ForgeConfigSpec.Builder builder)
     {
         GUI.load(builder);

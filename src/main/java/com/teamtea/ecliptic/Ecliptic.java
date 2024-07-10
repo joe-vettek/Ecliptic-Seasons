@@ -1,8 +1,9 @@
 package com.teamtea.ecliptic;
 
 
-import com.teamtea.ecliptic.config.NormalConfigs;
+import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
+import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -76,17 +77,12 @@ public class Ecliptic {
         MinecraftForge.EVENT_BUS.register(this);
 
         ModContents.ModBlocks.register(FMLJavaModLoadingContext.get().getModEventBus());
-        // ModContents.DRMenuType.register(FMLJavaModLoadingContext.get().getModEventBus());
-
-        // ModContents.init();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::gatherData);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::FMLCommonSetup);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, NormalConfigs.SERVER_CONFIG);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, NormalConfigs.CLIENT_CONFIG);
-
-
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ServerConfig.SERVER_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
 
     }
 
@@ -96,14 +92,13 @@ public class Ecliptic {
     }
 
     public void FMLCommonSetup(final FMLCommonSetupEvent event) {
-        // start.dataGen(event);
         SimpleNetworkHandler.init();
-
     }
 
     public void gatherData(final GatherDataEvent event) {
         // start.dataGen(event);
     }
+
 
     public static class ModContents {
         public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
@@ -111,7 +106,5 @@ public class Ecliptic {
         public static RegistryObject<Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS::defaultBlockState, BlockBehaviour.Properties.copy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
         public static RegistryObject<Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
         public static RegistryObject<Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
-
-
     }
 }

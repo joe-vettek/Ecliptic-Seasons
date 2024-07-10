@@ -4,6 +4,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ServerConfig
 {
+    public static final ForgeConfigSpec SERVER_CONFIG = new ForgeConfigSpec.Builder().configure(ServerConfig::new).getRight();
+
     protected ServerConfig(ForgeConfigSpec.Builder builder)
     {
         Block.load(builder);
