@@ -1,24 +1,7 @@
 package xueluoanping.ecliptic.mixin.compat.dynamictrees;
 
-import com.ferreusveritas.dynamictrees.block.leaves.DynamicLeavesBlock;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.fml.loading.FMLLoader;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xueluoanping.ecliptic.client.util.ModelManager;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 
 @Mixin({Heightmap.Types.class})

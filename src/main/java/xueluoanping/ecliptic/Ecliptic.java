@@ -1,9 +1,8 @@
 package xueluoanping.ecliptic;
 
 
-import cloud.lemonslice.teastory.config.NormalConfigs;
-import cloud.lemonslice.teastory.environment.solar.BiomeTemperatureManager;
-import cloud.lemonslice.teastory.network.SimpleNetworkHandler;
+import cloud.lemonslice.config.NormalConfigs;
+import cloud.lemonslice.network.SimpleNetworkHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -99,7 +98,7 @@ public class Ecliptic {
     public void FMLCommonSetup(final FMLCommonSetupEvent event) {
         // start.dataGen(event);
         SimpleNetworkHandler.init();
-        BiomeTemperatureManager.init();
+
     }
 
     public void gatherData(final GatherDataEvent event) {

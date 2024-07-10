@@ -209,6 +209,7 @@ dependencies {
 //    implementation fg.deobf("curse.maven:kiwi-303657:4688568")
 //    implementation fg.deobf("curse.maven:snow-real-magic-308663:5139853")
 
+    onlyMainRuntimeOnly fg.deobf("curse.maven:terralith-513688:5512076")
     onlyMainRuntimeOnly fg.deobf("curse.maven:journeymap-32274:4873863")
 
     // Real mod deobf dependency examples - these get remapped to your current mappings

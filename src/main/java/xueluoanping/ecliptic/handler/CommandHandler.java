@@ -1,7 +1,7 @@
 package xueluoanping.ecliptic.handler;
 
-import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
-import cloud.lemonslice.teastory.capability.SolarData;
+import cloud.lemonslice.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.capability.SolarData;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

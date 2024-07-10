@@ -2,7 +2,7 @@ package xueluoanping.ecliptic.mixin;
 
 
 
-import cloud.lemonslice.teastory.handler.AsmHandler;
+import cloud.lemonslice.handler.AsmHandler;
 import net.minecraft.world.level.LevelTimeAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

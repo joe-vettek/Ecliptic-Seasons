@@ -1,9 +1,9 @@
 package xueluoanping.ecliptic.handler;
 
 
-import cloud.lemonslice.teastory.environment.solar.Season;
-import cloud.lemonslice.teastory.environment.solar.SolarTerm;
-import cloud.lemonslice.teastory.handler.event.DataEventHandler;
+import cloud.lemonslice.environment.solar.Season;
+import cloud.lemonslice.environment.solar.SolarTerm;
+import cloud.lemonslice.handler.event.DataEventHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;

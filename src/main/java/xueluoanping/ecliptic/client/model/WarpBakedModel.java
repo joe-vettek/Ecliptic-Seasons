@@ -8,11 +8,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ChunkRenderTypeSet;
-import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xueluoanping.ecliptic.client.ClientSetup;
+import xueluoanping.ecliptic.client.core.ModelManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +26,7 @@ public class WarpBakedModel implements BakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction direction, RandomSource randomSource) {
-        var txt=ClientSetup.snowOverlayBlock.resolve().get().getQuads(Blocks.SNOW_BLOCK.defaultBlockState(), Direction.UP, null).get(0);
+        var txt= ModelManager.snowOverlayBlock.resolve().get().getQuads(Blocks.SNOW_BLOCK.defaultBlockState(), Direction.UP, null).get(0);
         if(direction==Direction.UP){
 
             return bakedModel.getQuads(state, direction, randomSource).stream().map(bakedQuad->{

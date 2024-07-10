@@ -1,8 +1,6 @@
 package xueluoanping.ecliptic.util;
 
-import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
-import cloud.lemonslice.teastory.environment.solar.SolarTerm;
-import net.minecraft.client.Minecraft;
+import cloud.lemonslice.environment.solar.SolarTerm;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;

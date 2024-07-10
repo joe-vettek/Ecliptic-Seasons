@@ -1,10 +1,8 @@
 package xueluoanping.ecliptic.util;
 
-import cloud.lemonslice.teastory.capability.CapabilitySolarTermTime;
-import cloud.lemonslice.teastory.capability.SolarData;
+import cloud.lemonslice.capability.CapabilitySolarTermTime;
+import cloud.lemonslice.capability.SolarData;
 import net.minecraft.world.level.Level;
-
-import java.util.Map;
 
 
 public class SolarUtil {
