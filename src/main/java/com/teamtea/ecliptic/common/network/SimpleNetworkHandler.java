@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.network;
+package com.teamtea.ecliptic.common.network;
 
 
 import com.teamtea.ecliptic.api.INormalMessage;

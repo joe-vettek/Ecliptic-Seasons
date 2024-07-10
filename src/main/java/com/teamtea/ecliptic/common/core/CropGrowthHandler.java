@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.core;
+package com.teamtea.ecliptic.common.core;
 
 
 import com.teamtea.ecliptic.api.biome.Humidity;
@@ -27,7 +27,7 @@ public final class CropGrowthHandler
         CropSeasonInfo seasonInfo = CropInfoManager.getSeasonInfo(block);
         if (seasonInfo != null && ServerConfig.Season.enable.get())
         {
-            if (seasonInfo.isSuitable(SeasonHelper.getSeason((Level) world)))
+            if (seasonInfo.isSuitable(SolarUtil.getSeason((Level) world)))
             {
                 Humidity env = Humidity.getHumid(world.getBiome(pos).get().getModifiedClimateSettings().downfall(), world.getBiome(pos).get().getTemperature(pos));
                 CropHumidityInfo humidityInfo = CropInfoManager.getHumidityInfo(block);

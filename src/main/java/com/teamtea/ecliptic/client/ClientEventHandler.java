@@ -2,7 +2,7 @@ package com.teamtea.ecliptic.client;
 
 
 import com.teamtea.ecliptic.config.ServerConfig;
-import com.teamtea.ecliptic.core.CropInfoManager;
+import com.teamtea.ecliptic.common.core.CropInfoManager;
 import com.teamtea.ecliptic.api.crop.CropSeasonInfo;
 import com.teamtea.ecliptic.api.crop.CropHumidityInfo;
 import net.minecraft.world.item.BlockItem;

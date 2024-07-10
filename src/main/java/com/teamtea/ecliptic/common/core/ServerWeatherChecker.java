@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.core;
+package com.teamtea.ecliptic.common.core;
 
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import net.minecraft.core.BlockPos;

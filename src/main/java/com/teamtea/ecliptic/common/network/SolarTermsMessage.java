@@ -1,10 +1,10 @@
-package com.teamtea.ecliptic.network;
+package com.teamtea.ecliptic.common.network;
 
 
 import com.teamtea.ecliptic.api.INormalMessage;
-import com.teamtea.ecliptic.core.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.core.BiomeTemperatureManager;
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.core.SolarDataRunner;
+import com.teamtea.ecliptic.common.core.SolarDataRunner;
 import com.teamtea.ecliptic.client.color.season.BiomeColorsHandler;
 
 import com.teamtea.ecliptic.config.ServerConfig;

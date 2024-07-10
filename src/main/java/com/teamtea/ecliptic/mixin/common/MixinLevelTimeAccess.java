@@ -2,7 +2,7 @@ package com.teamtea.ecliptic.mixin.common;
 
 
 
-import com.teamtea.ecliptic.core.AsmHandler;
+import com.teamtea.ecliptic.common.core.AsmHandler;
 import net.minecraft.world.level.LevelTimeAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

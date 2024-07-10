@@ -1,7 +1,7 @@
-package com.teamtea.ecliptic.handler;
+package com.teamtea.ecliptic.common.handler;
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.core.SolarDataRunner;
+import com.teamtea.ecliptic.common.core.SolarDataRunner;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

@@ -2,9 +2,9 @@ package com.teamtea.ecliptic.client.debug;
 
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.core.SolarDataRunner;
+import com.teamtea.ecliptic.common.core.SolarDataRunner;
 import com.teamtea.ecliptic.config.ClientConfig;
-import com.teamtea.ecliptic.core.AsmHandler;
+import com.teamtea.ecliptic.common.core.AsmHandler;
 import com.teamtea.ecliptic.api.biome.Humidity;
 import net.minecraft.client.Minecraft;
 

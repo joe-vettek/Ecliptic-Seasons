@@ -2,7 +2,7 @@ package com.teamtea.ecliptic;
 
 
 import com.teamtea.ecliptic.config.NormalConfigs;
-import com.teamtea.ecliptic.network.SimpleNetworkHandler;
+import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;

@@ -1,9 +1,9 @@
-package com.teamtea.ecliptic.handler;
+package com.teamtea.ecliptic.common.handler;
 
 
+import com.teamtea.ecliptic.common.core.WeatherHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.google.common.collect.Lists;
-import com.teamtea.ecliptic.core.WeatherHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;

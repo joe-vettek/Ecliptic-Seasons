@@ -1,7 +1,7 @@
 package com.teamtea.ecliptic.api;
 
 
-import com.teamtea.ecliptic.core.SolarDataRunner;
+import com.teamtea.ecliptic.common.core.SolarDataRunner;
 import net.minecraftforge.common.capabilities.*;
 
 public class CapabilitySolarTermTime {

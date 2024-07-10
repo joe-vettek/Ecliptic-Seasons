@@ -1,17 +1,15 @@
-package com.teamtea.ecliptic.core;
+package com.teamtea.ecliptic.common.core;
 
-import com.teamtea.ecliptic.core.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
-import com.teamtea.ecliptic.network.SimpleNetworkHandler;
+import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraftforge.network.PacketDistributor;
-import com.teamtea.ecliptic.core.ServerWeatherChecker;
 
 import java.util.ArrayList;
 

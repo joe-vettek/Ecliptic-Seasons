@@ -1,9 +1,9 @@
-package com.teamtea.ecliptic.core;
+package com.teamtea.ecliptic.common.core;
 
 
 import com.teamtea.ecliptic.api.solar.Season;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.handler.event.DataEventHandler;
+import com.teamtea.ecliptic.common.handler.event.DataEventHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;

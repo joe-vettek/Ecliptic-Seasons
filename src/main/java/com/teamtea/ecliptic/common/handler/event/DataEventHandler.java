@@ -1,11 +1,11 @@
-package com.teamtea.ecliptic.handler.event;
+package com.teamtea.ecliptic.common.handler.event;
 
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.core.SolarProvider;
+import com.teamtea.ecliptic.common.core.SolarProvider;
+import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.network.SimpleNetworkHandler;
-import com.teamtea.ecliptic.network.SolarTermsMessage;
+import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

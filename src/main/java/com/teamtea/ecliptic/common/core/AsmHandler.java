@@ -1,9 +1,9 @@
-package com.teamtea.ecliptic.core;
+package com.teamtea.ecliptic.common.core;
 
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.handler.event.DataEventHandler;
+import com.teamtea.ecliptic.common.handler.event.DataEventHandler;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelTimeAccess;
