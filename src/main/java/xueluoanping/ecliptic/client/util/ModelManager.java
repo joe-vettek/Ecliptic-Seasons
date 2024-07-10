@@ -5,13 +5,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -209,6 +212,7 @@ public class ModelManager {
     public static final int FLAG_BLOCK = 1;
     public static final int FLAG_SLAB = 2;
     public static final int FLAG_STAIRS = 3;
+    public static final int FLAG_LEAVES = 4;
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, long seed, List<BakedQuad> list) {
@@ -220,10 +224,14 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if (SolarClientUtil.getSnowLayer() > 0 && direction != Direction.DOWN && !list.isEmpty()) {
+        if (SolarClientUtil.getSnowLayer() > 0
+                && direction != Direction.DOWN
+                && !list.isEmpty()) {
 
             int flag = 0;
-            if ((state.isSolidRender(blockAndTintGetter, pos)
+            if (state.getBlock() instanceof LeavesBlock) {
+                flag = FLAG_LEAVES;
+            } else if ((state.isSolidRender(blockAndTintGetter, pos)
                     // state.isSolid()
                     || state.getBlock() instanceof LeavesBlock
                     || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
@@ -234,7 +242,7 @@ public class ModelManager {
             } else if (state.getBlock() instanceof StairBlock) {
                 flag = FLAG_STAIRS;
             } else return list;
-            
+
             boolean isLight = getHeightOrUpdate(pos, false) == pos.getY();
             // boolean isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
             // long blockLong = asLongPos(pos);
@@ -248,7 +256,9 @@ public class ModelManager {
             // //     cpos.hashCode();
             // }
             // Ecliptic.logger(System.currentTimeMillis() - time);
-            if (isLight && shouldSnowAt(blockAndTintGetter, pos, state, random, seed)) {
+            if (isLight
+                    && state.getBlock() != Blocks.SNOW_BLOCK
+                    && shouldSnowAt(blockAndTintGetter, pos, state, random, seed)) {
                 // DynamicLeavesBlock
                 var cc = quadMap.getOrDefault(list, null);
                 // long time = System.currentTimeMillis();
@@ -262,13 +272,14 @@ public class ModelManager {
                 // var cc = getQuad(list, null);
 
                 if (cc != null) {
-
                     return cc;
                 } else {
                     BakedModel snowModel = null;
                     BlockState snowState = null;
                     if (ClientSetup.snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
                         snowModel = ClientSetup.snowOverlayBlock.resolve().get();
+                    } else if (ClientSetup.snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
+                        snowModel = ClientSetup.snowOverlayLeaves.resolve().get();
                     } else if (ClientSetup.snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
                         snowModel = ClientSetup.snowySlabBottom.resolve().get();
                     } else if (ClientSetup.models != null && flag == FLAG_STAIRS) {
@@ -309,7 +320,6 @@ public class ModelManager {
         // Minecraft.getInstance().level.getBiome(pos);
         return SolarClientUtil.getSnowLayer() * 100 >= Math.abs(seed % 100) && !Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
         // >= random.nextInt(100));
-
     }
 
     public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {

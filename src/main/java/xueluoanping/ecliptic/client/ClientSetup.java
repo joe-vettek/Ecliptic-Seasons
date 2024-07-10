@@ -82,9 +82,9 @@ public class ClientSetup {
     }
 
     public static Map<ResourceLocation, BakedModel> models;
-    // public static
-    // LazyOptional<net.minecraft.client.resources.model.BakedModel> snowModel =
-    //         LazyOptional.of(() -> models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
+    public static
+    LazyOptional<net.minecraft.client.resources.model.BakedModel> snowModel =
+            LazyOptional.of(() -> models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
 
     public static
     LazyOptional<net.minecraft.client.resources.model.BakedModel> snowOverlayBlock =
@@ -92,6 +92,10 @@ public class ClientSetup {
     public static
     LazyOptional<net.minecraft.client.resources.model.BakedModel> snowySlabBottom =
             LazyOptional.of(() -> models.get(new ModelResourceLocation(Ecliptic.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
+
+    public static
+    LazyOptional<net.minecraft.client.resources.model.BakedModel> snowOverlayLeaves =
+            LazyOptional.of(() -> models.get(new ModelResourceLocation(Ecliptic.ModContents.snowyLeaves.getId(), "")));
 
     // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
 
@@ -101,6 +105,7 @@ public class ClientSetup {
         models = modelRegistry;
         // snowModel.resolve();
         snowySlabBottom.resolve();
+        snowOverlayLeaves.resolve();
         var test = snowOverlayBlock.resolve().get();
         Ecliptic.logger(test);
         // net.minecraft.client.resources.model.ModelManager.reload

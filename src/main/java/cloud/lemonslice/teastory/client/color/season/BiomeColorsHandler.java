@@ -63,6 +63,7 @@ public class BiomeColorsHandler {
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
                 return k > newFoliageBuffer.length ? originColor : newFoliageBuffer[k];
+                // return -1;
             }).orElse(originColor);
         } else return biome.getFoliageColor();
     };
