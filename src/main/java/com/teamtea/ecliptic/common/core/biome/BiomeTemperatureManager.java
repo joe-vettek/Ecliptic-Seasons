@@ -1,31 +1,25 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.core.biome;
 
 import com.teamtea.ecliptic.api.solar.SolarTerm;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import com.teamtea.ecliptic.Ecliptic;
 
 import java.util.HashMap;
 
-@Mod.EventBusSubscriber(modid = Ecliptic.MODID)
 public  class BiomeTemperatureManager {
     public final static HashMap<Biome, Float> BIOME_DEFAULT_TEMPERATURE_MAP = new HashMap<>();
 
-    @SubscribeEvent
-    public static void init(TagsUpdatedEvent tagsUpdatedEvent) {
+    public static void init(RegistryAccess tagsUpdatedEvent) {
         BIOME_DEFAULT_TEMPERATURE_MAP.clear();
-        var biomes=tagsUpdatedEvent.getRegistryAccess().registry(Registries.BIOME);
+        var biomes=tagsUpdatedEvent.registry(Registries.BIOME);
         if (biomes.isPresent()){
             biomes.get().forEach(biome ->
             {
                 BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.getModifiedClimateSettings().temperature());
-
                 biomes.get().getHolder( ResourceKey.create(Registries.BIOME, biomes.get().getKey(biome))).ifPresent(biomeHolder -> {
                     // if (biome.getCategory().equals(Biome.Category.SAVANNA))
                     if(biomeHolder.is(BiomeTags.IS_SAVANNA))
@@ -48,6 +42,7 @@ public  class BiomeTemperatureManager {
         return BiomeTemperatureManager.BIOME_DEFAULT_TEMPERATURE_MAP.getOrDefault(biome, 0.6F);
     }
 
+
     public static void updateTemperature(Level level, int solarTermIndex) {
         var biomes=level.registryAccess().registry(Registries.BIOME);
         if (biomes.isPresent()){
@@ -60,7 +55,6 @@ public  class BiomeTemperatureManager {
                         temperature,
                         oldClimateSettings.temperatureModifier(),
                         oldClimateSettings.downfall());
-
             });
         }
     }

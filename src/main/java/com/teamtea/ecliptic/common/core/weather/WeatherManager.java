@@ -1,11 +1,30 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.core.weather;
 
+import com.teamtea.ecliptic.api.solar.Season;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.common.AllListener;
+import com.teamtea.ecliptic.common.handler.SolarUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.WritableLevelData;
 
-public class ServerWeatherChecker {
+public class WeatherManager {
+
+    public static Boolean onCheckWarm(BlockPos p198905) {
+      return   SolarTerm.get(AllListener.provider.resolve().get().worldSolarTime.getSolarTermIndex()).getSeason() != Season.WINTER;
+    }
+
+    public static boolean onShouldSnow(ServerLevel level, Biome biome, BlockPos pos) {
+        return   SolarTerm.get(AllListener.provider.resolve().get().worldSolarTime.getSolarTermIndex()).getSeason() == Season.WINTER;
+    }
+
+    public static boolean agentAdvanceWeatherCycle(ServerLevel serverLevel, ServerLevelData serverLevelData, WritableLevelData levelData, RandomSource random) {
+
+        return true;
+    }
 
     public enum SnowRenderStatus {
         SNOW,

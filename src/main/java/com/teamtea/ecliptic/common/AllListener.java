@@ -1,34 +1,67 @@
-package com.teamtea.ecliptic.common.handler.event;
+package com.teamtea.ecliptic.common;
 
 
+import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.common.core.SolarProvider;
-import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.common.core.biome.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.core.crop.CropGrowthHandler;
+import com.teamtea.ecliptic.common.handler.SolarProvider;
+import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
+import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
-import com.teamtea.ecliptic.Ecliptic;
-
 
 @Mod.EventBusSubscriber(modid = Ecliptic.MODID)
-public final class DataEventHandler {
+public class AllListener {
     public static LazyOptional<SolarProvider> provider = LazyOptional.empty();
 
     @SubscribeEvent
-    public static void onAttachCapabilitiesEntity(AttachCapabilitiesEvent<Entity> event) {
+    public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
+        BiomeTemperatureManager.init(tagsUpdatedEvent.getRegistryAccess());
+    }
 
+
+    @SubscribeEvent
+    public static void onSleepFinishedTimeEvent(SleepFinishedTimeEvent event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            // TODO: 根据季节更新概率
+            if(!serverLevel.isRaining()&&serverLevel.getRandom().nextFloat()>0.8) {
+                serverLevel.setWeatherParameters(0,
+                        ServerLevel.RAIN_DURATION.sample(serverLevel.getRandom()),
+                        true, false);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onWorldTick(TickEvent.LevelTickEvent event) {
+        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Season.enable.get() && !event.level.isClientSide() && event.level.dimension() == Level.OVERWORLD) {
+            event.level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
+            {
+                if (!event.level.players().isEmpty()) {
+                    data.updateTicks((ServerLevel) event.level);
+                }
+            });
+        }
+
+        CustomRandomTickHandler.onWorldTick(event);
     }
 
     @SubscribeEvent
@@ -54,5 +87,11 @@ public final class DataEventHandler {
                 });
             }
         }
+    }
+
+
+    @SubscribeEvent
+    public static void canCropGrowUp(BlockEvent.CropGrowEvent.Pre event){
+        CropGrowthHandler.canCropGrowUp(event);
     }
 }

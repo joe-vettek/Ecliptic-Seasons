@@ -1,5 +1,7 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.core.solar;
 
+import com.teamtea.ecliptic.common.core.weather.WeatherManager;
+import com.teamtea.ecliptic.common.core.biome.BiomeTemperatureManager;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.config.ServerConfig;
@@ -13,7 +15,7 @@ import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 
-public class SolarDataRunner {
+public class SolarDataManager {
     private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
     private int solarTermsTicks = 0;
     private float snowLayer = 0.0f;
@@ -31,10 +33,10 @@ public class SolarDataRunner {
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;
-        var snow = ServerWeatherChecker.getSnowStatus(world, null, null);
-        if (snow == ServerWeatherChecker.SnowRenderStatus.SNOW) {
+        var snow = WeatherManager.getSnowStatus(world, null, null);
+        if (snow == WeatherManager.SnowRenderStatus.SNOW) {
             snowLayer = Math.min(1, snowLayer + 3.33e-5f);
-        } else if (snow == ServerWeatherChecker.SnowRenderStatus.SNOW_MELT) {
+        } else if (snow == WeatherManager.SnowRenderStatus.SNOW_MELT) {
             snowLayer = Math.max(0, snowLayer - 3.33e-5f);
         }
         if (snowLayer != sendSnowLayer) {

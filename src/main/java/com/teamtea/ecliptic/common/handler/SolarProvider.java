@@ -1,6 +1,7 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.handler;
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.Capability;
@@ -10,7 +11,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 
 public class SolarProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public final SolarDataRunner worldSolarTime = new SolarDataRunner();
+    public final SolarDataManager worldSolarTime = new SolarDataManager();
     // private final Capability.IStorage<Data> storage = WORLD_SOLAR_TIME.getStorage();
 
 

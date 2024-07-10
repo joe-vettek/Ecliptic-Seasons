@@ -1,6 +1,7 @@
 package com.teamtea.ecliptic.mixin.common;
 
 
+import com.teamtea.ecliptic.common.core.weather.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
@@ -10,7 +11,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.teamtea.ecliptic.common.core.WeatherHandler;
 
 @Mixin({Biome.class})
 public abstract class MixinBiome {
@@ -31,7 +31,7 @@ public abstract class MixinBiome {
 
     @Inject(at = {@At("HEAD")}, method = {"warmEnoughToRain"}, cancellable = true)
     public void mixin_warmEnoughToRain(BlockPos p_198905_, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(WeatherHandler.onCheckWarm(p_198905_));
+        cir.setReturnValue(WeatherManager.onCheckWarm(p_198905_));
     }
 
     @Inject(at = {@At("HEAD")}, method = {"shouldSnow"}, cancellable = true)

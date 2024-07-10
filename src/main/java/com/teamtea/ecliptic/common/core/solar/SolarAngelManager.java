@@ -1,16 +1,16 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.core.solar;
 
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.common.handler.event.DataEventHandler;
+import com.teamtea.ecliptic.common.AllListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelTimeAccess;
 import net.minecraft.world.level.dimension.DimensionType;
 
 
-public class AsmHandler {
+public class SolarAngelManager {
     public static float getSeasonCelestialAngle(long worldTime, DimensionType world) {
         return getCelestialAngle(getSolarAngelTime(worldTime, world));
     }
@@ -20,8 +20,8 @@ public class AsmHandler {
 
     public static int getSolarAngelTime(long worldTime, DimensionType world) {
         // world.effectsLocation()
-        if (DataEventHandler.provider.resolve().isPresent()) {
-            var data = DataEventHandler.provider.resolve().get().worldSolarTime;
+        if (AllListener.provider.resolve().isPresent()) {
+            var data = AllListener.provider.resolve().get().worldSolarTime;
             int dayTime = SolarTerm.get(data.getSolarTermIndex()).getDayTime();
             int sunrise = 24000 - dayTime / 2;
             int sunset = dayTime / 2;

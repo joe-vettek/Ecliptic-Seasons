@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.core.crop;
 
 
 import com.teamtea.ecliptic.api.crop.CropHumidityInfo;

@@ -2,9 +2,9 @@ package com.teamtea.ecliptic.common.network;
 
 
 import com.teamtea.ecliptic.api.INormalMessage;
-import com.teamtea.ecliptic.common.core.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.core.biome.BiomeTemperatureManager;
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.common.core.SolarDataRunner;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.client.color.season.BiomeColorsHandler;
 
 import com.teamtea.ecliptic.config.ServerConfig;
@@ -32,7 +32,7 @@ public class SolarTermsMessage implements INormalMessage {
         snowLayer = buf.readFloat();
     }
 
-    public SolarTermsMessage(SolarDataRunner solarData) {
+    public SolarTermsMessage(SolarDataManager solarData) {
         solarDay = solarData.getSolarTermsDay();
         snowLayer = solarData.getSnowLayer();
     }

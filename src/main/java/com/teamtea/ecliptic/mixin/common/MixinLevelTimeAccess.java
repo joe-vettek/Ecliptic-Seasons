@@ -2,7 +2,7 @@ package com.teamtea.ecliptic.mixin.common;
 
 
 
-import com.teamtea.ecliptic.common.core.AsmHandler;
+import com.teamtea.ecliptic.common.core.solar.SolarAngelManager;
 import net.minecraft.world.level.LevelTimeAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,6 +21,6 @@ public interface MixinLevelTimeAccess extends LevelTimeAccess{
     @Override
     default float getTimeOfDay(float p_46943_) {
         // TeaStory.logger(p_46943_,dayTime());
-        return AsmHandler.getSeasonCelestialAngle(dayTime(),(LevelTimeAccess)(Object)this);
+        return SolarAngelManager.getSeasonCelestialAngle(dayTime(),(LevelTimeAccess)(Object)this);
     }
 }

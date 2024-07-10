@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.common.handler;
+package com.teamtea.ecliptic.api;
 
 
 import net.minecraft.core.BlockPos;

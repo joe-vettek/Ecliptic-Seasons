@@ -1,9 +1,10 @@
-package com.teamtea.ecliptic.common.core;
+package com.teamtea.ecliptic.common.core.crop;
 
 
 import com.teamtea.ecliptic.api.biome.Humidity;
 import com.teamtea.ecliptic.api.crop.CropHumidityInfo;
 import com.teamtea.ecliptic.api.crop.CropSeasonInfo;
+import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -11,14 +12,9 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import com.teamtea.ecliptic.Ecliptic;
 
-@Mod.EventBusSubscriber(modid = Ecliptic.MODID)
 public final class CropGrowthHandler
 {
-    @SubscribeEvent
     public static void canCropGrowUp(BlockEvent.CropGrowEvent.Pre event)
     {
         Block block = event.getState().getBlock();

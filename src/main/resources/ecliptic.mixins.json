@@ -14,9 +14,7 @@
     "client.ItemBlockRenderTypes",
     "client.MixinBlockRenderVanilla",
     "client.MixinClientLevel",
-    "client.MixinClientLevelData",
     "client.MixinClientLevelRender",
-    "client.MixinSimpleBakedModel",
     "compat.embeddium.MixinBlockRender2"
   ],
   "injectors": {

@@ -1,7 +1,7 @@
-package com.teamtea.ecliptic.common.handler;
+package com.teamtea.ecliptic.common.command;
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.common.core.SolarDataRunner;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -26,7 +26,7 @@ public class CommandHandler {
 
 
     private static int getDay(ServerLevel worldIn) {
-        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarDataRunner::getSolarTermsDay).orElse(0);
+        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarDataManager::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {
