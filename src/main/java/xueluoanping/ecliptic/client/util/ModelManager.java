@@ -234,7 +234,7 @@ public class ModelManager {
             } else if (state.getBlock() instanceof StairBlock) {
                 flag = FLAG_STAIRS;
             } else return list;
-
+            
             boolean isLight = getHeightOrUpdate(pos, false) == pos.getY();
             // boolean isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
             // long blockLong = asLongPos(pos);
@@ -260,7 +260,9 @@ public class ModelManager {
                 // var t1 = System.currentTimeMillis() - time;
                 // Ecliptic.logger(t1,state);
                 // var cc = getQuad(list, null);
+
                 if (cc != null) {
+
                     return cc;
                 } else {
                     BakedModel snowModel = null;
@@ -297,25 +299,6 @@ public class ModelManager {
                 }
             }
 
-            // var time=System.currentTimeMillis();
-            // 性能测试
-            // if (ClientSetup.snowOverlayBlock.resolve().isPresent() && (state.isSolidRender(blockAndTintGetter, pos)
-            //         || state.is(BlockTags.LEAVES)
-            //         || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP))) {
-            //     for (int i = 0; i < 100000; i++) {
-            //         var a = getLight(blockAndTintGetter, pos, random) >= blockAndTintGetter.getMaxLightLevel();
-            //     }
-            //     var t1 = System.currentTimeMillis() - time;
-            //     time = System.currentTimeMillis();
-            //     for (int i = 0; i < 100000; i++) {
-            //         if (ClientSetup.snowOverlayBlock.resolve().isPresent() && (state.isSolidRender(blockAndTintGetter, pos)
-            //                 || state.is(BlockTags.LEAVES)
-            //                 || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP))) {
-            //             clist.addAll(ClientSetup.snowOverlayBlock.resolve().get().getQuads(null, direction, null));
-            //         }
-            //     }
-            //     Ecliptic.logger(System.currentTimeMillis() - time, t1);
-            // }
         }
         return list;
     }
