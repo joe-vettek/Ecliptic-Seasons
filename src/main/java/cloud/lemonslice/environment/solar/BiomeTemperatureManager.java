@@ -3,10 +3,12 @@ package cloud.lemonslice.environment.solar;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 import xueluoanping.ecliptic.Ecliptic;
 
 import java.util.HashMap;
@@ -44,5 +46,22 @@ public  class BiomeTemperatureManager {
 
     public static float getDefaultTemperature(Biome biome) {
         return BiomeTemperatureManager.BIOME_DEFAULT_TEMPERATURE_MAP.getOrDefault(biome, 0.6F);
+    }
+
+    public static void updateTemperature(Level level, int solarTermIndex) {
+        var biomes=level.registryAccess().registry(Registries.BIOME);
+        if (biomes.isPresent()){
+            biomes.get().forEach(biome ->
+            {
+                var temperature = BiomeTemperatureManager.getDefaultTemperature(biome) + SolarTerm.get(getSolarTermIndex()).getTemperatureChange();
+                var oldClimateSettings = biome.climateSettings;
+                biome.climateSettings = new Biome.ClimateSettings(
+                        oldClimateSettings.hasPrecipitation(),
+                        temperature,
+                        oldClimateSettings.temperatureModifier(),
+                        oldClimateSettings.downfall());
+
+            });
+        }
     }
 }

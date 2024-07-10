@@ -26,7 +26,6 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.loading.FMLLoader;
 import xueluoanping.ecliptic.Ecliptic;
-import xueluoanping.ecliptic.util.SolarClientUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -238,7 +237,7 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if (SolarClientUtil.getSnowLayer() > 0
+        if (SolarClientManager.getSnowLayer() > 0
                 && direction != Direction.DOWN
                 && !list.isEmpty()) {
 
@@ -332,7 +331,7 @@ public class ModelManager {
     public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
         // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
         // Minecraft.getInstance().level.getBiome(pos);
-        return SolarClientUtil.getSnowLayer() * 100 >= Math.abs(seed % 100) && !Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
+        return SolarClientManager.getSnowLayer() * 100 >= Math.abs(seed % 100) && !Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
         // >= random.nextInt(100));
     }
 

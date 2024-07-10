@@ -4,7 +4,7 @@ package cloud.lemonslice.network;
 import cloud.lemonslice.environment.solar.BiomeTemperatureManager;
 import cloud.lemonslice.environment.solar.SolarTerm;
 import cloud.lemonslice.capability.CapabilitySolarTermTime;
-import cloud.lemonslice.capability.SolarData;
+import cloud.lemonslice.capability.SolarDataRunner;
 import cloud.lemonslice.client.color.season.BiomeColorsHandler;
 
 import cloud.lemonslice.config.ServerConfig;
@@ -15,7 +15,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import xueluoanping.ecliptic.util.SolarClientUtil;
+import xueluoanping.ecliptic.client.core.SolarClientManager;
 
 import java.util.function.Supplier;
 
@@ -34,7 +34,7 @@ public class SolarTermsMessage implements INormalMessage {
         snowLayer = buf.readFloat();
     }
 
-    public SolarTermsMessage(SolarData solarData) {
+    public SolarTermsMessage(SolarDataRunner solarData) {
         solarDay = solarData.getSolarTermsDay();
         snowLayer = solarData.getSnowLayer();
     }
@@ -68,7 +68,7 @@ public class SolarTermsMessage implements INormalMessage {
                                     }
                             );
                             BiomeColorsHandler.needRefresh = true;
-                            SolarClientUtil.updateSnowLayer(data.getSnowLayer());
+                            SolarClientManager.updateSnowLayer(data.getSnowLayer());
                         }
                 );
                 try {

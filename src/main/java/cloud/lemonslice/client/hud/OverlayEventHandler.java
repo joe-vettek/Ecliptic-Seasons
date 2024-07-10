@@ -2,7 +2,7 @@ package cloud.lemonslice.client.hud;
 
 
 import cloud.lemonslice.capability.CapabilitySolarTermTime;
-import cloud.lemonslice.capability.SolarData;
+import cloud.lemonslice.capability.SolarDataRunner;
 import cloud.lemonslice.config.ClientConfig;
 import cloud.lemonslice.environment.Humidity;
 import cloud.lemonslice.handler.AsmHandler;
@@ -31,7 +31,7 @@ public final class OverlayEventHandler {
             // if(event.getOverlay().id().getPath().equals("all"))
             {
                 if (ClientConfig.GUI.debugInfo.get()) {
-                    int solar = clientPlayer.level().getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).orElse(new SolarData()).getSolarTermsDay();
+                    int solar = clientPlayer.level().getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).orElse(new SolarDataRunner()).getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);

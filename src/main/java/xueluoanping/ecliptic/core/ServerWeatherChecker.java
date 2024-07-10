@@ -1,4 +1,4 @@
-package xueluoanping.ecliptic.util;
+package xueluoanping.ecliptic.core;
 
 import cloud.lemonslice.environment.solar.SolarTerm;
 import net.minecraft.core.BlockPos;

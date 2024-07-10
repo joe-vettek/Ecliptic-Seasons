@@ -1,7 +1,7 @@
 package xueluoanping.ecliptic.handler;
 
 import cloud.lemonslice.capability.CapabilitySolarTermTime;
-import cloud.lemonslice.capability.SolarData;
+import cloud.lemonslice.capability.SolarDataRunner;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -26,7 +26,7 @@ public class CommandHandler {
 
 
     private static int getDay(ServerLevel worldIn) {
-        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarData::getSolarTermsDay).orElse(0);
+        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarDataRunner::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {

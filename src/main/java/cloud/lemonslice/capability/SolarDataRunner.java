@@ -13,11 +13,11 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
-import xueluoanping.ecliptic.util.ServerWeatherChecker;
+import xueluoanping.ecliptic.core.ServerWeatherChecker;
 
 import java.util.ArrayList;
 
-public class SolarData {
+public class SolarDataRunner {
     private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
     private int solarTermsTicks = 0;
     private float snowLayer = 0.0f;
@@ -30,16 +30,8 @@ public class SolarData {
         if (solarTermsTicks > dayTime + 100) {
             solarTermsDay++;
             solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
-            ForgeRegistries.BIOMES.forEach(biome ->
-            {
-                var temperature = BiomeTemperatureManager.getDefaultTemperature(biome) + SolarTerm.get(getSolarTermIndex()).getTemperatureChange();
-                var oldClimateSettings = biome.climateSettings;
-                biome.climateSettings = new Biome.ClimateSettings(
-                        oldClimateSettings.hasPrecipitation(),
-                        temperature,
-                        oldClimateSettings.temperatureModifier(),
-                        oldClimateSettings.downfall());
-            });
+
+            BiomeTemperatureManager.updateTemperature(world,getSolarTermIndex());
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;
@@ -67,7 +59,6 @@ public class SolarData {
             }
             // 强制刷新
             world.getChunkSource().chunkMap.resendBiomesForChunks(a);
-            // Ecliptic.logger(world.getDayTime(), "滴滴滴");
             updateSnow=false;
         }
 
@@ -116,29 +107,7 @@ public class SolarData {
             SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(this));
             if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                 player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
-                // MutableObject<ClientboundLevelChunkWithLightPacket> mutableobject = new MutableObject<>();
-                // var map = world.getChunkSource().chunkMap;
-                // for (ChunkHolder chunkholder : map.getChunks()) {
-                //     if (chunkholder.getFullChunk() != null)
-                //         map.playerLoadedChunk(player, mutableobject, chunkholder.getFullChunk());
-                // }
-
-
             }
         }
-        // world.getChunkSource().tick(()->false,true);
-
-
-// ;          var map=world.getChunkSource().chunkMap;
-//             for(ChunkHolder chunkholder : map.getChunks()) {
-//                 ChunkPos chunkpos = chunkholder.getPos();
-//                 MutableObject<ClientboundLevelChunkWithLightPacket> mutableobject = new MutableObject<>();
-//                 map.getPlayers(chunkpos, false).forEach((p_214864_) -> {
-//                     SectionPos sectionpos = p_214864_.getLastSectionPos();
-//                     // boolean flag = ChunkMap.isChunkInRange(chunkpos.x, chunkpos.z, sectionpos.x(), sectionpos.z(), j);
-//                     // boolean flag1 = ChunkMap.isChunkInRange(chunkpos.x, chunkpos.z, sectionpos.x(), sectionpos.z(), map.viewDistance);
-//                     map.updateChunkTracking(p_214864_, chunkpos, mutableobject, true, false);
-//                 });
-//             }
     }
 }

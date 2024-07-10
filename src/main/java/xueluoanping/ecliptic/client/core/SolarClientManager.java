@@ -1,7 +1,7 @@
-package xueluoanping.ecliptic.util;
+package xueluoanping.ecliptic.client.core;
 
 
-public class SolarClientUtil {
+public class SolarClientManager {
 
     public static float snowLayer = 0.0f;
 

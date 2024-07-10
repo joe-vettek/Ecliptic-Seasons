@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 
 public class SolarProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public final SolarData worldSolarTime = new SolarData();
+    public final SolarDataRunner worldSolarTime = new SolarDataRunner();
     // private final Capability.IStorage<Data> storage = WORLD_SOLAR_TIME.getStorage();
 
 
