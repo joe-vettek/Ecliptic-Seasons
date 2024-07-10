@@ -1,14 +1,14 @@
 {
   "required": true,
-  "package": "xueluoanping.ecliptic.mixin",
+  "package": "com.teamtea.ecliptic.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "ecliptic.refmap.json",
   "mixins": [
-    "MixinBiome",
-    "MixinDimensionType",
-    "MixinLevelChunk",
-    "MixinLevelTimeAccess",
-    "MixinServerLevel"
+    "common.MixinBiome",
+    "common.MixinDimensionType",
+    "common.MixinLevelChunk",
+    "common.MixinLevelTimeAccess",
+    "common.MixinServerLevel"
   ],
   "client": [
     "client.ItemBlockRenderTypes",
@@ -17,14 +17,11 @@
     "client.MixinClientLevelData",
     "client.MixinClientLevelRender",
     "client.MixinSimpleBakedModel",
-    "compat.dynamictrees.HeightmapTypes",
-    "compat.embeddium.MixinBlockRender2",
-    "experimental.MixinQuard",
-    "experimental.MixinTextureAltas"
+    "compat.embeddium.MixinBlockRender2"
   ],
   "injectors": {
     "defaultRequire": 1
   },
-  "plugin": "xueluoanping.ecliptic.mixin.EclipticMixinPlugin",
+  "plugin": "com.teamtea.ecliptic.mixin.EclipticMixinPlugin",
   "minVersion": "0.8"
 }
