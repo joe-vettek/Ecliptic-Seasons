@@ -1,6 +1,5 @@
 package xueluoanping.ecliptic.client.util;
 
-import com.ferreusveritas.dynamictrees.block.leaves.DynamicLeavesBlock;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -13,7 +12,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
@@ -21,13 +19,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.loading.FMLLoader;
 import xueluoanping.ecliptic.Ecliptic;
 import xueluoanping.ecliptic.client.ClientSetup;
-import xueluoanping.ecliptic.client.model.BakedQuadRetextured;
 import xueluoanping.ecliptic.util.SolarClientUtil;
-import xueluoanping.ecliptic.util.SolarUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,13 +70,21 @@ public class ModelManager {
         return outBakedQuads;
     }
 
-    public static class ChunkHeightMap {
-        private final int[][] matrix = new int[16][16];
-        private final Object[][] lockArray = new Object[16][16];
+    public static final int ChunkSize = 16 * 32;
+    public static final int ChunkSizeLoc = ChunkSize - 1;
+    public static final int ChunkSizeAxis = 4 * 5;
 
-        public ChunkHeightMap() {
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
+    public static class ChunkHeightMap {
+        private final int[][] matrix = new int[ChunkSize][ChunkSize];
+        private final Object[][] lockArray = new Object[ChunkSize][ChunkSize];
+        private final int x;
+        private final int z;
+
+        public ChunkHeightMap(int x, int z) {
+            this.x = x;
+            this.z = z;
+            for (int i = 0; i < ChunkSize; i++) {
+                for (int j = 0; j < ChunkSize; j++) {
                     matrix[i][j] = Integer.MIN_VALUE;
                     lockArray[i][j] = new Object();
                 }
@@ -115,18 +119,46 @@ public class ModelManager {
 
     // 获取chunk内部位置
     public static int getChunkValue(int i) {
-        return i & 15;
+        return i & (ChunkSizeLoc);
     }
 
     // 获取chunk位置
     public static int blockToSectionCoord(int i) {
-        return i >> 4;
+        return i >> ChunkSizeAxis;
     }
 
     // TODO:内存更新，双链表+Hash，用LRU
     public static Map<Long, Boolean> blockMap = new ConcurrentHashMap<>();
-    public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>(512);
+    public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>(16);
+    public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024, 0.5f);
+    public static List<BakedQuad>[] quadKeyList = (List<BakedQuad>[]) new List<?>[1024];
+    public static List<BakedQuad>[] quadValueList = (List<BakedQuad>[]) new List<?>[1024];
+    public static int emptyQuadPos = 0;
+
+    public static List<BakedQuad> getQuad(List<BakedQuad> input, List<BakedQuad> nullValue) {
+        for (int i = 0; i < quadKeyList.length; i++) {
+            var k = quadKeyList[i];
+            if (k == null)
+                break;
+            if (k == input)
+                return quadValueList[i];
+
+        }
+        return nullValue;
+    }
+
+    public static int setQuad(List<BakedQuad> keyList, List<BakedQuad> newList) {
+        if (emptyQuadPos < quadKeyList.length) {
+            quadKeyList[emptyQuadPos] = keyList;
+            quadValueList[emptyQuadPos] = newList;
+            emptyQuadPos++;
+            return emptyQuadPos;
+        }
+        Ecliptic.logger("Please update the size of quadList");
+        return -1;
+    }
+
 
     private static final int PACKED_X_LENGTH = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
     private static final int PACKED_Z_LENGTH = PACKED_X_LENGTH;
@@ -141,30 +173,45 @@ public class ModelManager {
     }
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
-        ChunkPos chunkPos = new ChunkPos(pos);
-        var map = ChunkMap.getOrDefault(chunkPos, null);
+        int x = blockToSectionCoord(pos.getX());
+        int z = blockToSectionCoord(pos.getZ());
+        ChunkPos chunkPos = new ChunkPos(x, z);
+        // var map = ChunkMap.getOrDefault(chunkPos, null);
+        ChunkHeightMap map = null;
+        for (ChunkHeightMap chunkHeightMap : RegionList) {
+            if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
+                map = chunkHeightMap;
+                break;
+            }
+        }
+        int h = 0;
         if (map != null) {
-            int h = map.getHeight(pos);
+            h = map.getHeight(pos);
             if (h == Integer.MIN_VALUE || shouldUpdate) {
                 map.updateHeight(pos, Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1);
                 h = map.getHeight(pos);
             }
-            return h;
+            // return h;
         } else {
-            map = new ChunkHeightMap();
-            ChunkMap.put(chunkPos, map);
-            int h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
+            map = new ChunkHeightMap(x, z);
+            // ChunkMap.put(chunkPos, map);
+            synchronized (RegionList) {
+                RegionList.add(map);
+            }
+
+            h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
             map.updateHeight(pos, h);
-            return h;
+            // return h;
         }
+        return h;
     }
 
-    public static final int FLAG_BLOCK=1;
-    public static final int FLAG_SLAB=2;
-    public static final int FLAG_STAIRS=3;
+    public static final int FLAG_BLOCK = 1;
+    public static final int FLAG_SLAB = 2;
+    public static final int FLAG_STAIRS = 3;
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
-    public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, List<BakedQuad> list) {
+    public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, long seed, List<BakedQuad> list) {
         // Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING,pos);
         // 不处理空列表，这代表着不处理这个方向
         // if (state.is(BlockTags.LEAVES) && !list.isEmpty()) {
@@ -188,22 +235,31 @@ public class ModelManager {
                 flag = FLAG_STAIRS;
             } else return list;
 
-            boolean isLight = getHeightOrUpdate(pos,false)==pos.getY();
+            boolean isLight = getHeightOrUpdate(pos, false) == pos.getY();
             // boolean isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
             // long blockLong = asLongPos(pos);
 
-            // // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
+            // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
             // long time = System.currentTimeMillis();
+            // var cpos = new ChunkPos(-1,0);
             // for (int i = 0; i < 100000 * 100; i++) {
-            //     // state.isSolidRender(blockAndTintGetter, pos);
-            //  isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
-            //
+            //     getHeightOrUpdate(pos, false) ;
+            // // ChunkMap.get(cpos);
+            // //     cpos.hashCode();
             // }
-            // var t1 = System.currentTimeMillis() - time;
-            // // Ecliptic.logger(t1);
-            if (isLight && shouldSnowAt(blockAndTintGetter, pos, state, random)) {
+            // Ecliptic.logger(System.currentTimeMillis() - time);
+            if (isLight && shouldSnowAt(blockAndTintGetter, pos, state, random, seed)) {
                 // DynamicLeavesBlock
                 var cc = quadMap.getOrDefault(list, null);
+                // long time = System.currentTimeMillis();
+                // for (int i = 0; i < 100000 * 100; i++) {
+                //      // cc = quadMap.getOrDefault(list, null);
+                //      //              getQuad(list, null);
+                //     Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
+                // }
+                // var t1 = System.currentTimeMillis() - time;
+                // Ecliptic.logger(t1,state);
+                // var cc = getQuad(list, null);
                 if (cc != null) {
                     return cc;
                 } else {
@@ -227,15 +283,15 @@ public class ModelManager {
                         int size = list.size();
                         var snowList = snowModel.getQuads(snowState, direction, null);
                         ArrayList<BakedQuad> newList;
-                        if ( direction == Direction.UP) {
+                        if (direction == Direction.UP) {
                             newList = (ArrayList<BakedQuad>) snowList;
-                        } else
-                        {
+                        } else {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());
                             newList.addAll(list);
                             newList.addAll(snowList);
                         }
                         quadMap.put(list, newList);
+                        setQuad(list, newList);
                         list = newList;
                     }
                 }
@@ -265,12 +321,15 @@ public class ModelManager {
     }
 
     // TODO:感觉用随机表性能更高
-    public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
-        return (SolarClientUtil.getSnowLayer() * 100
-                >= random.nextInt(100));
+    public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
+        // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
+        // Minecraft.getInstance().level.getBiome(pos);
+        return SolarClientUtil.getSnowLayer() * 100 >= Math.abs(seed % 100) && !Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
+        // >= random.nextInt(100));
+
     }
 
-    public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random) {
+    public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
         // Ecliptic.logger(pos);
         int result = 0;
         if (FMLLoader.getLoadingModList().getModFileById("embeddium") != null) {
@@ -288,7 +347,7 @@ public class ModelManager {
         if (result >= 15) {
             // TODO:未来设置为降雨
             // Ecliptic.logger(SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer());
-            result += shouldSnowAt(blockAndTintGetter, pos, state, random) ? 0 : -100;
+            result += shouldSnowAt(blockAndTintGetter, pos, state, random, seed) ? 0 : -100;
             // result+=blockAndTintGetter.getBlockState(pos.above()).isAir() ? 0 : -100;
         }
         return result;

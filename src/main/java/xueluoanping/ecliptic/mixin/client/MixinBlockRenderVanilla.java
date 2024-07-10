@@ -36,7 +36,19 @@ public abstract class MixinBlockRenderVanilla {
 
     // ctx.world().world.getBlockState(ctx.pos)
     @Inject(at = {@At("HEAD")}, method = {"tesselateWithAO(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/minecraftforge/client/model/data/ModelData;Lnet/minecraft/client/renderer/RenderType;)V"}, cancellable = true,remap = false)
-    private void mixin_tesselateWithAO(BlockAndTintGetter blockAndTintGetter, BakedModel bakedModel, BlockState state, BlockPos pos, PoseStack poseStack, VertexConsumer vertexConsumer, boolean p_111085_, RandomSource randomSource, long p_111087_, int p_111088_, ModelData modelData, RenderType renderType, CallbackInfo ci) {
+    private void mixin_tesselateWithAO(BlockAndTintGetter blockAndTintGetter,
+                                       BakedModel bakedModel,
+                                       BlockState state,
+                                       BlockPos pos,
+                                       PoseStack poseStack,
+                                       VertexConsumer vertexConsumer,
+                                       boolean p_111085_,
+                                       RandomSource randomSource,
+                                       long seed,
+                                       int p_111088_,
+                                       ModelData modelData,
+                                       RenderType renderType,
+                                       CallbackInfo ci) {
         float[] afloat = new float[DIRECTIONS.length * 2];
         BitSet bitset = new BitSet(3);
         ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
@@ -44,9 +56,9 @@ public abstract class MixinBlockRenderVanilla {
 
         var newmodel = ModelManager.checkAndUpdate(blockAndTintGetter, state, pos, Direction.UP, bakedModel);
         for (Direction direction : DIRECTIONS) {
-            randomSource.setSeed(p_111087_);
+            randomSource.setSeed(seed);
             List<BakedQuad> list = (direction == Direction.UP ? newmodel : bakedModel).getQuads(state, direction, randomSource, modelData, renderType);
-            list= ModelManager.appendOverlay(blockAndTintGetter,state,pos,direction, randomSource, list);
+            list= ModelManager.appendOverlay(blockAndTintGetter,state,pos,direction, randomSource,seed, list);
             if (!list.isEmpty()) {
                 blockpos$mutableblockpos.setWithOffset(pos, direction);
                 if (!p_111085_ || Block.shouldRenderFace(state, blockAndTintGetter, pos, direction, blockpos$mutableblockpos)) {
@@ -55,7 +67,7 @@ public abstract class MixinBlockRenderVanilla {
             }
         }
 
-        randomSource.setSeed(p_111087_);
+        randomSource.setSeed(seed);
         List<BakedQuad> list1 = bakedModel.getQuads(state, (Direction) null, randomSource, modelData, renderType);
         if (!list1.isEmpty()) {
             this.renderModelFaceAO(blockAndTintGetter, state, pos, poseStack, vertexConsumer, list1, afloat, bitset, modelblockrenderer$ambientocclusionface, p_111088_);
