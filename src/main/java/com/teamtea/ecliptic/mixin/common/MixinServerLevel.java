@@ -1,7 +1,7 @@
 package com.teamtea.ecliptic.mixin.common;
 
 
-import com.teamtea.ecliptic.common.core.weather.WeatherManager;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
@@ -40,5 +40,6 @@ public abstract class MixinServerLevel extends Level {
         if (cancel)
             ci.cancel();
     }
+
 
 }

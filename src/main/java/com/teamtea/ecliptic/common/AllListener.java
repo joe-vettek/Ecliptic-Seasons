@@ -4,18 +4,23 @@ package com.teamtea.ecliptic.common;
 import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.common.core.biome.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.core.crop.CropGrowthHandler;
 import com.teamtea.ecliptic.common.handler.SolarProvider;
 import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -23,10 +28,15 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+
+import java.util.ArrayList;
 
 @Mod.EventBusSubscriber(modid = Ecliptic.MODID)
 public class AllListener {
@@ -34,7 +44,7 @@ public class AllListener {
 
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
-        BiomeTemperatureManager.init(tagsUpdatedEvent.getRegistryAccess());
+        BiomeClimateManager.init(tagsUpdatedEvent.getRegistryAccess());
     }
 
 
@@ -42,13 +52,54 @@ public class AllListener {
     public static void onSleepFinishedTimeEvent(SleepFinishedTimeEvent event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             // TODO: 根据季节更新概率
-            if(!serverLevel.isRaining()&&serverLevel.getRandom().nextFloat()>0.8) {
+            if (!serverLevel.isRaining() && serverLevel.getRandom().nextFloat() > 0.8) {
                 serverLevel.setWeatherParameters(0,
                         ServerLevel.RAIN_DURATION.sample(serverLevel.getRandom()),
                         true, false);
             }
         }
     }
+
+    @SubscribeEvent
+    public static void onServerAboutToStartEvent(ServerAboutToStartEvent event) {
+        WeatherManager.BIOME_WEATHER_LIST.clear();
+        WeatherManager.NEXT_CHECK_BIOME_MAP.clear();
+        BiomeClimateManager.BIOME_DEFAULT_TEMPERATURE_MAP.clear();
+    }
+
+
+    @SubscribeEvent
+    public static void onLevelEventLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof Level level) {
+            var list = new ArrayList<WeatherManager.BiomeWeather>();
+            WeatherManager.BIOME_WEATHER_LIST.put(level, list);
+            if (level instanceof ClientLevel clientLevel) {
+                var biomes = clientLevel.registryAccess().registry(Registries.BIOME);
+                if (biomes.isPresent()) {
+                    for (Biome biome : biomes.get()) {
+                        var loc = biomes.get().getKey(biome);
+                        var id = biomes.get().getId(biome);
+                        var biomeHolder = biomes.get().getHolder(ResourceKey.create(Registries.BIOME, biomes.get().getKey(biome)));
+                        if (biomeHolder.isPresent()) {
+                            var biomeWeather = new WeatherManager.BiomeWeather(biomeHolder.get());
+                            biomes.get().getId(biome);
+                            biomeWeather.location = loc;
+                            biomeWeather.id = id;
+                            list.add(biomeWeather);
+                        }
+                    }
+                }
+                int aa=0;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLevelEventUnload(LevelEvent.Unload event) {
+        if (event.getLevel() instanceof Level level)
+            WeatherManager.BIOME_WEATHER_LIST.remove(level);
+    }
+
 
     @SubscribeEvent
     public static void onWorldTick(TickEvent.LevelTickEvent event) {
@@ -91,7 +142,7 @@ public class AllListener {
 
 
     @SubscribeEvent
-    public static void canCropGrowUp(BlockEvent.CropGrowEvent.Pre event){
+    public static void canCropGrowUp(BlockEvent.CropGrowEvent.Pre event) {
         CropGrowthHandler.canCropGrowUp(event);
     }
 }

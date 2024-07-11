@@ -2,7 +2,7 @@ package com.teamtea.ecliptic.common.handler;
 
 
 import com.teamtea.ecliptic.api.CustomRandomTick;
-import com.teamtea.ecliptic.common.core.weather.WeatherManager;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
@@ -24,7 +24,7 @@ public final class CustomRandomTickHandler {
     private static final CustomRandomTick SNOW_MELT = (state, world, pos) ->
     {
         BlockPos blockpos = new BlockPos(pos.getX(), world.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
-        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).get().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarm(pos)) {
+        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).get().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
             BlockState topState = world.getBlockState(blockpos);
             if (topState.getBlock().equals(Blocks.SNOW)) {
                 world.setBlockAndUpdate(blockpos, Blocks.AIR.defaultBlockState());

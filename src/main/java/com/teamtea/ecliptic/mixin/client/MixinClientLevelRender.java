@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.teamtea.ecliptic.client.core.WeatherChecker;
+import com.teamtea.ecliptic.client.core.ClientWeatherChecker;
 
 import javax.annotation.Nullable;
 
@@ -56,12 +56,12 @@ public abstract class MixinClientLevelRender {
 
     @Inject(at = {@At("HEAD")}, method = {"renderSnowAndRain"}, cancellable = true)
     private void mixin_renderSnowAndRain(LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_, CallbackInfo ci) {
-        if (minecraft==null||minecraft.level==null)ci.cancel();
+        if (minecraft == null || minecraft.level == null) ci.cancel();
         if (level.effects().renderSnowAndRain(level, ticks, p_109705_, p_109704_, p_109706_, p_109707_, p_109708_))
             return;
-        WeatherChecker.renderSnowAndRain((LevelRenderer)(Object)this,ticks,rainSizeX,rainSizeZ,RAIN_LOCATION,SNOW_LOCATION,p_109704_,  p_109705_,  p_109706_,  p_109707_,  p_109708_);
-
-        ci.cancel();
+        boolean re = ClientWeatherChecker.renderSnowAndRain((LevelRenderer) (Object) this, ticks, rainSizeX, rainSizeZ, RAIN_LOCATION, SNOW_LOCATION, p_109704_, p_109705_, p_109706_, p_109707_, p_109708_);
+        if (re)
+            ci.cancel();
     }
 
 }

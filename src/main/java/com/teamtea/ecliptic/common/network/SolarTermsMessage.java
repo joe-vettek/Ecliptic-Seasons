@@ -2,7 +2,7 @@ package com.teamtea.ecliptic.common.network;
 
 
 import com.teamtea.ecliptic.api.INormalMessage;
-import com.teamtea.ecliptic.common.core.biome.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.client.color.season.BiomeColorsHandler;
@@ -54,7 +54,7 @@ public class SolarTermsMessage implements INormalMessage {
                         {
                             data.setSolarTermsDay(solarDay);
                             data.setSnowLayer(snowLayer);
-                            BiomeTemperatureManager.updateTemperature(Minecraft.getInstance().level,data.getSolarTermIndex());
+                            BiomeClimateManager.updateTemperature(Minecraft.getInstance().level,data.getSolarTermIndex());
                             BiomeColorsHandler.needRefresh = true;
                             SolarClientManager.updateSnowLayer(data.getSnowLayer());
                         }

@@ -1,7 +1,7 @@
 package com.teamtea.ecliptic.mixin.common;
 
 
-import com.teamtea.ecliptic.common.core.weather.WeatherManager;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelReader;
@@ -28,10 +28,15 @@ public abstract class MixinBiome {
         }
     }
 
+    // TODO：这里需要走一下判断是在客户端还是服务器
+    @Inject(at = {@At("HEAD")}, method = {"getPrecipitationAt"}, cancellable = true)
+    public void mixin_getPrecipitationAt(BlockPos p_198905_, CallbackInfoReturnable<Biome.Precipitation> cir) {
+        cir.setReturnValue(WeatherManager.getPrecipitationAt((Biome) (Object)this,p_198905_));
+    }
 
     @Inject(at = {@At("HEAD")}, method = {"warmEnoughToRain"}, cancellable = true)
     public void mixin_warmEnoughToRain(BlockPos p_198905_, CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(WeatherManager.onCheckWarm(p_198905_));
+        cir.setReturnValue(WeatherManager.onCheckWarmEnoughToRain(p_198905_));
     }
 
     @Inject(at = {@At("HEAD")}, method = {"shouldSnow"}, cancellable = true)

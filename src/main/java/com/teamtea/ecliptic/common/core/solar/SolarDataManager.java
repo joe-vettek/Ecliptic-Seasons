@@ -1,7 +1,7 @@
 package com.teamtea.ecliptic.common.core.solar;
 
-import com.teamtea.ecliptic.common.core.weather.WeatherManager;
-import com.teamtea.ecliptic.common.core.biome.BiomeTemperatureManager;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
+import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.config.ServerConfig;
@@ -29,7 +29,7 @@ public class SolarDataManager {
             solarTermsDay++;
             solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
 
-            BiomeTemperatureManager.updateTemperature(world,getSolarTermIndex());
+            BiomeClimateManager.updateTemperature(world,getSolarTermIndex());
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;

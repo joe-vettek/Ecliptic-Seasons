@@ -15,6 +15,7 @@ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.teamtea.ecliptic.Ecliptic;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Ecliptic.MODID)
 public final class OverlayEventHandler {
@@ -30,7 +31,8 @@ public final class OverlayEventHandler {
             // if (event.getType() == RenderGameOverlayEvent.ElementType.ALL)
             // if(event.getOverlay().id().getPath().equals("all"))
             {
-                if (ClientConfig.GUI.debugInfo.get()) {
+                if (ClientConfig.GUI.debugInfo.get()|| !FMLEnvironment.production)
+                {
                     int solar = clientPlayer.level().getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).orElse(new SolarDataManager()).getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());

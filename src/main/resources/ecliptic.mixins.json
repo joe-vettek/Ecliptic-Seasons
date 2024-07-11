@@ -8,12 +8,12 @@
     "common.MixinDimensionType",
     "common.MixinLevelChunk",
     "common.MixinLevelTimeAccess",
-    "common.MixinServerLevel"
+    "common.MixinServerLevel",
+    "common.MixinLevel"
   ],
   "client": [
     "client.ItemBlockRenderTypes",
     "client.MixinBlockRenderVanilla",
-    "client.MixinClientLevel",
     "client.MixinClientLevelRender",
     "compat.embeddium.MixinBlockRender2"
   ],

@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.teamtea.ecliptic.Ecliptic;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
@@ -23,33 +25,27 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.Tags;
 
 // TODO:全局雨量控制表
-public class WeatherChecker {
+public class ClientWeatherChecker {
 
     public static float lastBiomeRainLevel = -1;
     public static float nowBiomeRainLevel = 0;
     public static int changeTime = 0;
     public static int MAX_CHANGE_TIME = 200;
 
-    public static Boolean isLocalBiomeRain(Holder<Biome> biomeHolder) {
-        return biomeHolder.is(Tags.Biomes.IS_DESERT);
-    }
-
-    public static Boolean isRainStandard(ClientLevel clientLevel) {
-        if (Minecraft.getInstance().cameraEntity instanceof Player player) {
-            if (clientLevel.getBiome(player.getOnPos()).is(Tags.Biomes.IS_DESERT)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    // public static Boolean isLocalBiomeRain(Holder<Biome> biomeHolder) {
+    //     return biomeHolder.is(Tags.Biomes.IS_DESERT);
+    // }
+    //
+    // public static Boolean isRainStandard(ClientLevel clientLevel) {
+    //     if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+    //         if (clientLevel.getBiome(player.getOnPos()).is(Tags.Biomes.IS_DESERT)) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
 
     public static Boolean isRain(ClientLevel clientLevel) {
-        if (!isRainStandard(clientLevel)) {
-            // if (clientLevel.getBiome(player.getOnPos()).is(Tags.Biomes.IS_DESERT)) {
-            //     return false;
-            // }
-            return false;
-        }
         return (double) getRainLevel(1.0F, clientLevel) > 0.2D;
     }
 
@@ -70,12 +66,14 @@ public class WeatherChecker {
             if (changeTime > 0) {
                 changeTime--;
                 if (lastBiomeRainLevel >= 0 && !isNear(rainLevel, lastBiomeRainLevel, 0.01f)) {
-                    rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.9999f;
+                    rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
                 }
                 // else
                 {
                     lastBiomeRainLevel = rainLevel;
+                    // Ecliptic.logger(lastBiomeRainLevel,rainLevel);
                 }
+
 
             } else {
                 if (rainLevel != lastBiomeRainLevel) {
@@ -89,13 +87,22 @@ public class WeatherChecker {
     }
 
     public static Float getStandardRainLevel(float p46723, ClientLevel clientLevel, Holder<Biome> biomeHolder) {
-        if (biomeHolder != null && biomeHolder.is(Tags.Biomes.IS_DESERT)) {
-            return 0.0f;
+        // if (biomeHolder != null && biomeHolder.is(Tags.Biomes.IS_DESERT)) {
+        //     return 0.0f;
+        // }
+        // return Mth.lerp(p46723, clientLevel.oRainLevel, clientLevel.rainLevel);
+       var lists= WeatherManager.getBiomeList(clientLevel);
+       if(lists!=null)
+        for (WeatherManager.BiomeWeather biomeWeather : lists) {
+            if (biomeWeather.biomeHolder==biomeHolder){
+                return biomeWeather.rainTime>0?1.0f:0.0f;
+            }
         }
-        return Mth.lerp(p46723, clientLevel.oRainLevel, clientLevel.rainLevel);
+        return 0.0f;
     }
 
-    public static void renderSnowAndRain(LevelRenderer levelRenderer, int ticks, float[] rainSizeX, float[] rainSizeZ, ResourceLocation RAIN_LOCATION, ResourceLocation SNOW_LOCATION, LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
+    public static boolean renderSnowAndRain(LevelRenderer levelRenderer, int ticks, float[] rainSizeX, float[] rainSizeZ, ResourceLocation RAIN_LOCATION, ResourceLocation SNOW_LOCATION, LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
+       if (true)return false;
         float f = Minecraft.getInstance().level.getRainLevel(p_109705_);
         float f_all = 1.0f;
         // if (!(f <= 0.0F))
@@ -223,5 +230,10 @@ public class WeatherChecker {
             RenderSystem.disableBlend();
             p_109704_.turnOffLightLayer();
         }
+        return false;
+    }
+
+    public static Boolean isRainingAt(BlockPos p46759, ClientLevel clientLevel) {
+        return true;
     }
 }
