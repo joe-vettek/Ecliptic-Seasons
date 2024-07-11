@@ -156,10 +156,11 @@ public class SolarDataManager extends SavedData {
     }
 
     public void sendUpdateMessage(ServerLevel world) {
-        for (ServerPlayer player : world.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer player : world.players()) {
             SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(this));
             if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                 player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
+            Ecliptic.logger(world.dimension());
             }
         }
     }

@@ -5,7 +5,11 @@ import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.WorldDimensions;
 import org.lwjgl.opengl.GL11;
 
 public final class DebugInfoRenderer {
@@ -17,6 +21,7 @@ public final class DebugInfoRenderer {
     }
 
     public void renderStatusBar(GuiGraphics matrixStack, int screenWidth, int screenHeight, int solar, long dayTime, double env, int solarTime) {
+
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // RenderSystem.enableAlphaTest();
         RenderSystem.enableBlend();
@@ -34,27 +39,30 @@ public final class DebugInfoRenderer {
         drawInfo(matrixStack, screenWidth, screenHeight, envS, index++);
         drawInfo(matrixStack, screenWidth, screenHeight, solarTimeS, index++);
 
-        if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+        for (Level level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
+            if (level.dimension()==Level.OVERWORLD){
+                if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+                    var standBiome = level.getBiome(player.getOnPos());
+                    for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
+                        if (((Holder.Reference<Biome>) biomeWeather.biomeHolder).key().location().equals(((Holder.Reference<Biome>) standBiome).key().location())) {
+                            String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
+                            String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
+                            drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
+                            drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
+                            break;
+                        }
+                    }
 
-            var standBiome = Minecraft.getInstance().level.getBiome(player.getOnPos());
-
-            for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(Minecraft.getInstance().level)) {
-                if (biomeWeather.biomeHolder.get() == standBiome.get()) {
-                    String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
-                    String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
-
-                    drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
-                    drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
-                    break;
                 }
             }
-
         }
+
 
 
         RenderSystem.enableBlend();
         // RenderSystem.disableAlphaTest();
         mc.getTextureManager().bindForSetup(OverlayEventHandler.DEFAULT);
+
     }
 
     private void drawInfo(GuiGraphics matrixStack, int screenWidth, int screenHeight, String s, int index) {

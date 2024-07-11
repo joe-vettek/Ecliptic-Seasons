@@ -43,19 +43,20 @@ public class CommandHandler {
     }
 
     private static int setBiomeRain(CommandSourceStack sourceStack, ResourceOrTagArgument.Result<Biome> result, boolean setRain) throws CommandSyntaxException {
-        var list = WeatherManager.getBiomeList(sourceStack.getLevel());
-        if (list != null) {
+        var levelBiomeWeather = WeatherManager.getBiomeList(sourceStack.getLevel());
+        if (levelBiomeWeather != null) {
             boolean found=false;
-            for (WeatherManager.BiomeWeather biomeWeather : list) {
+            int size = levelBiomeWeather.size();
+            for (WeatherManager.BiomeWeather biomeWeather : levelBiomeWeather) {
                 if (result.test(biomeWeather.biomeHolder)) {
-                    biomeWeather.rainTime = setRain ? ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) : 0;
-                    biomeWeather.clearTime = setRain ? 0 : ServerLevel.RAIN_DELAY.sample(sourceStack.getLevel().getRandom());
+                    biomeWeather.rainTime = setRain ? ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom())/size : 0;
+                    biomeWeather.clearTime = setRain ? 0 : 10/(size/30);;
 
                     found=true;
                 }
             }
             if(found){
-                WeatherManager.sendBiomePacket(list, sourceStack.getLevel().players());
+                WeatherManager.sendBiomePacket(levelBiomeWeather, sourceStack.getLevel().players());
             }
         }
         return 0;

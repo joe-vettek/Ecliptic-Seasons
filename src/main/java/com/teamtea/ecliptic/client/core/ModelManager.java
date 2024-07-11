@@ -332,7 +332,7 @@ public class ModelManager {
         // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
         // Minecraft.getInstance().level.getBiome(pos);
         var biome = Minecraft.getInstance().level.getBiome(pos);
-        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.get()) >= Math.abs(seed % 100)) {
+        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.get()) > Math.abs(seed % 100)) {
             return true;
         }
 
