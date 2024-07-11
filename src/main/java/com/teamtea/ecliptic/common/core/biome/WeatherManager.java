@@ -1,6 +1,9 @@
 package com.teamtea.ecliptic.common.core.biome;
 
+import com.teamtea.ecliptic.api.climate.BiomeRain;
+import com.teamtea.ecliptic.api.climate.SnowTerm;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
@@ -61,9 +64,6 @@ public class WeatherManager {
             return false;
         }
         var biome = serverLevel.getBiome(pos);
-        // for (BiomeWeather biomeWeather : BIOME_WEATHER_LIST) {
-        //     Ecliptic.logger(biomeWeather.biomeHolder,biomeWeather.biomeHolder.get().getModifiedClimateSettings().temperature());
-        // }
         if (getBiomeList(serverLevel) != null)
             for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
                 if (biome == biomeWeather.biomeHolder) {
@@ -71,6 +71,27 @@ public class WeatherManager {
                 }
             }
         return false;
+    }
+
+    public static Boolean isRainingAtBiome(ServerLevel serverLevel, Biome biome) {
+        if (getBiomeList(serverLevel) != null)
+            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+                if (biome == biomeWeather.biomeHolder.get()) {
+                    return biomeWeather.shouldRain();
+                }
+            }
+        return false;
+    }
+
+
+    public static int getSnowDepthAtBiome(Level serverLevel, Biome biome) {
+        if (getBiomeList(serverLevel) != null)
+            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+                if (biome == biomeWeather.biomeHolder.get()) {
+                    return biomeWeather.snowDepth;
+                }
+            }
+        return 0;
     }
 
     public static Biome.Precipitation getPrecipitationAt(Biome biome, BlockPos p198905) {
@@ -146,11 +167,14 @@ public class WeatherManager {
     public static class BiomeWeather implements INBTSerializable<CompoundTag> {
         public Holder<Biome> biomeHolder;
         public int id;
+        public SnowTerm snowTerm;
+
         public ResourceLocation location;
         public int rainTime = 0;
         public int thunderTime = 0;
         public int clearTime = 0;
         public byte snowDepth = 0;
+
 
         public BiomeWeather(Holder<Biome> biomeHolder) {
             this.biomeHolder = biomeHolder;
@@ -213,30 +237,42 @@ public class WeatherManager {
         var levelBiomeWeather = getBiomeList(level);
 
         if (pos >= 0 && levelBiomeWeather != null && pos < levelBiomeWeather.size()) {
-            var w = getBiomeList(level).get(pos);
+            int size = levelBiomeWeather.size();
+            var biomeWeather = getBiomeList(level).get(pos);
 
-            if (w.shouldClear()) {
-                w.clearTime--;
+            if (biomeWeather.shouldClear()) {
+                biomeWeather.clearTime--;
             } else {
-                if (w.shouldRain()) {
-                    w.rainTime--;
+                if (biomeWeather.shouldRain()) {
+                    biomeWeather.rainTime--;
                 } else {
-                    w.rainTime = ServerLevel.RAIN_DURATION.sample(random);
+                    BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+                    float weight = biomeRain.getRainChane() * Math.min(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
+                    if (level.getRandom().nextInt(1000) / 1000.f > weight) {
+                        biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
+                    }
                 }
             }
-            // if (w.biomeHolder.is(Biomes.PLAINS)){
-            //     Ecliptic.logger(w);
+            // if (biomeWeather.biomeHolder.is(Biomes.PLAINS)){
+            //     Ecliptic.logger(biomeWeather);
             // }
-            if (!w.shouldRain() && !w.shouldClear()) {
-                w.clearTime = ServerLevel.RAIN_DELAY.sample(random);
+            if (!biomeWeather.shouldRain() && !biomeWeather.shouldClear()) {
+                biomeWeather.clearTime = 10;
+            }
+
+            if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 3) {
+                var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.get(), null);
+                if (snow == WeatherManager.SnowRenderStatus.SNOW) {
+                    biomeWeather.snowDepth = (byte) Math.min(1, biomeWeather.snowDepth + 1);
+                } else if (snow == WeatherManager.SnowRenderStatus.SNOW_MELT) {
+                    biomeWeather.snowDepth = (byte) Math.min(0, biomeWeather.snowDepth - 1);
+                }
             }
 
             pos++;
-
         } else {
             pos = 0;
         }
-
         // Ecliptic.logger(level.getGameTime(),level.getGameTime() & 100);
         if (levelBiomeWeather != null && (level.getGameTime() % 100) == 0 && !level.players().isEmpty()) {
             // Ecliptic.logger(level.getGameTime());
@@ -271,24 +307,19 @@ public class WeatherManager {
         NONE
     }
 
-    public static boolean isInTerms(SolarTerm start, SolarTerm end, SolarTerm check) {
-        if (start.ordinal() <= end.ordinal()) {
-            return start.ordinal() <= check.ordinal() && check.ordinal() <= end.ordinal();
-        } else
-            return start.ordinal() <= check.ordinal() || check.ordinal() <= end.ordinal();
-    }
-
     public static SnowRenderStatus getSnowStatus(ServerLevel level, Biome biome, BlockPos pos) {
         var provider = SolarUtil.getProvider(level);
         var status = SnowRenderStatus.NONE;
         if (provider != null) {
-            if (level.isRaining()) {
-                if (isInTerms(SolarTerm.LIGHT_SNOW, SolarTerm.GREATER_COLD, provider.getSolarTerm())) {
+            var solarTerm = provider.getSolarTerm();
+            var snowTerm = SolarTerm.getSnowTerm(biome);
+            boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
+            if (isRainingAtBiome(level, biome)) {
+                if (flag_cold) {
                     status = SnowRenderStatus.SNOW;
-                }
-            }
-            if (isInTerms(SolarTerm.RAIN_WATER, SolarTerm.AUTUMNAL_EQUINOX, provider.getSolarTerm())) {
-                status = SnowRenderStatus.SNOW_MELT;
+                } else status = SnowRenderStatus.SNOW_MELT;
+            } else {
+                status = level.getRandom().nextBoolean() ? SnowRenderStatus.SNOW_MELT : SnowRenderStatus.NONE;
             }
         }
         return status;

@@ -6,7 +6,7 @@ import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.core.crop.CropGrowthHandler;
-import com.teamtea.ecliptic.common.core.solar.GlobalDataManager;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
@@ -36,21 +36,22 @@ import java.util.Map;
 public class AllListener {
     // public static LazyOptional<SolarProvider> provider = LazyOptional.empty();
 
-    public static final Map<Level, GlobalDataManager> DATA_MANAGER_MAP = new HashMap<>();
+    public static final Map<Level, SolarDataManager> DATA_MANAGER_MAP = new HashMap<>();
 
 
-    public static GlobalDataManager getSaveData(Level level) {
+    public static SolarDataManager getSaveData(Level level) {
         return DATA_MANAGER_MAP.get(level);
     }
 
-    public static LazyOptional<GlobalDataManager> getSaveDataLazy(Level level) {
-        return LazyOptional.of(() -> DATA_MANAGER_MAP.getOrDefault(level, new GlobalDataManager(level)));
+    public static LazyOptional<SolarDataManager> getSaveDataLazy(Level level) {
+        return LazyOptional.of(() -> DATA_MANAGER_MAP.getOrDefault(level, new SolarDataManager(level)));
     }
 
 
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
         BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
+        WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess());
     }
 
 
@@ -80,7 +81,7 @@ public class AllListener {
             WeatherManager.createLevelBiomeWeatherList(level);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            DATA_MANAGER_MAP.put(level, GlobalDataManager.get(level));
+            DATA_MANAGER_MAP.put(level, SolarDataManager.get(level));
         }
     }
 

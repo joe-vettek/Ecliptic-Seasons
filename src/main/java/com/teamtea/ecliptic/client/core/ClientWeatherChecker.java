@@ -91,18 +91,18 @@ public class ClientWeatherChecker {
         //     return 0.0f;
         // }
         // return Mth.lerp(p46723, clientLevel.oRainLevel, clientLevel.rainLevel);
-       var lists= WeatherManager.getBiomeList(clientLevel);
-       if(lists!=null)
-        for (WeatherManager.BiomeWeather biomeWeather : lists) {
-            if (biomeWeather.biomeHolder==biomeHolder){
-                return biomeWeather.rainTime>0?1.0f:0.0f;
+        var lists = WeatherManager.getBiomeList(clientLevel);
+        if (lists != null)
+            for (WeatherManager.BiomeWeather biomeWeather : lists) {
+                if (biomeWeather.biomeHolder == biomeHolder) {
+                    return biomeWeather.rainTime > 0 ? 1.0f : 0.0f;
+                }
             }
-        }
         return 0.0f;
     }
 
     public static boolean renderSnowAndRain(LevelRenderer levelRenderer, int ticks, float[] rainSizeX, float[] rainSizeZ, ResourceLocation RAIN_LOCATION, ResourceLocation SNOW_LOCATION, LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
-       if (true)return false;
+        if (true) return false;
         float f = Minecraft.getInstance().level.getRainLevel(p_109705_);
         float f_all = 1.0f;
         // if (!(f <= 0.0F))
@@ -156,10 +156,10 @@ public class ClientWeatherChecker {
                             RandomSource randomsource = RandomSource.create((long) (k1 * k1 * 3121 + k1 * 45238971 ^ j1 * j1 * 418711 + j1 * 13761));
                             blockpos$mutableblockpos.set(k1, j2, j1);
                             Biome.Precipitation biome$precipitation = biome.get().getPrecipitationAt(blockpos$mutableblockpos);
-                            boolean small=false;
+                            boolean small = false;
 
                             try {
-                                small=biome.is(Biomes.DESERT);
+                                small = biome.is(Biomes.DESERT);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -181,7 +181,7 @@ public class ClientWeatherChecker {
                                 double d4 = (double) j1 + 0.5D - p_109708_;
                                 float f3 = (float) Math.sqrt(d2 * d2 + d4 * d4) / (float) l;
 
-                                float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * (small?f:f_all);
+                                float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * (small ? f : f_all);
                                 blockpos$mutableblockpos.set(k1, l2, j1);
                                 int j3 = levelRenderer.getLightColor(level, blockpos$mutableblockpos);
                                 bufferbuilder.vertex((double) k1 - p_109706_ - d0 + 0.5D, (double) k2 - p_109707_, (double) j1 - p_109708_ - d1 + 0.5D).uv(0.0F, (float) j2 * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(j3).endVertex();
@@ -205,7 +205,7 @@ public class ClientWeatherChecker {
                                 double d3 = (double) k1 + 0.5D - p_109706_;
                                 double d5 = (double) j1 + 0.5D - p_109708_;
                                 float f8 = (float) Math.sqrt(d3 * d3 + d5 * d5) / (float) l;
-                                float f9 = ((1.0F - f8 * f8) * 0.3F + 0.5F) * (small?f:f_all);
+                                float f9 = ((1.0F - f8 * f8) * 0.3F + 0.5F) * (small ? f : f_all);
                                 blockpos$mutableblockpos.set(k1, l2, j1);
                                 int k3 = levelRenderer.getLightColor(level, blockpos$mutableblockpos);
                                 int l3 = k3 >> 16 & '\uffff';

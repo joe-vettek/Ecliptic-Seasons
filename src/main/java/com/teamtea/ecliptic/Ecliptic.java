@@ -4,6 +4,7 @@ package com.teamtea.ecliptic;
 import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
+import com.teamtea.ecliptic.data.start;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -96,7 +97,7 @@ public class Ecliptic {
     }
 
     public void gatherData(final GatherDataEvent event) {
-        // start.dataGen(event);
+        start.dataGen(event);
     }
 
 

@@ -1,5 +1,6 @@
 package com.teamtea.ecliptic.client.core;
 
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -237,8 +238,7 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if (SolarClientManager.getSnowLayer() > 0
-                && direction != Direction.DOWN
+        if ( direction != Direction.DOWN
                 && !list.isEmpty()) {
 
             int flag = 0;
@@ -331,7 +331,12 @@ public class ModelManager {
     public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
         // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
         // Minecraft.getInstance().level.getBiome(pos);
-        return SolarClientManager.getSnowLayer() * 100 >= Math.abs(seed % 100) && !Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
+        var biome = Minecraft.getInstance().level.getBiome(pos);
+        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.get()) >= Math.abs(seed % 100)) {
+            return true;
+        }
+
+        return false;
         // >= random.nextInt(100));
     }
 

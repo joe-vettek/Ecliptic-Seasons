@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,25 +26,21 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
-public class GlobalDataManager extends SavedData {
+public class SolarDataManager extends SavedData {
 
     private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
     private int solarTermsTicks = 0;
-    private float snowLayer = 0.0f;
-    private float sendSnowLayer = 0.0f;
-    private boolean updateSnow = false;
 
     private WeakReference<Level> levelWeakReference;
 
-    public GlobalDataManager(Level level) {
+    public SolarDataManager(Level level) {
         levelWeakReference = new WeakReference<>(level);
     }
 
-    public GlobalDataManager(Level level, CompoundTag nbt) {
+    public SolarDataManager(Level level, CompoundTag nbt) {
         this(level);
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
-        setSnowLayer(nbt.getFloat("SnowDepth"));
         var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
         if (levelWeakReference.get() != null) {
             var biomeWeathers =WeatherManager.getBiomeList(levelWeakReference.get());
@@ -66,7 +61,6 @@ public class GlobalDataManager extends SavedData {
     public @NotNull CompoundTag save(CompoundTag compound) {
         compound.putInt("SolarTermsDay", getSolarTermsDay());
         compound.putInt("SolarTermsTicks", getSolarTermsTicks());
-        compound.putFloat("SnowDepth", getSnowLayer());
         ListTag listTag = new ListTag();
         if (levelWeakReference.get() != null) {
             var list = WeatherManager.getBiomeList(levelWeakReference.get());
@@ -78,7 +72,7 @@ public class GlobalDataManager extends SavedData {
         return compound;
     }
 
-    public static GlobalDataManager get(Level level) {
+    public static SolarDataManager get(Level level) {
         if (level instanceof ServerLevel serverLevel) {
             return get(serverLevel);
         }
@@ -89,15 +83,15 @@ public class GlobalDataManager extends SavedData {
     }
 
 
-    public static GlobalDataManager get(ServerLevel serverLevel) {
+    public static SolarDataManager get(ServerLevel serverLevel) {
         DimensionDataStorage storage = serverLevel.getDataStorage();
-        return storage.computeIfAbsent((compoundTag) -> new GlobalDataManager(serverLevel, compoundTag),
-                () -> new GlobalDataManager(serverLevel), Ecliptic.MODID);
+        return storage.computeIfAbsent((compoundTag) -> new SolarDataManager(serverLevel, compoundTag),
+                () -> new SolarDataManager(serverLevel), Ecliptic.MODID);
     }
 
 
-    public static GlobalDataManager get(ClientLevel clientLevel) {
-        return new GlobalDataManager(clientLevel);
+    public static SolarDataManager get(ClientLevel clientLevel) {
+        return new SolarDataManager(clientLevel);
     }
 
 
@@ -112,21 +106,8 @@ public class GlobalDataManager extends SavedData {
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;
-        var snow = WeatherManager.getSnowStatus(world, null, null);
-        if (snow == WeatherManager.SnowRenderStatus.SNOW) {
-            snowLayer = Math.min(1, snowLayer + 3.33e-5f);
-        } else if (snow == WeatherManager.SnowRenderStatus.SNOW_MELT) {
-            snowLayer = Math.max(0, snowLayer - 3.33e-5f);
-        }
-        if (snowLayer != sendSnowLayer) {
-            if (snowLayer * 1000 % 10 == 0) {
-                sendUpdateOnly(world);
-                sendSnowLayer = snowLayer;
-                updateSnow = true;
-            }
 
-        }
-        if (updateSnow && world.getDayTime() % 1000 == 0) {
+        if (world.getRandom().nextBoolean() && world.getDayTime() % 1000 == 0) {
             // player.connection.send();
             var a = new ArrayList<ChunkAccess>();
             for (ChunkHolder chunk : (world).getChunkSource().chunkMap.getChunks()) {
@@ -136,7 +117,6 @@ public class GlobalDataManager extends SavedData {
             }
             // 强制刷新
             world.getChunkSource().chunkMap.resendBiomesForChunks(a);
-            updateSnow = false;
         }
 
         setDirty();
@@ -168,14 +148,6 @@ public class GlobalDataManager extends SavedData {
         setDirty();
     }
 
-    public float getSnowLayer() {
-        return snowLayer;
-    }
-
-    public void setSnowLayer(float snowLayer) {
-        this.snowLayer = snowLayer;
-        setDirty();
-    }
 
     public void sendUpdateOnly(ServerLevel world) {
         for (ServerPlayer player : world.getServer().getPlayerList().getPlayers()) {

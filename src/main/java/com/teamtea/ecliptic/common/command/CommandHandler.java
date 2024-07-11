@@ -3,7 +3,7 @@ package com.teamtea.ecliptic.common.command;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
-import com.teamtea.ecliptic.common.core.solar.GlobalDataManager;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -62,7 +62,7 @@ public class CommandHandler {
     }
 
     private static int getDay(ServerLevel worldIn) {
-        return AllListener.getSaveDataLazy(worldIn).map(GlobalDataManager::getSolarTermsDay).orElse(0);
+        return AllListener.getSaveDataLazy(worldIn).map(SolarDataManager::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {

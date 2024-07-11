@@ -2,9 +2,9 @@ package com.teamtea.ecliptic.client.debug;
 
 
 import com.teamtea.ecliptic.common.AllListener;
-import com.teamtea.ecliptic.common.core.solar.GlobalDataManager;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.config.ClientConfig;
-import com.teamtea.ecliptic.common.core.solar.SolarAngelManager;
+import com.teamtea.ecliptic.common.core.solar.SolarAngelHelper;
 import com.teamtea.ecliptic.api.biome.Humidity;
 import net.minecraft.client.Minecraft;
 
@@ -33,12 +33,12 @@ public final class OverlayEventHandler {
             {
                 if (ClientConfig.GUI.debugInfo.get()|| !FMLEnvironment.production)
                 {
-                    int solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new GlobalDataManager(clientPlayer.level())).getSolarTermsDay();
+                    int solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new SolarDataManager(clientPlayer.level())).getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);
                     double env = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
-                    int solarTime = SolarAngelManager.getSolarAngelTime(clientPlayer.level().getDayTime(), clientPlayer.level());
+                    int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level().getDayTime(), clientPlayer.level());
 
                     BAR_4.renderStatusBar(event.getGuiGraphics(), event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(), solar, dayTime, env, solarTime);
                 }

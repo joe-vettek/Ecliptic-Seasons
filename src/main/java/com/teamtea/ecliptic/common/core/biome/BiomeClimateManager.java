@@ -18,7 +18,6 @@ public class BiomeClimateManager {
         biomes.ifPresent(biomeRegistry -> biomeRegistry.forEach(biome ->
                 BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.getModifiedClimateSettings().temperature())));
 
-        WeatherManager.informUpdateBiomes(registryAccess);
     }
 
     public static float getDefaultTemperature(Biome biome) {
