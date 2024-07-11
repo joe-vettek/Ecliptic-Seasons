@@ -1,9 +1,9 @@
 package com.teamtea.ecliptic.common.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
+import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
-import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
+import com.teamtea.ecliptic.common.core.solar.GlobalDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -62,12 +62,12 @@ public class CommandHandler {
     }
 
     private static int getDay(ServerLevel worldIn) {
-        return worldIn.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(SolarDataManager::getSolarTermsDay).orElse(0);
+        return AllListener.getSaveDataLazy(worldIn).map(GlobalDataManager::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {
         for (ServerLevel ServerLevel : source.getServer().getAllLevels()) {
-            ServerLevel.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
+            AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(day);
                 data.sendUpdateMessage(ServerLevel);
@@ -80,7 +80,7 @@ public class CommandHandler {
 
     public static int addDay(CommandSourceStack source, int add) {
         for (ServerLevel ServerLevel : source.getServer().getAllLevels()) {
-            ServerLevel.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
+            AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);
                 data.sendUpdateMessage(ServerLevel);

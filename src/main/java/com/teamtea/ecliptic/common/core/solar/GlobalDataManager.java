@@ -1,26 +1,67 @@
 package com.teamtea.ecliptic.common.core.solar;
 
-import com.teamtea.ecliptic.common.core.biome.WeatherManager;
-import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
-import com.teamtea.ecliptic.common.network.SolarTermsMessage;
+import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.config.ServerConfig;
+import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
+import com.teamtea.ecliptic.common.network.SolarTermsMessage;
+import com.teamtea.ecliptic.config.ServerConfig;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class SolarDataManager {
+
+public class GlobalDataManager extends SavedData {
+
     private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
     private int solarTermsTicks = 0;
     private float snowLayer = 0.0f;
     private float sendSnowLayer = 0.0f;
     private boolean updateSnow = false;
+
+
+    public GlobalDataManager() {
+    }
+
+    public GlobalDataManager(CompoundTag nbt) {
+        this();
+        setSolarTermsDay(nbt.getInt("SolarTermsDay"));
+        setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
+        setSnowLayer(nbt.getFloat("SnowDepth"));
+    }
+
+    @Override
+    public @NotNull CompoundTag save(CompoundTag compound) {
+        compound.putInt("SolarTermsDay", getSolarTermsDay());
+        compound.putInt("SolarTermsTicks", getSolarTermsTicks());
+        compound.putFloat("SnowDepth", getSnowLayer());
+        return compound;
+    }
+
+    public static GlobalDataManager get(ServerLevel worldIn) {
+        ServerLevel world = (ServerLevel) worldIn;
+        DimensionDataStorage storage = world.getDataStorage();
+        return storage.computeIfAbsent(GlobalDataManager::new, GlobalDataManager::new, Ecliptic.MODID);
+    }
+
+
+    public static GlobalDataManager get(ClientLevel worldIn) {
+        return  new GlobalDataManager();
+    }
+
+
 
     public void updateTicks(ServerLevel world) {
         solarTermsTicks++;
@@ -60,6 +101,7 @@ public class SolarDataManager {
             updateSnow=false;
         }
 
+        setDirty();
     }
 
     public int getSolarTermIndex() {
@@ -80,10 +122,12 @@ public class SolarDataManager {
 
     public void setSolarTermsDay(int solarTermsDay) {
         this.solarTermsDay = Math.max(solarTermsDay, 0) % (24 * ServerConfig.Season.lastingDaysOfEachTerm.get());
+        setDirty();
     }
 
     public void setSolarTermsTicks(int solarTermsTicks) {
         this.solarTermsTicks = solarTermsTicks;
+        setDirty();
     }
 
     public float getSnowLayer() {
@@ -92,6 +136,7 @@ public class SolarDataManager {
 
     public void setSnowLayer(float snowLayer) {
         this.snowLayer = snowLayer;
+        setDirty();
     }
 
     public void sendUpdateOnly(ServerLevel world) {
@@ -108,4 +153,5 @@ public class SolarDataManager {
             }
         }
     }
+
 }

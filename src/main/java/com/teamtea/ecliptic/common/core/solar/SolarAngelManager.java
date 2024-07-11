@@ -11,38 +11,16 @@ import net.minecraft.world.level.dimension.DimensionType;
 
 
 public class SolarAngelManager {
-    public static float getSeasonCelestialAngle(long worldTime, DimensionType world) {
-        return getCelestialAngle(getSolarAngelTime(worldTime, world));
-    }
+
     public static float getSeasonCelestialAngle(long worldTime, LevelTimeAccess world) {
         return getCelestialAngle(getSolarAngelTime(worldTime, world));
     }
 
-    public static int getSolarAngelTime(long worldTime, DimensionType world) {
-        // world.effectsLocation()
-        if (AllListener.provider.resolve().isPresent()) {
-            var data = AllListener.provider.resolve().get().worldSolarTime;
-            int dayTime = SolarTerm.get(data.getSolarTermIndex()).getDayTime();
-            int sunrise = 24000 - dayTime / 2;
-            int sunset = dayTime / 2;
-            int dayLevelTime = Math.toIntExact((worldTime + 18000) % 24000); // 0 for noon; 6000 for sunset; 18000 for sunrise.
-            int solarAngelTime;
-            if (0 <= dayLevelTime && dayLevelTime <= sunset) {
-                solarAngelTime = 6000 + dayLevelTime * 6000 / sunset;
-            } else if (dayLevelTime > sunset && dayLevelTime <= sunrise) {
-                solarAngelTime = 12000 + (dayLevelTime - sunset) * 12000 / (24000 - dayTime);
-            } else {
-                solarAngelTime = (dayLevelTime - sunrise) * 6000 / (24000 - sunrise);
-            }
-            return solarAngelTime;
-        }
-        return Math.toIntExact(worldTime % 24000);
-    }
     public static int getSolarAngelTime(long worldTime, LevelTimeAccess world)
     {
-        if (world instanceof Level)
+        if (world instanceof Level level &&AllListener.getSaveData(level)!=null)
         {
-            return ((Level) world).getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(data ->
+            return AllListener.getSaveDataLazy(level).map(data ->
             {
                 int dayTime = SolarTerm.get(data.getSolarTermIndex()).getDayTime();
                 // dayTime=23900;

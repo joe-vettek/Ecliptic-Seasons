@@ -3,6 +3,7 @@ package com.teamtea.ecliptic.client.color.season;
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.client.core.ColorHelper;
+import com.teamtea.ecliptic.common.AllListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ColorResolver;
@@ -16,9 +17,10 @@ public class BiomeColorsHandler {
 
     public static final ColorResolver GRASS_COLOR = (biome, posX, posZ) ->
     {
-        if (Minecraft.getInstance().level != null) {
+        var clientLevel = Minecraft.getInstance().level;
+        if (clientLevel != null) {
             int originColor = biome.getGrassColor(posX, posZ);
-            return Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(data ->
+            return AllListener.getSaveDataLazy(clientLevel).map(data ->
             {
                 if (needRefresh) {
                     reloadColors();
@@ -37,9 +39,11 @@ public class BiomeColorsHandler {
 
     public static final ColorResolver FOLIAGE_COLOR = (biome, posX, posZ) ->
     {
-        if (Minecraft.getInstance().level != null) {
+        var clientLevel = Minecraft.getInstance().level;
+
+        if (clientLevel != null) {
             int originColor = biome.getFoliageColor();
-            return Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).map(data ->
+            return AllListener.getSaveDataLazy(clientLevel).map(data ->
             {
                 if (needRefresh) {
                     reloadColors();
@@ -56,34 +60,37 @@ public class BiomeColorsHandler {
     };
 
     public static void reloadColors() {
-        if (Minecraft.getInstance().level != null) {
-            Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
-            {
-                int[] foliageBuffer = FoliageColor.pixels;
-                int[] grassBuffer = GrassColor.pixels;
+        {
+            var clientLevel = Minecraft.getInstance().level;
+            if (clientLevel != null) {
+                AllListener.getSaveDataLazy(clientLevel).ifPresent(data ->
+                {
+                    int[] foliageBuffer = FoliageColor.pixels;
+                    int[] grassBuffer = GrassColor.pixels;
 
-                for (int i = 0; i < foliageBuffer.length; i++) {
-                    int originColor = foliageBuffer[i];
-                    SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
-                    if (solar.getColorInfo().getTemperateMix() == 0.0F) {
-                        newFoliageBuffer[i] = originColor;
-                    } else {
-                        newFoliageBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getBirchColor(), solar.getColorInfo().getTemperateMix(), originColor, 1.0F - solar.getColorInfo().getTemperateMix());
+                    for (int i = 0; i < foliageBuffer.length; i++) {
+                        int originColor = foliageBuffer[i];
+                        SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
+                        if (solar.getColorInfo().getTemperateMix() == 0.0F) {
+                            newFoliageBuffer[i] = originColor;
+                        } else {
+                            newFoliageBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getBirchColor(), solar.getColorInfo().getTemperateMix(), originColor, 1.0F - solar.getColorInfo().getTemperateMix());
+                        }
                     }
-                }
 
-                for (int i = 0; i < grassBuffer.length; i++) {
-                    int originColor = grassBuffer[i];
-                    SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
-                    if (solar.getColorInfo().getTemperateMix() == 0.0F) {
-                        newGrassBuffer[i] = originColor;
-                    } else {
-                        newGrassBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getTemperateColor(), solar.getColorInfo().getTemperateMix(), originColor, 1.0F - solar.getColorInfo().getTemperateMix());
+                    for (int i = 0; i < grassBuffer.length; i++) {
+                        int originColor = grassBuffer[i];
+                        SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
+                        if (solar.getColorInfo().getTemperateMix() == 0.0F) {
+                            newGrassBuffer[i] = originColor;
+                        } else {
+                            newGrassBuffer[i] = ColorHelper.simplyMixColor(solar.getColorInfo().getTemperateColor(), solar.getColorInfo().getTemperateMix(), originColor, 1.0F - solar.getColorInfo().getTemperateMix());
+                        }
                     }
-                }
 
-                needRefresh = false;
-            });
+                    needRefresh = false;
+                });
+            }
         }
     }
 }

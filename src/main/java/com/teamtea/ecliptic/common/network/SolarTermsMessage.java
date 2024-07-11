@@ -2,9 +2,9 @@ package com.teamtea.ecliptic.common.network;
 
 
 import com.teamtea.ecliptic.api.INormalMessage;
+import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
-import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
-import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
+import com.teamtea.ecliptic.common.core.solar.GlobalDataManager;
 import com.teamtea.ecliptic.client.color.season.BiomeColorsHandler;
 
 import com.teamtea.ecliptic.config.ServerConfig;
@@ -32,7 +32,7 @@ public class SolarTermsMessage implements INormalMessage {
         snowLayer = buf.readFloat();
     }
 
-    public SolarTermsMessage(SolarDataManager solarData) {
+    public SolarTermsMessage(GlobalDataManager solarData) {
         solarDay = solarData.getSolarTermsDay();
         snowLayer = solarData.getSnowLayer();
     }
@@ -50,7 +50,7 @@ public class SolarTermsMessage implements INormalMessage {
         {
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
 
-                Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).ifPresent(data ->
+                AllListener.getSaveDataLazy(Minecraft.getInstance().level).ifPresent(data ->
                         {
                             data.setSolarTermsDay(solarDay);
                             data.setSnowLayer(snowLayer);
@@ -60,7 +60,7 @@ public class SolarTermsMessage implements INormalMessage {
                         }
                 );
                 try {
-                    if (Minecraft.getInstance().level.getCapability(CapabilitySolarTermTime.WORLD_SOLAR_TIME).resolve().get().getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
+                    if (AllListener.getSaveDataLazy(Minecraft.getInstance().level).resolve().get().getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                         // 强制刷新
                         var cc = Minecraft.getInstance().levelRenderer;
                         // cc.allChanged();
