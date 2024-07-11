@@ -11,14 +11,10 @@ import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TagsUpdatedEvent;
@@ -32,8 +28,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Ecliptic.MODID)
@@ -48,13 +44,13 @@ public class AllListener {
     }
 
     public static LazyOptional<GlobalDataManager> getSaveDataLazy(Level level) {
-        return LazyOptional.of(() -> DATA_MANAGER_MAP.getOrDefault(level, new GlobalDataManager()));
+        return LazyOptional.of(() -> DATA_MANAGER_MAP.getOrDefault(level, new GlobalDataManager(level)));
     }
 
 
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
-        BiomeClimateManager.init(tagsUpdatedEvent.getRegistryAccess());
+        BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
     }
 
 
@@ -81,32 +77,10 @@ public class AllListener {
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof Level level) {
-            var list = new ArrayList<WeatherManager.BiomeWeather>();
-            WeatherManager.BIOME_WEATHER_LIST.put(level, list);
-            if (level instanceof ServerLevel serverLevel) {
-                DATA_MANAGER_MAP.put(serverLevel, GlobalDataManager.get(serverLevel));
-            }
-
-            if (level instanceof ClientLevel clientLevel) {
-                DATA_MANAGER_MAP.put(clientLevel, GlobalDataManager.get(clientLevel));
-                var biomes = clientLevel.registryAccess().registry(Registries.BIOME);
-                if (biomes.isPresent()) {
-                    for (Biome biome : biomes.get()) {
-                        var loc = biomes.get().getKey(biome);
-                        var id = biomes.get().getId(biome);
-                        var biomeHolder = biomes.get().getHolder(ResourceKey.create(Registries.BIOME, biomes.get().getKey(biome)));
-                        if (biomeHolder.isPresent()) {
-                            var biomeWeather = new WeatherManager.BiomeWeather(biomeHolder.get());
-                            biomes.get().getId(biome);
-                            biomeWeather.location = loc;
-                            biomeWeather.id = id;
-                            list.add(biomeWeather);
-                        }
-                    }
-                }
-                int aa = 0;
-            }
-
+            WeatherManager.createLevelBiomeWeatherList(level);
+            // 这里需要恢复一下数据
+            // 客户端登录时同步天气数据，此处先放入
+            DATA_MANAGER_MAP.put(level, GlobalDataManager.get(level));
         }
     }
 
@@ -150,13 +124,24 @@ public class AllListener {
 
         if (event.getEntity() instanceof ServerPlayer && !(event.getEntity() instanceof FakePlayer)) {
             if (ServerConfig.Season.enable.get()) {
-                getSaveDataLazy((ServerLevel) event.getEntity().level()).ifPresent(t ->
+                getSaveDataLazy(event.getEntity().level()).ifPresent(t ->
                 {
                     SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new SolarTermsMessage(t));
                     if (t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                         ((ServerPlayer) event.getEntity()).sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
                     }
                 });
+                WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(event.getEntity().level()), List.of((ServerPlayer) event.getEntity()));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+
+        if (event.getEntity() instanceof ServerPlayer && !(event.getEntity() instanceof FakePlayer)) {
+            if (ServerConfig.Season.enable.get()) {
+                WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(event.getEntity().level()), List.of((ServerPlayer) event.getEntity()));
             }
         }
     }

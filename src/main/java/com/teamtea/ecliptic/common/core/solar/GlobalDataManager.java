@@ -9,7 +9,10 @@ import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +23,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
@@ -31,15 +35,31 @@ public class GlobalDataManager extends SavedData {
     private float sendSnowLayer = 0.0f;
     private boolean updateSnow = false;
 
+    private WeakReference<Level> levelWeakReference;
 
-    public GlobalDataManager() {
+    public GlobalDataManager(Level level) {
+        levelWeakReference = new WeakReference<>(level);
     }
 
-    public GlobalDataManager(CompoundTag nbt) {
-        this();
+    public GlobalDataManager(Level level, CompoundTag nbt) {
+        this(level);
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
         setSnowLayer(nbt.getFloat("SnowDepth"));
+        var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
+        if (levelWeakReference.get() != null) {
+            var biomeWeathers =WeatherManager.getBiomeList(levelWeakReference.get());
+            for (int i = 0; i < listTag.size(); i++) {
+                var location = listTag.getCompound(i).getString("biome");
+                for (WeatherManager.BiomeWeather biomeWeather : biomeWeathers) {
+                    if (location.equals(biomeWeather.location.toString()))
+                    {
+                        biomeWeather.deserializeNBT(listTag.getCompound(i));
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -47,20 +67,38 @@ public class GlobalDataManager extends SavedData {
         compound.putInt("SolarTermsDay", getSolarTermsDay());
         compound.putInt("SolarTermsTicks", getSolarTermsTicks());
         compound.putFloat("SnowDepth", getSnowLayer());
+        ListTag listTag = new ListTag();
+        if (levelWeakReference.get() != null) {
+            var list = WeatherManager.getBiomeList(levelWeakReference.get());
+            for (WeatherManager.BiomeWeather biomeWeather : list) {
+                listTag.add(biomeWeather.serializeNBT());
+            }
+        }
+        compound.put("biomes", listTag);
         return compound;
     }
 
-    public static GlobalDataManager get(ServerLevel worldIn) {
-        ServerLevel world = (ServerLevel) worldIn;
-        DimensionDataStorage storage = world.getDataStorage();
-        return storage.computeIfAbsent(GlobalDataManager::new, GlobalDataManager::new, Ecliptic.MODID);
+    public static GlobalDataManager get(Level level) {
+        if (level instanceof ServerLevel serverLevel) {
+            return get(serverLevel);
+        }
+        if (level instanceof ClientLevel clientLevel) {
+            return get(clientLevel);
+        }
+        return null;
     }
 
 
-    public static GlobalDataManager get(ClientLevel worldIn) {
-        return  new GlobalDataManager();
+    public static GlobalDataManager get(ServerLevel serverLevel) {
+        DimensionDataStorage storage = serverLevel.getDataStorage();
+        return storage.computeIfAbsent((compoundTag) -> new GlobalDataManager(serverLevel, compoundTag),
+                () -> new GlobalDataManager(serverLevel), Ecliptic.MODID);
     }
 
+
+    public static GlobalDataManager get(ClientLevel clientLevel) {
+        return new GlobalDataManager(clientLevel);
+    }
 
 
     public void updateTicks(ServerLevel world) {
@@ -70,7 +108,7 @@ public class GlobalDataManager extends SavedData {
             solarTermsDay++;
             solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
 
-            BiomeClimateManager.updateTemperature(world,getSolarTermIndex());
+            BiomeClimateManager.updateTemperature(world, getSolarTermIndex());
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;
@@ -98,7 +136,7 @@ public class GlobalDataManager extends SavedData {
             }
             // 强制刷新
             world.getChunkSource().chunkMap.resendBiomesForChunks(a);
-            updateSnow=false;
+            updateSnow = false;
         }
 
         setDirty();

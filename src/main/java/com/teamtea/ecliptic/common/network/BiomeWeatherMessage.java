@@ -44,7 +44,7 @@ public class BiomeWeatherMessage implements INormalMessage {
         context.get().enqueueWork(() ->
         {
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                var lists = WeatherManager.BIOME_WEATHER_LIST.get(Minecraft.getInstance().level);
+                var lists = WeatherManager.getBiomeList(Minecraft.getInstance().level);
                 if (lists != null) {
                     for (WeatherManager.BiomeWeather biomeWeather : lists) {
                         biomeWeather.rainTime = rain[biomeWeather.id] * 100000;

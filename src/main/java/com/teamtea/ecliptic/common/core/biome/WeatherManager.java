@@ -1,25 +1,25 @@
 package com.teamtea.ecliptic.common.core.biome;
 
-import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.solar.Season;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
 
@@ -82,8 +82,68 @@ public class WeatherManager {
         return Biome.Precipitation.NONE;
     }
 
+    public static void createLevelBiomeWeatherList(Level level) {
+        var list = new ArrayList<WeatherManager.BiomeWeather>();
+        WeatherManager.BIOME_WEATHER_LIST.put(level, list);
+        {
+            var biomes = level.registryAccess().registry(Registries.BIOME);
+            if (biomes.isPresent()) {
+                for (Biome biome : biomes.get()) {
+                    var loc = biomes.get().getKey(biome);
+                    var id = biomes.get().getId(biome);
+                    var biomeHolder = biomes.get().getHolder(ResourceKey.create(Registries.BIOME, biomes.get().getKey(biome)));
+                    if (biomeHolder.isPresent()) {
+                        var biomeWeather = new WeatherManager.BiomeWeather(biomeHolder.get());
+                        biomes.get().getId(biome);
+                        biomeWeather.location = loc;
+                        biomeWeather.id = id;
+                        list.add(biomeWeather);
+                    }
+                }
+            }
+        }
+    }
 
-    public static class BiomeWeather {
+    public static void informUpdateBiomes(RegistryAccess registryAccess) {
+        var biomes = registryAccess.registry(Registries.BIOME);
+        if (biomes.isPresent()) {
+            biomes.get().forEach(biome ->
+            {
+                var loc = biomes.get().getKey(biome);
+                var id = biomes.get().getId(biome);
+                biomes.get().getHolder(ResourceKey.create(Registries.BIOME, biomes.get().getKey(biome))).ifPresent(biomeHolder -> {
+
+                    WeatherManager.BIOME_WEATHER_LIST.entrySet().stream().forEach(levelArrayListEntry ->
+                    {
+                        var biomeWeathers = levelArrayListEntry.getValue();
+
+                        boolean inList = false;
+
+                        for (BiomeWeather biomeWeather : biomeWeathers) {
+                            // 这里需要根据holder确定一下
+                            if (biomeWeather.location.equals(loc)) {
+                                biomeWeather.id = id;
+                                biomeWeather.biomeHolder = biomeHolder;
+                                inList = true;
+                                break;
+                            }
+                        }
+                        if (!inList) {
+                            var biomeWeather = new WeatherManager.BiomeWeather(biomeHolder);
+                            biomes.get().getId(biome);
+                            biomeWeather.location = loc;
+                            biomeWeather.id = id;
+                            biomeWeathers.add(biomeWeather);
+                        }
+                    });
+                });
+
+            });
+        }
+    }
+
+
+    public static class BiomeWeather implements INBTSerializable<CompoundTag> {
         public Holder<Biome> biomeHolder;
         public int id;
         public ResourceLocation location;
@@ -112,13 +172,27 @@ public class WeatherManager {
 
         @Override
         public String toString() {
-            return "BiomeWeather{" +
-                    "biome=" + location +
-                    ", rainTime=" + rainTime +
-                    ", thunderTime=" + thunderTime +
-                    ", clearTime=" + clearTime +
-                    ", snowDepth=" + snowDepth +
-                    '}';
+            return serializeNBT().toString();
+        }
+
+        @Override
+        public CompoundTag serializeNBT() {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("biome", location.toString());
+            tag.putInt("rainTime", rainTime);
+            tag.putInt("thunderTime", thunderTime);
+            tag.putInt("clearTime", clearTime);
+            tag.putByte("snowDepth", snowDepth);
+            return tag;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundTag nbt) {
+            location = new ResourceLocation(nbt.getString("biome"));
+            rainTime = nbt.getInt("rainTime");
+            thunderTime = nbt.getInt("thunderTime");
+            clearTime = nbt.getInt("clearTime");
+            snowDepth = nbt.getByte("snowDepth");
         }
     }
 
@@ -153,7 +227,7 @@ public class WeatherManager {
             // if (w.biomeHolder.is(Biomes.PLAINS)){
             //     Ecliptic.logger(w);
             // }
-            if (!w.shouldRain()&&!w.shouldClear()) {
+            if (!w.shouldRain() && !w.shouldClear()) {
                 w.clearTime = ServerLevel.RAIN_DELAY.sample(random);
             }
 
@@ -164,7 +238,7 @@ public class WeatherManager {
         }
 
         // Ecliptic.logger(level.getGameTime(),level.getGameTime() & 100);
-        if (levelBiomeWeather != null && (level.getGameTime() % 100) == 0) {
+        if (levelBiomeWeather != null && (level.getGameTime() % 100) == 0 && !level.players().isEmpty()) {
             // Ecliptic.logger(level.getGameTime());
             sendBiomePacket(levelBiomeWeather, level.players());
         }

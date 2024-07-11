@@ -1,8 +1,11 @@
 package com.teamtea.ecliptic.client.debug;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.teamtea.ecliptic.common.AllListener;
+import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
 import org.lwjgl.opengl.GL11;
 
 public final class DebugInfoRenderer {
@@ -30,6 +33,24 @@ public final class DebugInfoRenderer {
         drawInfo(matrixStack, screenWidth, screenHeight, dayS, index++);
         drawInfo(matrixStack, screenWidth, screenHeight, envS, index++);
         drawInfo(matrixStack, screenWidth, screenHeight, solarTimeS, index++);
+
+        if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+
+            var standBiome = Minecraft.getInstance().level.getBiome(player.getOnPos());
+
+            for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(Minecraft.getInstance().level)) {
+                if (biomeWeather.biomeHolder.get() == standBiome.get()) {
+                    String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
+                    String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
+
+                    drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
+                    break;
+                }
+            }
+
+        }
+
 
         RenderSystem.enableBlend();
         // RenderSystem.disableAlphaTest();

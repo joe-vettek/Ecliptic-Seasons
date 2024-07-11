@@ -43,7 +43,7 @@ public class CommandHandler {
     }
 
     private static int setBiomeRain(CommandSourceStack sourceStack, ResourceOrTagArgument.Result<Biome> result, boolean setRain) throws CommandSyntaxException {
-        var list = WeatherManager.BIOME_WEATHER_LIST.get(sourceStack.getLevel());
+        var list = WeatherManager.getBiomeList(sourceStack.getLevel());
         if (list != null) {
             boolean found=false;
             for (WeatherManager.BiomeWeather biomeWeather : list) {

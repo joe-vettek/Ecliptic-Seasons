@@ -33,7 +33,7 @@ public final class OverlayEventHandler {
             {
                 if (ClientConfig.GUI.debugInfo.get()|| !FMLEnvironment.production)
                 {
-                    int solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new GlobalDataManager()).getSolarTermsDay();
+                    int solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new GlobalDataManager(clientPlayer.level())).getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);
