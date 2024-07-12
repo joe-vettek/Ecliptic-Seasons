@@ -54,10 +54,10 @@ public abstract class MixinBlockRenderVanilla {
         ModelBlockRenderer.AmbientOcclusionFace modelblockrenderer$ambientocclusionface = new ModelBlockRenderer.AmbientOcclusionFace();
         BlockPos.MutableBlockPos blockpos$mutableblockpos = pos.mutable();
 
-        var newmodel = ModelManager.checkAndUpdate(blockAndTintGetter, state, pos, Direction.UP, bakedModel);
+        var newmodel = bakedModel;
         for (Direction direction : DIRECTIONS) {
             randomSource.setSeed(seed);
-            List<BakedQuad> list = (direction == Direction.UP ? newmodel : bakedModel).getQuads(state, direction, randomSource, modelData, renderType);
+            List<BakedQuad> list = bakedModel.getQuads(state, direction, randomSource, modelData, renderType);
             list= ModelManager.appendOverlay(blockAndTintGetter,state,pos,direction, randomSource,seed, list);
             if (!list.isEmpty()) {
                 blockpos$mutableblockpos.setWithOffset(pos, direction);
@@ -69,6 +69,8 @@ public abstract class MixinBlockRenderVanilla {
 
         randomSource.setSeed(seed);
         List<BakedQuad> list1 = bakedModel.getQuads(state, (Direction) null, randomSource, modelData, renderType);
+        list1= ModelManager.appendOverlay(blockAndTintGetter,state,pos,(Direction) null, randomSource,seed, list1);
+
         if (!list1.isEmpty()) {
             this.renderModelFaceAO(blockAndTintGetter, state, pos, poseStack, vertexConsumer, list1, afloat, bitset, modelblockrenderer$ambientocclusionface, p_111088_);
         }

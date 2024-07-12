@@ -24,7 +24,7 @@ public abstract class MixinBlockRender2 {
     private void mixin_renderQuadList(BlockRenderContext ctx, Direction face, CallbackInfoReturnable<List<BakedQuad>> cir) {
         RandomSource random = this.random;
         random.setSeed(ctx.seed());
-        var model= ModelManager.checkDirectionAndUpdate(ctx.world(),ctx.state(),ctx.pos(),face,ctx.model());
+        var model= ctx.model();
         var bakes=model.getQuads(ctx.state(), face, random, ctx.modelData(), ctx.renderLayer());
         bakes= ModelManager.appendOverlay(ctx.world(),ctx.state(),ctx.pos(),face,random,ctx.seed(),bakes);
         cir.setReturnValue(bakes);

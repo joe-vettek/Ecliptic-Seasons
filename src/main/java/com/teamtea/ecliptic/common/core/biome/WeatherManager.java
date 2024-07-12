@@ -289,10 +289,10 @@ public class WeatherManager {
             }
 
 
-            if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 3) {
+            if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 1) {
                 var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.get(), null);
                 if (snow == WeatherManager.SnowRenderStatus.SNOW) {
-                    biomeWeather.snowDepth = (byte) Math.min(1, biomeWeather.snowDepth + 1);
+                    biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
                 } else if (snow == WeatherManager.SnowRenderStatus.SNOW_MELT) {
                     biomeWeather.snowDepth = (byte) Math.max(0, biomeWeather.snowDepth - 1);
                 }
@@ -343,13 +343,15 @@ public class WeatherManager {
             var solarTerm = provider.getSolarTerm();
             var snowTerm = SolarTerm.getSnowTerm(biome);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
-            if (isRainingAtBiome(level, biome)) {
-                if (flag_cold) {
+            if (flag_cold) {
+                if (isRainingAtBiome(level, biome)) {
                     status = SnowRenderStatus.SNOW;
-                } else status = SnowRenderStatus.SNOW_MELT;
+                }
             } else {
-                status = level.getRandom().nextBoolean() ? SnowRenderStatus.SNOW_MELT : SnowRenderStatus.NONE;
+                status = level.getRandom().nextBoolean() | isRainingAtBiome(level, biome) ?
+                        SnowRenderStatus.SNOW_MELT : SnowRenderStatus.NONE;
             }
+
         }
         return status;
     }

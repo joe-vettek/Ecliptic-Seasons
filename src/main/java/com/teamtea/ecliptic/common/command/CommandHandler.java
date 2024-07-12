@@ -17,6 +17,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.teamtea.ecliptic.Ecliptic;
 
+import java.util.List;
+
 @Mod.EventBusSubscriber(modid = Ecliptic.MODID)
 public class CommandHandler {
     @SubscribeEvent
@@ -67,7 +69,7 @@ public class CommandHandler {
     }
 
     public static int setDay(CommandSourceStack source, int day) {
-        for (ServerLevel ServerLevel : source.getServer().getAllLevels()) {
+        for (ServerLevel ServerLevel :  List.of(source.getLevel())) {
             AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(day);
@@ -80,7 +82,7 @@ public class CommandHandler {
     }
 
     public static int addDay(CommandSourceStack source, int add) {
-        for (ServerLevel ServerLevel : source.getServer().getAllLevels()) {
+        for (ServerLevel ServerLevel : List.of(source.getLevel())) {
             AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);

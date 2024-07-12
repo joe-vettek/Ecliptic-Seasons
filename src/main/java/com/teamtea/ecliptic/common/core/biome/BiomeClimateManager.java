@@ -44,4 +44,8 @@ public class BiomeClimateManager {
             });
         }
     }
+
+    public static Float agent$GetBaseTemperature(Biome biome) {
+        return getDefaultTemperature(biome);
+    }
 }

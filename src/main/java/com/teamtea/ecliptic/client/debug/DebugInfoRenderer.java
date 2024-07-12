@@ -1,11 +1,13 @@
 package com.teamtea.ecliptic.client.debug;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -40,15 +42,31 @@ public final class DebugInfoRenderer {
         drawInfo(matrixStack, screenWidth, screenHeight, solarTimeS, index++);
 
         for (Level level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
-            if (level.dimension()==Level.OVERWORLD){
+            if (level.dimension() == Level.OVERWORLD && level instanceof ServerLevel) {
                 if (Minecraft.getInstance().cameraEntity instanceof Player player) {
                     var standBiome = level.getBiome(player.getOnPos());
                     for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
                         if (((Holder.Reference<Biome>) biomeWeather.biomeHolder).key().location().equals(((Holder.Reference<Biome>) standBiome).key().location())) {
+                            var solarTerm = AllListener.getSaveData(level).getSolarTerm();
+                            String solarTermS = "Solar Term: " + solarTerm;
+                            String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
+                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.get());
+                            drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
+                            drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
+                            drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);
+                            drawInfo(matrixStack, screenWidth, screenHeight, snowTermS, index++);
+
+                            drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
+
                             String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
                             String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
+                            String snowDepthS = "Snow Depth: " + biomeWeather.snowDepth;
+
                             drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
+                            drawInfo(matrixStack, screenWidth, screenHeight, snowDepthS, index++);
+
+
                             break;
                         }
                     }
@@ -56,7 +74,6 @@ public final class DebugInfoRenderer {
                 }
             }
         }
-
 
 
         RenderSystem.enableBlend();

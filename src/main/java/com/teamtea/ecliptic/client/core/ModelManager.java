@@ -46,47 +46,6 @@ public class ModelManager {
     LazyOptional<BakedModel> snowModel =
             LazyOptional.of(() -> models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
 
-    // if (state.getBlock() instanceof GrassBlock&& blockAndTintGetter.getBlockState(pos.above()).isAir()
-    public static BakedModel checkAndUpdate(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, BakedModel bakedModel) {
-        var out = bakedModel;
-        // &&blockAndTintGetter.canSeeSky(pos)
-        // if (ClientSetup.snowModel.resolve().isPresent()
-        //         && blockAndTintGetter.getBlockState(pos.above()).isAir()&& (state.isSolidRender(blockAndTintGetter, pos)||state.is(BlockTags.LEAVES)))
-        // {
-        //     out = ClientSetup.snowModel.resolve().get();
-        //     // out=new WarpBakedModel(bakedModel,ClientSetup.snowModel.resolve().get());
-        // }
-        return out;
-    }
-
-
-    public static BakedModel checkDirectionAndUpdate(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, BakedModel bakedModel) {
-        // return direction == Direction.UP ? checkAndUpdate(blockAndTintGetter, state, pos, direction, bakedModel) : bakedModel;
-        return bakedModel;
-    }
-
-    public static boolean ShouldReplaceQuads(BlockState state, Direction direction, RandomSource randomSource) {
-        // return direction == Direction.UP;
-        return false;
-    }
-
-    public static List<BakedQuad> getReplacedQuads(Map<Direction, List<BakedQuad>> culledFaces, BlockState state, Direction direction, RandomSource randomSource) {
-        var BakedQuads = culledFaces.get(direction);
-        var outBakedQuads = new ArrayList<BakedQuad>();
-        // java.util.ConcurrentModificationException: null
-        // for (BakedQuad bakedQuad : BakedQuads) {
-        //    var wrapperBakedQuad = new WrapBakedQuad(bakedQuad.getVertices(),
-        //             bakedQuad.getTintIndex(),
-        //             bakedQuad.getDirection(),
-        //             bakedQuad.getSprite(),
-        //             bakedQuad.isShade(),
-        //             bakedQuad.hasAmbientOcclusion(), bakedQuad);
-        //     outBakedQuads.add(wrapperBakedQuad);
-        // }
-
-        return outBakedQuads;
-    }
-
     public static final int ChunkSize = 16 * 32;
     public static final int ChunkSizeLoc = ChunkSize - 1;
     public static final int ChunkSizeAxis = 4 * 5;
@@ -145,49 +104,9 @@ public class ModelManager {
     }
 
     // TODO:内存更新，双链表+Hash，用LRU
-    public static Map<Long, Boolean> blockMap = new ConcurrentHashMap<>();
-    public static Map<ChunkPos, ChunkHeightMap> ChunkMap = new ConcurrentHashMap<>(16);
     public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024, 0.5f);
-    public static List<BakedQuad>[] quadKeyList = (List<BakedQuad>[]) new List<?>[1024];
-    public static List<BakedQuad>[] quadValueList = (List<BakedQuad>[]) new List<?>[1024];
-    public static int emptyQuadPos = 0;
 
-    public static List<BakedQuad> getQuad(List<BakedQuad> input, List<BakedQuad> nullValue) {
-        for (int i = 0; i < quadKeyList.length; i++) {
-            var k = quadKeyList[i];
-            if (k == null)
-                break;
-            if (k == input)
-                return quadValueList[i];
-
-        }
-        return nullValue;
-    }
-
-    public static int setQuad(List<BakedQuad> keyList, List<BakedQuad> newList) {
-        if (emptyQuadPos < quadKeyList.length) {
-            quadKeyList[emptyQuadPos] = keyList;
-            quadValueList[emptyQuadPos] = newList;
-            emptyQuadPos++;
-            return emptyQuadPos;
-        }
-        Ecliptic.logger("Please update the size of quadList");
-        return -1;
-    }
-
-
-    private static final int PACKED_X_LENGTH = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
-    private static final int PACKED_Z_LENGTH = PACKED_X_LENGTH;
-    private static final long PACKED_X_MASK = (1L << PACKED_X_LENGTH) - 1L;
-    private static final long PACKED_Z_MASK = (1L << PACKED_Z_LENGTH) - 1L;
-    private static final int Z_OFFSET = PACKED_X_LENGTH;
-
-    public static long asLongPos(BlockPos pos) {
-        long i = 0L;
-        i |= ((long) pos.getX() & PACKED_X_MASK);
-        return i | ((long) pos.getZ() & PACKED_Z_MASK) << Z_OFFSET;
-    }
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
         int x = blockToSectionCoord(pos.getX());
@@ -238,7 +157,7 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if ( direction != Direction.DOWN
+        if (direction != Direction.DOWN
                 && !list.isEmpty()) {
 
             int flag = 0;
@@ -257,8 +176,6 @@ public class ModelManager {
             } else return list;
 
             boolean isLight = getHeightOrUpdate(pos, false) == pos.getY();
-            // boolean isLight=getLight(blockAndTintGetter, pos, state, random)>=blockAndTintGetter.getMaxLightLevel();
-            // long blockLong = asLongPos(pos);
 
             // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
             // long time = System.currentTimeMillis();
@@ -300,7 +217,6 @@ public class ModelManager {
                                 .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
                                 .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
                                 .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
-                        // ClientSetup.models.get(new ModelResourceLocation(Ecliptic.ModContents.snowyStairs.getId(),"facing=north,half=bottom,shape=outer_left,waterlogged=true"))
                         // 楼梯的方向是无
                         snowModel = models.get(BlockModelShaper.stateToModelLocation(snowState));
                     }
@@ -317,7 +233,6 @@ public class ModelManager {
                             newList.addAll(snowList);
                         }
                         quadMap.put(list, newList);
-                        setQuad(list, newList);
                         list = newList;
                     }
                 }
