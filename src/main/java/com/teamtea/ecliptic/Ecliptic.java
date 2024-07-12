@@ -18,9 +18,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +39,8 @@ public class Ecliptic {
     public static final String NETWORK_VERSION = "1.0";
 
     public static void logger(String x) {
+        // 通过它可以判断是否在哪个服务器
+        // ServerLifecycleHooks.getCurrentServer()
         // if (!FMLEnvironment.production||General.bool.get())
         {
 //            LOGGER.debug(x);
