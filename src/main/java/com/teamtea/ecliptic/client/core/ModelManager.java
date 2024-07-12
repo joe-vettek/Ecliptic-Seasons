@@ -59,12 +59,14 @@ public class ModelManager {
         public ChunkHeightMap(int x, int z) {
             this.x = x;
             this.z = z;
+            Ecliptic.logger(String.format("Create new Height Map with [%s, %s]", x, z));
             for (int i = 0; i < ChunkSize; i++) {
                 for (int j = 0; j < ChunkSize; j++) {
                     matrix[i][j] = Integer.MIN_VALUE;
                     lockArray[i][j] = new Object();
                 }
             }
+            Ecliptic.logger(String.format("End create [%s, %s]", x, z));
         }
 
         public int getHeight(int x, int z) {
@@ -129,14 +131,24 @@ public class ModelManager {
             }
             // return h;
         } else {
-            map = new ChunkHeightMap(x, z);
+
             // ChunkMap.put(chunkPos, map);
             synchronized (RegionList) {
-                RegionList.add(map);
+                boolean hasBuild = false;
+                for (ChunkHeightMap chunkHeightMap : RegionList) {
+                    if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
+                        hasBuild = true;
+                        break;
+                    }
+                }
+                if (!hasBuild) {
+                    map = new ChunkHeightMap(x, z);
+                    RegionList.add(map);
+                }
             }
-
-            h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
-            map.updateHeight(pos, h);
+            // h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
+            // map.updateHeight(pos, h);
+            h = getHeightOrUpdate(pos, false);
             // return h;
         }
         return h;

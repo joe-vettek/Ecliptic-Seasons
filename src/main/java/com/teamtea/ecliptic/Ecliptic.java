@@ -1,6 +1,7 @@
 package com.teamtea.ecliptic;
 
 
+import com.teamtea.ecliptic.compat.CompatModule;
 import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
@@ -18,12 +19,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -99,6 +97,7 @@ public class Ecliptic {
 
     public void FMLCommonSetup(final FMLCommonSetupEvent event) {
         SimpleNetworkHandler.init();
+        CompatModule.register();
     }
 
     public void gatherData(final GatherDataEvent event) {

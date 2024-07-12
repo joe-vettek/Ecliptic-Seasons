@@ -31,7 +31,9 @@ public final class OverlayEventHandler {
             // if (event.getType() == RenderGameOverlayEvent.ElementType.ALL)
             // if(event.getOverlay().id().getPath().equals("all"))
             {
-                if (ClientConfig.GUI.debugInfo.get()|| !FMLEnvironment.production)
+                if (ClientConfig.GUI.debugInfo.get()
+                        || !FMLEnvironment.production
+                )
                 {
                     int solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new SolarDataManager(clientPlayer.level())).getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();

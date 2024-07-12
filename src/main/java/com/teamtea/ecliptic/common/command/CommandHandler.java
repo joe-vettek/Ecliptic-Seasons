@@ -52,7 +52,7 @@ public class CommandHandler {
             for (WeatherManager.BiomeWeather biomeWeather : levelBiomeWeather) {
                 if (result.test(biomeWeather.biomeHolder)) {
                     biomeWeather.rainTime = setRain ? ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom())/size : 0;
-                    biomeWeather.clearTime = setRain ? 0 : 10/(size/30);;
+                    biomeWeather.clearTime = setRain ? 0:ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size;
 
                     found=true;
                 }

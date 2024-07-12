@@ -69,6 +69,9 @@ public class ClientSetup {
         ModelManager.snowOverlayLeaves.resolve();
         var test = ModelManager.snowOverlayBlock.resolve().get();
         Ecliptic.logger(test);
+
+        ModelManager.quadMap.clear();
+
         // net.minecraft.client.resources.model.ModelManager.reload
         // p_251134_.listPacks().toList().get(0).getResource(PackType.CLIENT_RESOURCES, completablefuture.get().entrySet().stream().toList().get(0).getKey()).get().readAllBytes()
         // p_251134_.listPacks().toList().get(1).getResource(PackType.CLIENT_RESOURCES, Ecliptic.rl("textures/block/icon.png")).get().readAllBytes()

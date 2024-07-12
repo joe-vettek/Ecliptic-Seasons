@@ -118,6 +118,9 @@ public class WeatherManager {
             var biomes = level.registryAccess().registry(Registries.BIOME).get();
             for (BiomeWeather biomeWeather : getBiomeList(level)) {
                 if (biomeWeather.location.equals(biomes.getKey(biome))) {
+                    if(biomeWeather.shouldClear())
+                        return Biome.Precipitation.NONE;
+
                     return flag_cold
                             || BiomeClimateManager.getDefaultTemperature(biome) <= BiomeClimateManager.SNOW_LEVEL ?
                             Biome.Precipitation.SNOW : Biome.Precipitation.RAIN;
@@ -280,13 +283,14 @@ public class WeatherManager {
                     if (level.getRandom().nextInt(1000) / 1000.f < weight) {
                         biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                     } else {
-                        biomeWeather.clearTime = 10 / (size / 30);
+                        // biomeWeather.clearTime = 10 / (size / 30);
+                        biomeWeather.clearTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                     }
                 }
             }
-            if (biomeWeather.biomeHolder.is(Biomes.PLAINS)) {
-                // Ecliptic.logger(biomeWeather);
-            }
+            // if (biomeWeather.biomeHolder.is(Biomes.PLAINS)) {
+            //     // Ecliptic.logger(biomeWeather);
+            // }
 
 
             if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 1) {

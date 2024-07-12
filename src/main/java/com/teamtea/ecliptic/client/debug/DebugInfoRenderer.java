@@ -48,7 +48,7 @@ public final class DebugInfoRenderer {
                     for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
                         if (((Holder.Reference<Biome>) biomeWeather.biomeHolder).key().location().equals(((Holder.Reference<Biome>) standBiome).key().location())) {
                             var solarTerm = AllListener.getSaveData(level).getSolarTerm();
-                            String solarTermS = "Solar Term: " + solarTerm;
+                            String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
                             String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
                             String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.get());
                             drawInfo(matrixStack, screenWidth, screenHeight, "", index++);

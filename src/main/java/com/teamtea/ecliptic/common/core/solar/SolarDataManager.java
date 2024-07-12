@@ -12,11 +12,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.network.PacketDistributor;
@@ -24,6 +28,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class SolarDataManager extends SavedData {
@@ -107,17 +114,18 @@ public class SolarDataManager extends SavedData {
         }
         solarTermsTicks = dayTime;
 
-        if (world.getRandom().nextBoolean() && world.getDayTime() % 1000 == 0) {
-            // player.connection.send();
-            var a = new ArrayList<ChunkAccess>();
-            for (ChunkHolder chunk : (world).getChunkSource().chunkMap.getChunks()) {
-                var cs = chunk.getLastAvailable();
-                if (cs != null)
-                    a.add(chunk.getLastAvailable());
-            }
-            // 强制刷新
-            world.getChunkSource().chunkMap.resendBiomesForChunks(a);
-        }
+        // 强制刷新，由于服务器区块是悲观锁，所以不能强刷
+        // if (world.getRandom().nextBoolean() && world.getDayTime() % 1000 == 0) {
+        //     // player.connection.send();
+        //     var a = new ArrayList<ChunkAccess>();
+        //     for (ChunkHolder chunk : (world).getChunkSource().chunkMap.getChunks()) {
+        //         var cs = chunk.getLastAvailable();
+        //         if (cs != null)
+        //             a.add(chunk.getLastAvailable());
+        //     }
+        //
+        //     world.getChunkSource().chunkMap.resendBiomesForChunks(a);
+        // }
 
         setDirty();
     }
@@ -162,6 +170,29 @@ public class SolarDataManager extends SavedData {
                 player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
             }
         }
+    }
+
+
+    public void resendBiomesForChunks(ServerLevel serverLevel, ChunkMap chunkMap, List<ChunkAccess> chunkAccessList) {
+        Map<ServerPlayer, List<LevelChunk>> map = new HashMap<>();
+
+        for(ChunkAccess chunkaccess : chunkAccessList) {
+            ChunkPos chunkpos = chunkaccess.getPos();
+            LevelChunk levelchunk;
+            if (chunkaccess instanceof LevelChunk levelchunk1) {
+                levelchunk = levelchunk1;
+            } else {
+                levelchunk = serverLevel.getChunk(chunkpos.x, chunkpos.z);
+            }
+
+            for(ServerPlayer serverplayer : chunkMap.getPlayers(chunkpos, false)) {
+                map.computeIfAbsent(serverplayer, (p_274834_) -> new ArrayList<>()).add(levelchunk);
+            }
+        }
+
+        map.forEach((player, levelChunks) -> {
+            player.connection.send(ClientboundChunksBiomesPacket.forChunks(levelChunks));
+        });
     }
 
 }

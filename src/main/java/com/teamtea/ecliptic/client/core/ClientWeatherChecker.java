@@ -101,12 +101,14 @@ public class ClientWeatherChecker {
         return 0.0f;
     }
 
+    // TODO:做成可选项
     public static boolean renderSnowAndRain(LevelRenderer levelRenderer, int ticks, float[] rainSizeX, float[] rainSizeZ, ResourceLocation RAIN_LOCATION, ResourceLocation SNOW_LOCATION, LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
-        if (true) return false;
+        // if (true) return false;
         float f = Minecraft.getInstance().level.getRainLevel(p_109705_);
+        var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().filter(WeatherManager.BiomeWeather::shouldRain).findAny();
         float f_all = 1.0f;
         // if (!(f <= 0.0F))
-        {
+        if (anyRain.isPresent()) {
             p_109704_.turnOnLightLayer();
             Level level = Minecraft.getInstance().level;
             int i = Mth.floor(p_109706_);
@@ -156,13 +158,7 @@ public class ClientWeatherChecker {
                             RandomSource randomsource = RandomSource.create((long) (k1 * k1 * 3121 + k1 * 45238971 ^ j1 * j1 * 418711 + j1 * 13761));
                             blockpos$mutableblockpos.set(k1, j2, j1);
                             Biome.Precipitation biome$precipitation = biome.get().getPrecipitationAt(blockpos$mutableblockpos);
-                            boolean small = false;
-
-                            try {
-                                small = biome.is(Biomes.DESERT);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            // Ecliptic.logger(blockpos$mutableblockpos);
 
                             if (biome$precipitation == Biome.Precipitation.RAIN) {
                                 if (i1 != 0) {
@@ -181,7 +177,7 @@ public class ClientWeatherChecker {
                                 double d4 = (double) j1 + 0.5D - p_109708_;
                                 float f3 = (float) Math.sqrt(d2 * d2 + d4 * d4) / (float) l;
 
-                                float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * (small ? f : f_all);
+                                float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * f_all;
                                 blockpos$mutableblockpos.set(k1, l2, j1);
                                 int j3 = levelRenderer.getLightColor(level, blockpos$mutableblockpos);
                                 bufferbuilder.vertex((double) k1 - p_109706_ - d0 + 0.5D, (double) k2 - p_109707_, (double) j1 - p_109708_ - d1 + 0.5D).uv(0.0F, (float) j2 * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(j3).endVertex();
@@ -205,7 +201,7 @@ public class ClientWeatherChecker {
                                 double d3 = (double) k1 + 0.5D - p_109706_;
                                 double d5 = (double) j1 + 0.5D - p_109708_;
                                 float f8 = (float) Math.sqrt(d3 * d3 + d5 * d5) / (float) l;
-                                float f9 = ((1.0F - f8 * f8) * 0.3F + 0.5F) * (small ? f : f_all);
+                                float f9 = ((1.0F - f8 * f8) * 0.3F + 0.5F) * f_all;
                                 blockpos$mutableblockpos.set(k1, l2, j1);
                                 int k3 = levelRenderer.getLightColor(level, blockpos$mutableblockpos);
                                 int l3 = k3 >> 16 & '\uffff';
@@ -229,11 +225,17 @@ public class ClientWeatherChecker {
             RenderSystem.enableCull();
             RenderSystem.disableBlend();
             p_109704_.turnOffLightLayer();
+            return true;
         }
         return false;
     }
 
     public static Boolean isRainingAt(BlockPos p46759, ClientLevel clientLevel) {
-        return true;
+        if (!clientLevel.canSeeSky(p46759)) {
+            return false;
+        } else if (clientLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, p46759).getY() > p46759.getY()) {
+            return false;
+        }
+        return clientLevel.getBiome(p46759).get().getPrecipitationAt(p46759)== Biome.Precipitation.RAIN;
     }
 }
