@@ -226,7 +226,7 @@ public class ModelManager {
                         var snowList = snowModel.getQuads(snowState, direction, null);
                         ArrayList<BakedQuad> newList;
                         if (direction == Direction.UP) {
-                            newList = (ArrayList<BakedQuad>) snowList;
+                            newList = new ArrayList<>(snowList);
                         } else {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());
                             newList.addAll(list);

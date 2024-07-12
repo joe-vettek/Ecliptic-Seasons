@@ -1,5 +1,6 @@
 package com.teamtea.ecliptic.common.core.biome;
 
+import com.teamtea.ecliptic.api.EclipticBiomeTags;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -47,5 +48,9 @@ public class BiomeClimateManager {
 
     public static Float agent$GetBaseTemperature(Biome biome) {
         return getDefaultTemperature(biome);
+    }
+
+    public static Boolean agent$hasPrecipitation(Biome biome) {
+       return ! EclipticBiomeTags.getTag(biome).equals(EclipticBiomeTags.RAINLESS);
     }
 }
