@@ -1,10 +1,7 @@
 package com.teamtea.ecliptic.api.solar.color;
 
-import com.teamtea.ecliptic.client.core.ColorHelper;
-import net.minecraft.world.level.FoliageColor;
 
-
-public enum NoneSolarTermColors implements SolarTermColor {
+public enum SlightlySolarTermColors implements SolarTermColor {
     // Spring Solar Terms
     BEGINNING_OF_SPRING(),
     RAIN_WATER(),
@@ -41,16 +38,16 @@ public enum NoneSolarTermColors implements SolarTermColor {
     private final float ratio;
 
 
-    NoneSolarTermColors(float ratio) {
+    SlightlySolarTermColors(float ratio) {
         this.ratio = ratio;
     }
 
-    NoneSolarTermColors() {
-        this.ratio = 0;
+    SlightlySolarTermColors() {
+        this.ratio = 0.1f;
     }
 
 
-    public static NoneSolarTermColors get(int index) {
+    public static SlightlySolarTermColors get(int index) {
         return values()[index];
     }
 

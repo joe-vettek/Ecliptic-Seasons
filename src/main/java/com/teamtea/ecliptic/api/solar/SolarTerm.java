@@ -2,10 +2,7 @@ package com.teamtea.ecliptic.api.solar;
 
 import com.teamtea.ecliptic.api.EclipticBiomeTags;
 import com.teamtea.ecliptic.api.climate.*;
-import com.teamtea.ecliptic.api.solar.color.NoneSolarTermColors;
-import com.teamtea.ecliptic.api.solar.color.RainySolarTermColors;
-import com.teamtea.ecliptic.api.solar.color.SolarTermColor;
-import com.teamtea.ecliptic.api.solar.color.TemperateSolarTermColors;
+import com.teamtea.ecliptic.api.solar.color.*;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -83,11 +80,11 @@ public enum SolarTerm {
         } else if (biomeTagKey.equals(EclipticBiomeTags.ARID)) {
             return NoneSolarTermColors.get(this.ordinal());
         } else if (biomeTagKey.equals(EclipticBiomeTags.DROUGHTY)) {
-            return NoneSolarTermColors.get(this.ordinal());
+            return SlightlySolarTermColors.get(this.ordinal());
         } else if (biomeTagKey.equals(EclipticBiomeTags.SOFT)) {
-            return NoneSolarTermColors.get(this.ordinal());
+            return SlightlySolarTermColors.get(this.ordinal());
         } else if (biomeTagKey.equals(EclipticBiomeTags.RAINY)) {
-            return NoneSolarTermColors.get(this.ordinal());
+            return SlightlySolarTermColors.get(this.ordinal());
         } else if (biomeTagKey.equals(EclipticBiomeTags.MONSOONAL)) {
             return RainySolarTermColors.values()[this.ordinal()];
         } else if (biomeTagKey.equals(EclipticBiomeTags.SEASONAL)) {
