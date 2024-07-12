@@ -24,6 +24,8 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.Tags;
 
+import java.util.List;
+
 // TODO:全局雨量控制表
 public class ClientWeatherChecker {
 
@@ -61,8 +63,16 @@ public class ClientWeatherChecker {
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
-            var standBiome = clientLevel.getBiome(player.getOnPos());
-            rainLevel = getStandardRainLevel(p46723, clientLevel, standBiome);
+            var pos=player.getOnPos();
+            for (BlockPos blockPos : List.of(pos.east(4), pos.north(4), pos.south(4), pos.west(4))) {
+                var standBiome = clientLevel.getBiome(blockPos);
+                float orainLevel = getStandardRainLevel(p46723, clientLevel, standBiome);
+                if (orainLevel>rainLevel){
+                    rainLevel=orainLevel;
+                }
+            }
+
+
             if (changeTime > 0) {
                 changeTime--;
                 if (lastBiomeRainLevel >= 0 && !isNear(rainLevel, lastBiomeRainLevel, 0.01f)) {
@@ -103,7 +113,7 @@ public class ClientWeatherChecker {
 
     // TODO:做成可选项
     public static boolean renderSnowAndRain(LevelRenderer levelRenderer, int ticks, float[] rainSizeX, float[] rainSizeZ, ResourceLocation RAIN_LOCATION, ResourceLocation SNOW_LOCATION, LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_) {
-        // if (true) return false;
+        if (true) return false;
         float f = Minecraft.getInstance().level.getRainLevel(p_109705_);
         var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().filter(WeatherManager.BiomeWeather::shouldRain).findAny();
         float f_all = 1.0f;

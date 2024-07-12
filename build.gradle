@@ -193,6 +193,11 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_min_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.0"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.0")) {
+        jarJar.ranged(it, "[0.4.0,)")
+    }
+
     implementation fg.deobf("curse.maven:jei-238222:4644453")
 //    implementation fg.deobf("curse.maven:jade-324717:4654448")
     implementation fg.deobf("curse.maven:jade-324717:5072729-deobf-sources-api")

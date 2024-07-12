@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
@@ -118,7 +119,7 @@ public class WeatherManager {
             var biomes = level.registryAccess().registry(Registries.BIOME).get();
             for (BiomeWeather biomeWeather : getBiomeList(level)) {
                 if (biomeWeather.location.equals(biomes.getKey(biome))) {
-                    if(biomeWeather.shouldClear())
+                    if (biomeWeather.shouldClear())
                         return Biome.Precipitation.NONE;
 
                     return flag_cold
@@ -189,6 +190,10 @@ public class WeatherManager {
 
             });
         }
+    }
+
+    public static boolean wantsToEnterHiveCheckRain(Bee bee) {
+        return bee.level().isRainingAt(bee.getOnPos().above());
     }
 
 

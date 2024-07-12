@@ -1,12 +1,14 @@
 package com.teamtea.ecliptic.mixin.common;
 
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.ServerLevelData;

@@ -6,10 +6,16 @@
   "mixins": [
     "common.MixinBiome",
     "common.MixinDimensionType",
+    "common.MixinLevel",
     "common.MixinLevelChunk",
     "common.MixinLevelTimeAccess",
     "common.MixinServerLevel",
-    "common.MixinLevel"
+    "common.bee.MixinBee",
+    "common.bee.MixinBee_BeePollinateGoal",
+    "common.bee.MixinBeehiveBlockEntity",
+    "common.block.MixinFireBlock",
+    "common.command.MixinWeatherCommand",
+    "common.loot.MixinWeatherCheck"
   ],
   "client": [
     "client.ItemBlockRenderTypes",
