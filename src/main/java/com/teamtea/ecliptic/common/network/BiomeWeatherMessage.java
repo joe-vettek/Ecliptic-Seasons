@@ -1,20 +1,17 @@
 package com.teamtea.ecliptic.common.network;
 
 
-import com.teamtea.ecliptic.api.INormalMessage;
-import com.teamtea.ecliptic.common.core.biome.WeatherManager;
-import net.minecraft.client.Minecraft;
+
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class BiomeWeatherMessage implements INormalMessage {
-    private final byte[] rain;
-    private final byte[] thuder;
-    private final byte[] clear;
-    private final byte[] snowDepth;
+public class BiomeWeatherMessage {
+    public final byte[] rain;
+    public final byte[] thuder;
+    public final byte[] clear;
+    public final byte[] snowDepth;
 
     public BiomeWeatherMessage(FriendlyByteBuf buf) {
         rain = buf.readByteArray();
@@ -31,7 +28,7 @@ public class BiomeWeatherMessage implements INormalMessage {
     }
 
 
-    @Override
+
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeByteArray(rain);
         buf.writeByteArray(thuder);
@@ -40,20 +37,4 @@ public class BiomeWeatherMessage implements INormalMessage {
     }
 
 
-    public void process(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() ->
-        {
-            if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                var lists = WeatherManager.getBiomeList(Minecraft.getInstance().level);
-                if (lists != null) {
-                    for (WeatherManager.BiomeWeather biomeWeather : lists) {
-                        biomeWeather.rainTime = rain[biomeWeather.id] * 100000;
-                        biomeWeather.clearTime = clear[biomeWeather.id] * 100000;
-                        biomeWeather.thunderTime = thuder[biomeWeather.id] * 100000;
-                        biomeWeather.snowDepth = snowDepth[biomeWeather.id];
-                    }
-                }
-            }
-        });
-    }
 }

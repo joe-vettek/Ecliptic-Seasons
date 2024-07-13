@@ -32,18 +32,19 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SolarDataManager extends SavedData {
+public class ClientSolarDataManager extends SolarDataManager {
 
     private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
     private int solarTermsTicks = 0;
 
     private WeakReference<Level> levelWeakReference;
 
-    public SolarDataManager(Level level) {
+    public ClientSolarDataManager(Level level) {
+        super(level);
         levelWeakReference = new WeakReference<>(level);
     }
 
-    public SolarDataManager(Level level, CompoundTag nbt) {
+    public ClientSolarDataManager(Level level, CompoundTag nbt) {
         this(level);
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
@@ -77,41 +78,29 @@ public class SolarDataManager extends SavedData {
         compound.put("biomes", listTag);
         return compound;
     }
-    
-    public static SolarDataManager get(ServerLevel serverLevel) {
-        DimensionDataStorage storage = serverLevel.getDataStorage();
-        return storage.computeIfAbsent((compoundTag) -> new SolarDataManager(serverLevel, compoundTag),
-                () -> new SolarDataManager(serverLevel), Ecliptic.MODID);
-    }
 
-
-    public void updateTicks(ServerLevel world) {
-        solarTermsTicks++;
-        int dayTime = Math.toIntExact(world.getDayTime() % 24000);
-        if (solarTermsTicks > dayTime + 100) {
-            solarTermsDay++;
-            solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
-
-            BiomeClimateManager.updateTemperature(world, getSolarTermIndex());
-            sendUpdateMessage(world);
+    public static ClientSolarDataManager get(Level level) {
+        if (level instanceof ServerLevel serverLevel) {
+            return get(serverLevel);
         }
-        solarTermsTicks = dayTime;
-
-        // 强制刷新，由于服务器区块是悲观锁，所以不能强刷
-        // if (world.getRandom().nextBoolean() && world.getDayTime() % 1000 == 0) {
-        //     // player.connection.send();
-        //     var a = new ArrayList<ChunkAccess>();
-        //     for (ChunkHolder chunk : (world).getChunkSource().chunkMap.getChunks()) {
-        //         var cs = chunk.getLastAvailable();
-        //         if (cs != null)
-        //             a.add(chunk.getLastAvailable());
-        //     }
-        //
-        //     world.getChunkSource().chunkMap.resendBiomesForChunks(a);
-        // }
-
-        setDirty();
+        if (level instanceof ClientLevel clientLevel) {
+            return get(clientLevel);
+        }
+        return null;
     }
+
+
+    public static ClientSolarDataManager get(ServerLevel serverLevel) {
+        DimensionDataStorage storage = serverLevel.getDataStorage();
+        return storage.computeIfAbsent((compoundTag) -> new ClientSolarDataManager(serverLevel, compoundTag),
+                () -> new ClientSolarDataManager(serverLevel), Ecliptic.MODID);
+    }
+
+
+    public static ClientSolarDataManager get(ClientLevel clientLevel) {
+        return new ClientSolarDataManager(clientLevel);
+    }
+
 
     public int getSolarTermIndex() {
         return solarTermsDay / ServerConfig.Season.lastingDaysOfEachTerm.get();
@@ -137,38 +126,6 @@ public class SolarDataManager extends SavedData {
     public void setSolarTermsTicks(int solarTermsTicks) {
         this.solarTermsTicks = solarTermsTicks;
         setDirty();
-    }
-
-    public void sendUpdateMessage(ServerLevel world) {
-        for (ServerPlayer player : world.players()) {
-            SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(this.getSolarTermsDay()));
-            if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
-                player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
-            }
-        }
-    }
-
-
-    public void resendBiomesForChunks(ServerLevel serverLevel, ChunkMap chunkMap, List<ChunkAccess> chunkAccessList) {
-        Map<ServerPlayer, List<LevelChunk>> map = new HashMap<>();
-
-        for(ChunkAccess chunkaccess : chunkAccessList) {
-            ChunkPos chunkpos = chunkaccess.getPos();
-            LevelChunk levelchunk;
-            if (chunkaccess instanceof LevelChunk levelchunk1) {
-                levelchunk = levelchunk1;
-            } else {
-                levelchunk = serverLevel.getChunk(chunkpos.x, chunkpos.z);
-            }
-
-            for(ServerPlayer serverplayer : chunkMap.getPlayers(chunkpos, false)) {
-                map.computeIfAbsent(serverplayer, (p_274834_) -> new ArrayList<>()).add(levelchunk);
-            }
-        }
-
-        map.forEach((player, levelChunks) -> {
-            player.connection.send(ClientboundChunksBiomesPacket.forChunks(levelChunks));
-        });
     }
 
 }

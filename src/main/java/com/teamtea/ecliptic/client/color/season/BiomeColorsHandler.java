@@ -2,6 +2,7 @@ package com.teamtea.ecliptic.client.color.season;
 
 import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.api.EclipticBiomeTags;
+import com.teamtea.ecliptic.api.EclipticBiomeTagsClientTool;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.api.solar.color.SolarTermColor;
 import com.teamtea.ecliptic.client.core.ColorHelper;
@@ -43,7 +44,7 @@ public class BiomeColorsHandler {
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
 
-                int[] newGrassBuffer = newGrassBufferMap.getOrDefault(EclipticBiomeTags.getTag(biome), GrassColor.pixels);
+                int[] newGrassBuffer = newGrassBufferMap.getOrDefault(EclipticBiomeTagsClientTool.getTag(biome), GrassColor.pixels);
                 return k > newGrassBuffer.length ? -65281 : newGrassBuffer[k];
             }).orElse(originColor);
         } else return -1;
@@ -67,7 +68,7 @@ public class BiomeColorsHandler {
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
                 
-                int[] newFoliageBuffer = newFoliageBufferMap.getOrDefault(EclipticBiomeTags.getTag(biome), FoliageColor.pixels);
+                int[] newFoliageBuffer = newFoliageBufferMap.getOrDefault(EclipticBiomeTagsClientTool.getTag(biome), FoliageColor.pixels);
                 return k > newFoliageBuffer.length ? originColor : newFoliageBuffer[k];
             }).orElse(originColor);
         } else return biome.getFoliageColor();

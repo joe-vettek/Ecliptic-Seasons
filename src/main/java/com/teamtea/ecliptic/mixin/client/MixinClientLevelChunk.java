@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.mixin.common;
+package com.teamtea.ecliptic.mixin.client;
 
 
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.teamtea.ecliptic.client.core.ModelManager;
 
 @Mixin({LevelChunk.class})
-public abstract class MixinLevelChunk {
+public abstract class MixinClientLevelChunk {
     @Shadow @Final private Level level;
 
     // 目前还不能发现动态树叶的更新

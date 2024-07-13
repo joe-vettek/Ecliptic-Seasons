@@ -1,18 +1,15 @@
 package com.teamtea.ecliptic.common.network;
 
 
-import com.teamtea.ecliptic.api.INormalMessage;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import com.teamtea.ecliptic.Ecliptic;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import com.teamtea.ecliptic.Ecliptic;
 
 import java.util.List;
-import java.util.function.Function;
 
 public final class SimpleNetworkHandler {
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
@@ -24,17 +21,31 @@ public final class SimpleNetworkHandler {
 
     public static void init() {
         int id = 0;
-        registerMessage(id++, SolarTermsMessage.class, SolarTermsMessage::new);
-        registerMessage(id++, BiomeWeatherMessage.class, BiomeWeatherMessage::new);
+        // registerMessage(id++, SolarTermsMessage.class, SolarTermsMessage::new);
+        // registerMessage(id++, BiomeWeatherMessage.class, BiomeWeatherMessage::new);
+        var a = CHANNEL.messageBuilder(SolarTermsMessage.class, id++)
+                .encoder(SolarTermsMessage::toBytes)
+                .decoder(SolarTermsMessage::new);
+        if (FMLLoader.getDist() == Dist.CLIENT)
+            a.consumerNetworkThread(NetworkdUtil::processSolarTermsMessage);
+        a.add();
+        var c = CHANNEL.messageBuilder(BiomeWeatherMessage.class, id++)
+                .encoder(BiomeWeatherMessage::toBytes)
+                .decoder(BiomeWeatherMessage::new);
+        if (FMLLoader.getDist() == Dist.CLIENT)
+            c.consumerNetworkThread(NetworkdUtil::processBiomeWeatherMessage);
+        c.add();
     }
 
-    private static <T extends INormalMessage> void registerMessage(int index, Class<T> messageType, Function<FriendlyByteBuf, T> decoder) {
-        CHANNEL.registerMessage(index, messageType, INormalMessage::toBytes, decoder, (message, context) ->
-        {
-            message.process(context);
-            context.get().setPacketHandled(true);
-        });
-    }
+    // private static <T extends INormalMessage> void registerMessage(int index, Class<T> messageType, Function<FriendlyByteBuf, T> decoder) {
+    //     CHANNEL.registerMessage(index, messageType, INormalMessage::toBytes, decoder, (message, context) ->
+    //     {
+    //
+    //
+    //         message.process(context);
+    //         context.get().setPacketHandled(true);
+    //     });
+    // }
 
 
     public static <MSG> void send(ServerPlayer player, MSG msg) {
@@ -42,6 +53,6 @@ public final class SimpleNetworkHandler {
     }
 
     public static <MSG> void send(List<ServerPlayer> player, MSG msg) {
-        player.forEach(serverPlayer -> send(serverPlayer,msg));
+        player.forEach(serverPlayer -> send(serverPlayer, msg));
     }
 }

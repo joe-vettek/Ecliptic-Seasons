@@ -1,6 +1,7 @@
 package com.teamtea.ecliptic.client;
 
 import com.teamtea.ecliptic.client.color.season.BiomeColorsHandler;
+import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;

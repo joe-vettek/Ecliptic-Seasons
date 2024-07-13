@@ -75,7 +75,7 @@ public abstract class MixinClientLevelRender {
             method = "renderSnowAndRain",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getRainLevel(F)F")
     )
-    private float wantsToEnterHiveCheckRain(float original) {
+    private float on$renderSnowAndRainCheckRain(float original) {
         var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
         return anyRain?1.0f:0.0f;
     }

@@ -2,7 +2,10 @@ package com.teamtea.ecliptic.client;
 
 
 import com.teamtea.ecliptic.client.core.ModelManager;
+import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
+import com.teamtea.ecliptic.common.core.solar.ClientSolarDataManager;
+import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.teamtea.ecliptic.common.core.crop.CropInfoManager;
@@ -64,6 +67,15 @@ public final class ClientEventHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onLevelEventLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ClientLevel clientLevel) {
+            WeatherManager.createLevelBiomeWeatherList(clientLevel);
+            // 这里需要恢复一下数据
+            // 客户端登录时同步天气数据，此处先放入
+            AllListener.DATA_MANAGER_MAP.put(clientLevel, ClientSolarDataManager.get(clientLevel));
+        }
+    }
 
     // 强制区块渲染
     @SubscribeEvent

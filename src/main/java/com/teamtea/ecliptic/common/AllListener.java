@@ -11,15 +11,9 @@ import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientChunkCache;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
@@ -83,11 +77,11 @@ public class AllListener {
 
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof Level level) {
-            WeatherManager.createLevelBiomeWeatherList(level);
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            WeatherManager.createLevelBiomeWeatherList(serverLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            DATA_MANAGER_MAP.put(level, SolarDataManager.get(level));
+            DATA_MANAGER_MAP.put(serverLevel, SolarDataManager.get(serverLevel));
         }
     }
 
@@ -134,7 +128,7 @@ public class AllListener {
             if (ServerConfig.Season.enable.get()) {
                 getSaveDataLazy(event.getEntity().level()).ifPresent(t ->
                 {
-                    SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new SolarTermsMessage(t));
+                    SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new SolarTermsMessage(t.getSolarTermsDay()));
                     if (t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                         ((ServerPlayer) event.getEntity()).sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
                     }

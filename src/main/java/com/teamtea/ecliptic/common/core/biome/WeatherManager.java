@@ -107,10 +107,13 @@ public class WeatherManager {
         return null;
     }
 
-    public static Biome.Precipitation getPrecipitationAt(Biome biome, BlockPos p198905) {
+    public static Biome.Precipitation getPrecipitationAt(Biome biome, BlockPos pos) {
+        return getPrecipitationAt(null,biome,pos);
+    }
+    public static Biome.Precipitation getPrecipitationAt(Level levelNull,Biome biome, BlockPos p198905) {
 
-        var level = getMainServerWorld();
-        var provider = SolarUtil.getProvider(level != null ? level : Minecraft.getInstance().level);
+        var level = levelNull != null ? levelNull :  getMainServerWorld();
+        var provider = SolarUtil.getProvider(level);
 
         if (provider != null) {
             var solarTerm = provider.getSolarTerm();
