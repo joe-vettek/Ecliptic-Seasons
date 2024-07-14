@@ -114,13 +114,13 @@ public class WeatherManager {
 
         var level = levelNull != null ? levelNull :  getMainServerWorld();
         var provider = SolarUtil.getProvider(level);
-
-        if (provider != null) {
+        var weathers=getBiomeList(level);
+        if (provider != null && weathers!=null) {
             var solarTerm = provider.getSolarTerm();
             var snowTerm = SolarTerm.getSnowTerm(biome);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             var biomes = level.registryAccess().registry(Registries.BIOME).get();
-            for (BiomeWeather biomeWeather : getBiomeList(level)) {
+            for (BiomeWeather biomeWeather : weathers) {
                 if (biomeWeather.location.equals(biomes.getKey(biome))) {
                     if (biomeWeather.shouldClear())
                         return Biome.Precipitation.NONE;
