@@ -7,6 +7,7 @@ import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.core.solar.ClientSolarDataManager;
 import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.common.handler.CustomRandomTickHandler;
+import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.teamtea.ecliptic.common.core.crop.CropInfoManager;
 import com.teamtea.ecliptic.api.crop.CropSeasonInfo;
@@ -80,24 +81,26 @@ public final class ClientEventHandler {
     // 强制区块渲染
     @SubscribeEvent
     public static void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase.equals(TickEvent.Phase.END)
-                && event.level.isClientSide()
-                && ((ClientLevel) event.level).getGameTime() >> 8 == 0) {
-            var lr = Minecraft.getInstance().levelRenderer;
-            if (lr != null) {
-                //
-                // ((ClientChunkCache) event.level.getChunkSource()).storage.
-                if (Minecraft.getInstance().cameraEntity instanceof Player player) {
-                    BlockPos pos = player.getOnPos();
-                    SectionPos sectionPos = SectionPos.of(pos);
-                    // lr.setSectionDirtyWithNeighbors(sectionPos.x(),sectionPos.y(),sectionPos.z());
-                    int x = sectionPos.x();
-                    int y = sectionPos.y();
-                    int z = sectionPos.z();
-                    for (int i = x - 2; i <= x + 2; ++i) {
-                        for (int j = z - 2; j <= z + 2; ++j) {
-                            for (int k = y - 1; k <= y + 1; ++k) {
-                                lr.setSectionDirty(j, k, i);
+        if(ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
+            if (event.phase.equals(TickEvent.Phase.END)
+                    && event.level.isClientSide()
+                    && ((ClientLevel) event.level).getGameTime() >> 8 == 0) {
+                var lr = Minecraft.getInstance().levelRenderer;
+                if (lr != null) {
+                    //
+                    // ((ClientChunkCache) event.level.getChunkSource()).storage.
+                    if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+                        BlockPos pos = player.getOnPos();
+                        SectionPos sectionPos = SectionPos.of(pos);
+                        // lr.setSectionDirtyWithNeighbors(sectionPos.x(),sectionPos.y(),sectionPos.z());
+                        int x = sectionPos.x();
+                        int y = sectionPos.y();
+                        int z = sectionPos.z();
+                        for (int i = x - 2; i <= x + 2; ++i) {
+                            for (int j = z - 2; j <= z + 2; ++j) {
+                                for (int k = y - 1; k <= y + 1; ++k) {
+                                    lr.setSectionDirty(j, k, i);
+                                }
                             }
                         }
                     }

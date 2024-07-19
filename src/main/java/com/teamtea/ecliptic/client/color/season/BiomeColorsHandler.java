@@ -28,6 +28,7 @@ public class BiomeColorsHandler {
 
     public static final ColorResolver GRASS_COLOR = (biome, posX, posZ) ->
     {
+        // if(true)return 9680335;
         var clientLevel = Minecraft.getInstance().level;
         if (clientLevel != null) {
             int originColor = biome.getGrassColor(posX, posZ);

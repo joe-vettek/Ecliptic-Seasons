@@ -11,25 +11,20 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LeavesBlock;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.loading.FMLLoader;
 import com.teamtea.ecliptic.Ecliptic;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelManager {
     public static Map<ResourceLocation, BakedModel> models;
@@ -45,6 +40,22 @@ public class ModelManager {
     public static
     LazyOptional<BakedModel> snowModel =
             LazyOptional.of(() -> models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
+
+    public static ResourceLocation snowy_fern = Ecliptic.rl("block/snowy_fern");
+    public static ResourceLocation snowy_grass = Ecliptic.rl("block/snowy_grass");
+    public static ResourceLocation snowy_large_fern_bottom = Ecliptic.rl("block/snowy_large_fern_bottom");
+    public static ResourceLocation snowy_large_fern_top = Ecliptic.rl("block/snowy_large_fern_top");
+    public static ResourceLocation snowy_tall_grass_bottom = Ecliptic.rl("block/snowy_tall_grass_bottom");
+    public static ResourceLocation snowy_tall_grass_top = Ecliptic.rl("block/snowy_tall_grass_top");
+
+
+    public static ResourceLocation mrl(String s) {
+        return mrl(s, "");
+    }
+
+    public static ResourceLocation mrl(String s, String s2) {
+        return new ModelResourceLocation(Ecliptic.rl(s), s2);
+    }
 
     public static final int ChunkSize = 16 * 32;
     public static final int ChunkSizeLoc = ChunkSize - 1;
@@ -158,6 +169,11 @@ public class ModelManager {
     public static final int FLAG_SLAB = 2;
     public static final int FLAG_STAIRS = 3;
     public static final int FLAG_LEAVES = 4;
+    public static final int FLAG_GRASS = 5;
+    public static final int FLAG_GRASS_LARGE = 501;
+    public static final List<Block> GRASS = List.of(Blocks.GRASS, Blocks.FERN);
+    public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
+
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, long seed, List<BakedQuad> list) {
@@ -172,47 +188,53 @@ public class ModelManager {
         if (direction != Direction.DOWN
                 && !list.isEmpty()) {
 
+            var onBlock = state.getBlock();
             int flag = 0;
-            if (state.getBlock() instanceof LeavesBlock) {
+            if (onBlock instanceof LeavesBlock) {
                 flag = FLAG_LEAVES;
             } else if ((state.isSolidRender(blockAndTintGetter, pos)
                     // state.isSolid()
-                    || state.getBlock() instanceof LeavesBlock
-                    || (state.getBlock() instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
-                    || (state.getBlock() instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
+                    || onBlock instanceof LeavesBlock
+                    || (onBlock instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
+                    || (onBlock instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
                 flag = FLAG_BLOCK;
-            } else if (state.getBlock() instanceof SlabBlock) {
+            } else if (onBlock instanceof SlabBlock) {
                 flag = FLAG_SLAB;
-            } else if (state.getBlock() instanceof StairBlock) {
+            } else if (onBlock instanceof StairBlock) {
                 flag = FLAG_STAIRS;
+            } else if (GRASS.contains(onBlock)) {
+                flag = FLAG_GRASS;
+            } else if (LARGE_GRASS.contains(onBlock)) {
+                flag = FLAG_GRASS_LARGE;
             } else return list;
 
-            boolean isLight = getHeightOrUpdate(pos, false) == pos.getY();
+            var onPos = getHeightOrUpdate(pos, false);
+            boolean isLight = false;
+            int offset = 0;
+            if (flag == FLAG_GRASS || flag == FLAG_GRASS_LARGE) {
+                if (flag == FLAG_GRASS) {
+                    isLight = onPos == pos.getY() - 1;
+                    offset = 1;
+                }
+                // 这里不忽略这个警告，因为后续会有优化
+                else if (flag == FLAG_GRASS_LARGE) {
+                    if (state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+                        isLight = onPos == pos.getY() - 1;
+                        offset = 1;
+                    } else {
+                        isLight = onPos == pos.getY() - 2;
+                        offset = 2;
+                    }
+                }
+            } else isLight = onPos == pos.getY();
 
-            // isLight = (getHeightOrUpdate(pos, false) == pos.getY());
-            // long time = System.currentTimeMillis();
-            // var cpos = new ChunkPos(-1,0);
-            // for (int i = 0; i < 100000 * 100; i++) {
-            //     getHeightOrUpdate(pos, false) ;
-            // // ChunkMap.get(cpos);
-            // //     cpos.hashCode();
-            // }
-            // Ecliptic.logger(System.currentTimeMillis() - time);
+            // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
+
             if (isLight
-                    && state.getBlock() != Blocks.SNOW_BLOCK
+                    && onBlock != Blocks.SNOW_BLOCK
                     && shouldSnowAt(blockAndTintGetter, pos, state, random, seed)) {
                 // DynamicLeavesBlock
                 var cc = quadMap.getOrDefault(list, null);
-                // long time = System.currentTimeMillis();
-                // for (int i = 0; i < 100000 * 100; i++) {
-                //      // cc = quadMap.getOrDefault(list, null);
-                //      //              getQuad(list, null);
-                //     Minecraft.getInstance().level.getBiome(pos).is(Tags.Biomes.IS_DESERT);
-                // }
-                // var t1 = System.currentTimeMillis() - time;
-                // Ecliptic.logger(t1,state);
-                // var cc = getQuad(list, null);
-
                 if (cc != null) {
                     return cc;
                 } else {
@@ -231,13 +253,28 @@ public class ModelManager {
                                 .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
                         // 楼梯的方向是无
                         snowModel = models.get(BlockModelShaper.stateToModelLocation(snowState));
+                    } else if (flag == FLAG_GRASS) {
+                        if (onBlock == Blocks.GRASS) {
+                            snowModel = models.get(snowy_grass);
+                        } else if (onBlock == Blocks.FERN) {
+                            snowModel = models.get(snowy_fern);
+                        } else snowModel = models.get(snowy_grass);
+                    } else if (flag == FLAG_GRASS_LARGE) {
+                        if (onBlock == Blocks.TALL_GRASS) {
+                            snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
+                        } else if (onBlock == Blocks.LARGE_FERN) {
+                            snowModel = models.get(offset == 1 ? snowy_large_fern_bottom : snowy_large_fern_top);
+                        } else snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
                     }
 
                     if (snowModel != null) {
                         int size = list.size();
                         var snowList = snowModel.getQuads(snowState, direction, null);
                         ArrayList<BakedQuad> newList;
-                        if (direction == Direction.UP) {
+
+                        if (flag == FLAG_GRASS) {
+                            newList = new ArrayList<>(snowList);
+                        } else if (direction == Direction.UP) {
                             newList = new ArrayList<>(snowList);
                         } else {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());

@@ -1,7 +1,6 @@
 package com.teamtea.ecliptic.client;
 
 import com.teamtea.ecliptic.client.color.season.BiomeColorsHandler;
-import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -9,7 +8,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
@@ -29,8 +27,16 @@ public class ClientSetup {
         return layerToCheck == RenderType.cutoutMipped() || layerToCheck == RenderType.translucent();
     }
 
+
     @SubscribeEvent
     public static void registerExtraModels(ModelEvent.RegisterAdditional event) {
+        event.register(ModelManager.snowy_fern);
+        event.register(ModelManager.snowy_grass);
+        event.register(ModelManager.snowy_tall_grass_top);
+        event.register(ModelManager.snowy_tall_grass_bottom);
+        event.register(ModelManager.snowy_large_fern_top);
+        // 注意这里使用地址和model地址效果不同，后者需要写blockstate
+        event.register(ModelManager.snowy_large_fern_bottom);
     }
 
     @SubscribeEvent
