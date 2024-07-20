@@ -11,7 +11,7 @@ public class SolarUtil {
 
 
     public static SolarDataManager getProvider(Level level) {
-        return level == null ? null : AllListener.getSaveDataLazy(level).resolve().orElse(null);
+        return AllListener.getSaveData(level);
     }
 
     public static Season getSeason(Level level) {

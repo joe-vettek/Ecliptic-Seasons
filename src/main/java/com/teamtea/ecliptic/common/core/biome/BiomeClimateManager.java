@@ -1,5 +1,6 @@
 package com.teamtea.ecliptic.common.core.biome;
 
+import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.EclipticBiomeTags;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import net.minecraft.core.RegistryAccess;
@@ -17,7 +18,9 @@ public class BiomeClimateManager {
         BIOME_DEFAULT_TEMPERATURE_MAP.clear();
         var biomes = registryAccess.registry(Registries.BIOME);
         biomes.ifPresent(biomeRegistry -> biomeRegistry.forEach(biome ->
-                BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.getModifiedClimateSettings().temperature())));
+        {
+            BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.getModifiedClimateSettings().temperature());
+        }));
     }
 
     public static float getDefaultTemperature(Biome biome) {

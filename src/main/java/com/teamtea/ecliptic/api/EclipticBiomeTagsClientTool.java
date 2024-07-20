@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class EclipticBiomeTagsClientTool {
 
+
     public static TagKey<Biome> getTag(Biome biome) {
         Level level = WeatherManager.getMainServerWorld();
         level = level != null ? level : Minecraft.getInstance().level;

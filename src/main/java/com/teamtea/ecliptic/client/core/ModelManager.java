@@ -232,7 +232,7 @@ public class ModelManager {
 
             if (isLight
                     && onBlock != Blocks.SNOW_BLOCK
-                    && shouldSnowAt(blockAndTintGetter, pos, state, random, seed)) {
+                    && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
                 // DynamicLeavesBlock
                 var cc = quadMap.getOrDefault(list, null);
                 if (cc != null) {

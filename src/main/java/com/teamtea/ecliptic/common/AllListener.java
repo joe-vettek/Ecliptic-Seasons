@@ -24,6 +24,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -40,7 +41,7 @@ public class AllListener {
 
 
     public static SolarDataManager getSaveData(Level level) {
-        return DATA_MANAGER_MAP.get(level);
+        return DATA_MANAGER_MAP.getOrDefault(level,null);
     }
 
     public static LazyOptional<SolarDataManager> getSaveDataLazy(Level level) {
@@ -48,6 +49,7 @@ public class AllListener {
     }
 
 
+    // TagsUpdatedEvent invoke before ServerAboutToStartEvent
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
         BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
@@ -56,23 +58,31 @@ public class AllListener {
 
 
     @SubscribeEvent
-    public static void onSleepFinishedTimeEvent(SleepFinishedTimeEvent event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
-            // TODO: 根据季节更新概率
-            if (!serverLevel.isRaining() && serverLevel.getRandom().nextFloat() > 0.8) {
-                serverLevel.setWeatherParameters(0,
-                        ServerLevel.RAIN_DURATION.sample(serverLevel.getRandom()),
-                        true, false);
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onServerAboutToStartEvent(ServerAboutToStartEvent event) {
         WeatherManager.BIOME_WEATHER_LIST.clear();
         WeatherManager.NEXT_CHECK_BIOME_MAP.clear();
-        BiomeClimateManager.BIOME_DEFAULT_TEMPERATURE_MAP.clear();
     }
+
+
+    // @SubscribeEvent
+    // public static void onServerStartedEvent(ServerStartedEvent event) {
+    //     BiomeClimateManager.resetBiomeTemps(event.getServer().registryAccess());
+    //     WeatherManager.informUpdateBiomes(event.getServer().registryAccess());
+    // }
+
+    @SubscribeEvent
+    public static void onSleepFinishedTimeEvent(SleepFinishedTimeEvent event) {
+        // if (event.getLevel() instanceof ServerLevel serverLevel) {
+        //     // TODO: 根据季节更新概率
+        //     if (!serverLevel.isRaining() && serverLevel.getRandom().nextFloat() > 0.8) {
+        //         serverLevel.setWeatherParameters(0,
+        //                 ServerLevel.RAIN_DURATION.sample(serverLevel.getRandom()),
+        //                 true, false);
+        //     }
+        // }
+    }
+
+
 
 
     @SubscribeEvent
