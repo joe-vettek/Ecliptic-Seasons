@@ -1,6 +1,5 @@
 package com.teamtea.ecliptic.api;
 
-import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -9,14 +8,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
-import java.util.List;
 import java.util.Map;
 
 public class EclipticBiomeTagsClientTool {
 
 
     public static TagKey<Biome> getTag(Biome biome) {
-        Level level = WeatherManager.getMainServerWorld();
+        Level level = WeatherManager.getMainServerLevel();
         level = level != null ? level : Minecraft.getInstance().level;
         if (level != null) {
             var biomes = level.registryAccess().registry(Registries.BIOME);

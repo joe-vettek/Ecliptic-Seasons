@@ -1,6 +1,5 @@
 package com.teamtea.ecliptic.common.core.biome;
 
-import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.climate.BiomeRain;
 import com.teamtea.ecliptic.api.climate.SnowTerm;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
@@ -8,7 +7,6 @@ import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -22,7 +20,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -98,7 +95,7 @@ public class WeatherManager {
         return 0;
     }
 
-    public static ServerLevel getMainServerWorld() {
+    public static ServerLevel getMainServerLevel() {
         for (Level level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
             if (level.dimension() == Level.OVERWORLD && level instanceof ServerLevel serverLevel) {
                 return serverLevel;
@@ -112,7 +109,7 @@ public class WeatherManager {
     }
     public static Biome.Precipitation getPrecipitationAt(Level levelNull,Biome biome, BlockPos p198905) {
 
-        var level = levelNull != null ? levelNull :  getMainServerWorld();
+        var level = levelNull != null ? levelNull :  getMainServerLevel();
         var provider = SolarUtil.getProvider(level);
         var weathers=getBiomeList(level);
         if (provider != null && weathers!=null) {

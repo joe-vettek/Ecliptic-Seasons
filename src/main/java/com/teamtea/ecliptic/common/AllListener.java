@@ -50,6 +50,8 @@ public class AllListener {
 
 
     // TagsUpdatedEvent invoke before ServerAboutToStartEvent
+    // TODO：优化这个问题，理论上来说，更新数据的时候不能发送群系包，话说回来，既然是群系天气，实际上与level关系不大，不应该一个level一个
+    // 但是这也说不准啊，谁知道谁无聊就搞这个呢
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
         BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
