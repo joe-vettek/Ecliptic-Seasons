@@ -299,7 +299,7 @@ public class WeatherManager {
             //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
             //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
             //     //
-            //     // Ecliptic.logger(biomeWeather,weight);
+            //     // Ecliptic.logger(biomeWeather,weight) ;
             // }
 
 
