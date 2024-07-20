@@ -9,8 +9,8 @@ public enum FlatRain implements BiomeRain {
     RAINLESS(),
     ARID(0.01F),
     DROUGHTY(0.1F, 0.001f),
-    SOFT(0.4F, 0.005f),
-    RAINY(1.0F, 0.01f),
+    SOFT(0.3F, 0.005f),
+    RAINY(0.9F, 0.01f),
     NONE();
 
     private final float rainChane;

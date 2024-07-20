@@ -1,5 +1,6 @@
 package com.teamtea.ecliptic.common.core.biome;
 
+import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.climate.BiomeRain;
 import com.teamtea.ecliptic.api.climate.SnowTerm;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
@@ -20,6 +21,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -293,9 +295,12 @@ public class WeatherManager {
                     }
                 }
             }
-            // if (biomeWeather.biomeHolder.is(Biomes.PLAINS)) {
-            //     // Ecliptic.logger(biomeWeather);
-            // }
+            if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
+                // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+                // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
+                //
+                // Ecliptic.logger(biomeWeather,weight);
+            }
 
 
             if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 1) {
