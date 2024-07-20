@@ -35,12 +35,15 @@ public class ClientConfig
     public static class Renderer
     {
         public static ForgeConfigSpec.BooleanValue forceChunkRenderUpdate;
+        public static ForgeConfigSpec.BooleanValue snowyWinter;
 
         private static void load(ForgeConfigSpec.Builder builder)
         {
             builder.push("Renderer");
             forceChunkRenderUpdate = builder.comment("Force to update chunk rendering.")
                     .define("ForceChunkRenderUpdate", false);
+            snowyWinter = builder.comment("If snow falls during cold weather, it will gradually cover all solid blocks and grass.")
+                    .define("snowyWinter", true);
             builder.pop();
         }
     }

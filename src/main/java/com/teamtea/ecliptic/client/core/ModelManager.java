@@ -1,6 +1,7 @@
 package com.teamtea.ecliptic.client.core;
 
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
+import com.teamtea.ecliptic.config.ClientConfig;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -185,7 +186,8 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if (direction != Direction.DOWN
+        if (ClientConfig.Renderer.snowyWinter.get()
+                && direction != Direction.DOWN
                 && !list.isEmpty()) {
 
             var onBlock = state.getBlock();
