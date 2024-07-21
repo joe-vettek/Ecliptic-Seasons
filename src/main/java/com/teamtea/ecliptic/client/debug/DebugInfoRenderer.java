@@ -6,12 +6,13 @@ import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.levelgen.WorldDimensions;
 import org.lwjgl.opengl.GL11;
 
 public final class DebugInfoRenderer {
@@ -22,7 +23,7 @@ public final class DebugInfoRenderer {
         this.mc = mc;
     }
 
-    public void renderStatusBar(GuiGraphics matrixStack, int screenWidth, int screenHeight, int solar, long dayTime, double env, int solarTime) {
+    public void renderStatusBar(GuiGraphics matrixStack, int screenWidth, int screenHeight,ClientLevel clientLevel, LocalPlayer player, SolarTerm solar, long dayTime, double env, int solarTime) {
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // RenderSystem.enableAlphaTest();
@@ -43,7 +44,7 @@ public final class DebugInfoRenderer {
 
         for (Level level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
             if (level.dimension() == Level.OVERWORLD && level instanceof ServerLevel) {
-                if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+                {
                     var standBiome = level.getBiome(player.getOnPos());
                     for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
                         if (((Holder.Reference<Biome>) biomeWeather.biomeHolder).key().location().equals(((Holder.Reference<Biome>) standBiome).key().location())) {
@@ -85,4 +86,5 @@ public final class DebugInfoRenderer {
     private void drawInfo(GuiGraphics matrixStack, int screenWidth, int screenHeight, String s, int index) {
         matrixStack.drawString(mc.font, s, screenWidth / 2 - mc.font.width(s) / 2, index * 9 + 3, 0xFFFFFF);
     }
+
 }

@@ -27,7 +27,8 @@ public final class OverlayEventHandler {
 
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
-        if (clientPlayer != null) {
+        var level=Minecraft.getInstance().level;
+        if (clientPlayer != null &&level!=null) {
             // if (event.getType() == RenderGameOverlayEvent.ElementType.ALL)
             // if(event.getOverlay().id().getPath().equals("all"))
             {
@@ -35,14 +36,14 @@ public final class OverlayEventHandler {
                         || !FMLEnvironment.production
                 )
                 {
-                    int solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new SolarDataManager(clientPlayer.level())).getSolarTermsDay();
+                    var solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new SolarDataManager(clientPlayer.level())).getSolarTerm();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);
                     double env = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level().getDayTime(), clientPlayer.level());
 
-                    BAR_4.renderStatusBar(event.getGuiGraphics(), event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(), solar, dayTime, env, solarTime);
+                    BAR_4.renderStatusBar(event.getGuiGraphics(), event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),level,clientPlayer, solar, dayTime, env, solarTime);
                 }
             }
         }
