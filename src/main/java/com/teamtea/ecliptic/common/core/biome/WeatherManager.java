@@ -1,6 +1,5 @@
 package com.teamtea.ecliptic.common.core.biome;
 
-import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.climate.BiomeRain;
 import com.teamtea.ecliptic.api.climate.SnowTerm;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
@@ -21,7 +20,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -40,9 +38,10 @@ public class WeatherManager {
     }
 
 
-    public static Float getRainLevel(float p46723, ServerLevel serverLevel) {
-        if (getBiomeList(serverLevel) != null)
-            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+    public static Float getMaximumRainLevel(Level level, float p46723) {
+        var ws = getBiomeList(level);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
                 if (biomeWeather.shouldRain()) {
                     return 1.0f;
                 }
@@ -50,9 +49,10 @@ public class WeatherManager {
         return 0.0f;
     }
 
-    public static Boolean isRaining(ServerLevel serverLevel) {
-        if (getBiomeList(serverLevel) != null)
-            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+    public static Boolean isRainingAnywhere(ServerLevel serverLevel) {
+        var ws = getBiomeList(serverLevel);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
                 if (biomeWeather.shouldRain()) {
                     return true;
                 }
@@ -60,25 +60,26 @@ public class WeatherManager {
         return false;
     }
 
-    public static Boolean isRainingAt(BlockPos pos, ServerLevel serverLevel) {
+    public static Boolean isRainingAt(ServerLevel serverLevel, BlockPos pos) {
         if (!serverLevel.canSeeSky(pos)) {
             return false;
         } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
             return false;
         }
         var biome = serverLevel.getBiome(pos);
-        if (getBiomeList(serverLevel) != null)
-            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
-                if (biome == biomeWeather.biomeHolder) {
-                    return biomeWeather.shouldRain();
-                }
-            }
-        return false;
+        // if (getBiomeList(serverLevel) != null)
+        //     for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+        //         if (biome == biomeWeather.biomeHolder) {
+        //             return biomeWeather.shouldRain();
+        //         }
+        //     }
+        return isRainingAtBiome(serverLevel, biome.get());
     }
 
     public static Boolean isRainingAtBiome(ServerLevel serverLevel, Biome biome) {
-        if (getBiomeList(serverLevel) != null)
-            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+        var ws = getBiomeList(serverLevel);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
                 if (biome == biomeWeather.biomeHolder.get()) {
                     return biomeWeather.shouldRain();
                 }
@@ -88,8 +89,9 @@ public class WeatherManager {
 
 
     public static int getSnowDepthAtBiome(Level serverLevel, Biome biome) {
-        if (getBiomeList(serverLevel) != null)
-            for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
+        var ws = getBiomeList(serverLevel);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
                 if (biome == biomeWeather.biomeHolder.get()) {
                     return biomeWeather.snowDepth;
                 }
@@ -107,14 +109,15 @@ public class WeatherManager {
     }
 
     public static Biome.Precipitation getPrecipitationAt(Biome biome, BlockPos pos) {
-        return getPrecipitationAt(null,biome,pos);
+        return getPrecipitationAt(null, biome, pos);
     }
-    public static Biome.Precipitation getPrecipitationAt(Level levelNull,Biome biome, BlockPos p198905) {
 
-        var level = levelNull != null ? levelNull :  getMainServerLevel();
+    public static Biome.Precipitation getPrecipitationAt(Level levelNull, Biome biome, BlockPos p198905) {
+
+        var level = levelNull != null ? levelNull : getMainServerLevel();
         var provider = SolarUtil.getProvider(level);
-        var weathers=getBiomeList(level);
-        if (provider != null && weathers!=null) {
+        var weathers = getBiomeList(level);
+        if (provider != null && weathers != null) {
             var solarTerm = provider.getSolarTerm();
             var snowTerm = SolarTerm.getSnowTerm(biome);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
@@ -195,7 +198,7 @@ public class WeatherManager {
     }
 
     public static boolean wantsToEnterHiveCheckRain(Bee bee) {
-        return isRainingAt(bee.getOnPos().above(), (ServerLevel) bee.level());
+        return isRainingAt((ServerLevel) bee.level(), bee.getOnPos().above());
         // return bee.level().isRainingAt(bee.getOnPos().above());
     }
 

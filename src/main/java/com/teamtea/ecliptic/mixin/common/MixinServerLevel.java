@@ -69,6 +69,6 @@ public abstract class MixinServerLevel extends Level {
         int i = chunkpos.getMiddleBlockX();
         int j = chunkpos.getMiddleBlockZ();
         BlockPos blockpos1 =((ServerLevel)(Object)this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
-        return WeatherManager.isRainingAt(blockpos1,(ServerLevel)(Object)this);
+        return WeatherManager.isRainingAt((ServerLevel)(Object)this, blockpos1);
     }
 }
