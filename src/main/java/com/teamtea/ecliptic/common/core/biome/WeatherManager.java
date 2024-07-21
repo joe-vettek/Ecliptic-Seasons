@@ -195,7 +195,8 @@ public class WeatherManager {
     }
 
     public static boolean wantsToEnterHiveCheckRain(Bee bee) {
-        return bee.level().isRainingAt(bee.getOnPos().above());
+        return isRainingAt(bee.getOnPos().above(), (ServerLevel) bee.level());
+        // return bee.level().isRainingAt(bee.getOnPos().above());
     }
 
 

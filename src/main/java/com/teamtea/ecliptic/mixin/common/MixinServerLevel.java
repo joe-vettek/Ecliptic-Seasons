@@ -15,7 +15,9 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
 import org.spongepowered.asm.mixin.Final;
@@ -56,4 +58,17 @@ public abstract class MixinServerLevel extends Level {
         return WeatherManager.getPrecipitationAt((ServerLevel)(Object)this,biome,pos);
     }
 
+
+
+    @WrapOperation(
+            method = "tickChunk",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
+    )
+    private boolean mixin$tickChunk_isRaining(ServerLevel serverLevel,Operation<Boolean> original,@Local(ordinal = 0) LevelChunk levelChunk) {
+        var chunkpos=levelChunk.getPos();
+        int i = chunkpos.getMiddleBlockX();
+        int j = chunkpos.getMiddleBlockZ();
+        BlockPos blockpos1 =((ServerLevel)(Object)this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
+        return WeatherManager.isRainingAt(blockpos1,(ServerLevel)(Object)this);
+    }
 }
