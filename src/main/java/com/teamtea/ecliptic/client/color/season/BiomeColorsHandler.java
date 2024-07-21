@@ -1,6 +1,5 @@
 package com.teamtea.ecliptic.client.color.season;
 
-import com.teamtea.ecliptic.api.CapabilitySolarTermTime;
 import com.teamtea.ecliptic.api.EclipticBiomeTags;
 import com.teamtea.ecliptic.api.EclipticBiomeTagsClientTool;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
