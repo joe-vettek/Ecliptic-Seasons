@@ -17,6 +17,7 @@ public class MixinBee_BeePollinateGoal {
 
     // @Shadow @Final private Bee this$0;
 
+
     @Shadow @Final private Bee this$0;
 
     @WrapOperation(

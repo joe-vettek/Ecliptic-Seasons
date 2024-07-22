@@ -48,7 +48,8 @@ public class ModelManager {
     public static ResourceLocation snowy_large_fern_top = Ecliptic.rl("block/snowy_large_fern_top");
     public static ResourceLocation snowy_tall_grass_bottom = Ecliptic.rl("block/snowy_tall_grass_bottom");
     public static ResourceLocation snowy_tall_grass_top = Ecliptic.rl("block/snowy_tall_grass_top");
-
+    public static ResourceLocation snowy_dandelion = Ecliptic.rl("block/snowy_dandelion");
+    public static ResourceLocation overlay_2 = Ecliptic.rl("block/overlay_2");
 
     public static ResourceLocation mrl(String s) {
         return mrl(s, "");
@@ -172,8 +173,9 @@ public class ModelManager {
     public static final int FLAG_LEAVES = 4;
     public static final int FLAG_GRASS = 5;
     public static final int FLAG_GRASS_LARGE = 501;
-    public static final List<Block> GRASS = List.of(Blocks.GRASS, Blocks.FERN);
+    public static final List<Block> LowerPlant = List.of(Blocks.GRASS, Blocks.FERN,Blocks.DANDELION);
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
+
 
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
@@ -204,7 +206,7 @@ public class ModelManager {
                 flag = FLAG_SLAB;
             } else if (onBlock instanceof StairBlock) {
                 flag = FLAG_STAIRS;
-            } else if (GRASS.contains(onBlock)) {
+            } else if (LowerPlant.contains(onBlock)) {
                 flag = FLAG_GRASS;
             } else if (LARGE_GRASS.contains(onBlock)) {
                 flag = FLAG_GRASS_LARGE;
@@ -244,6 +246,7 @@ public class ModelManager {
                     BlockState snowState = null;
                     if (snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
                         snowModel = snowOverlayBlock.resolve().get();
+                        // snowModel = models.get(overlay_2);
                     } else if (snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
                         snowModel = snowOverlayLeaves.resolve().get();
                     } else if (snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
@@ -260,6 +263,8 @@ public class ModelManager {
                             snowModel = models.get(snowy_grass);
                         } else if (onBlock == Blocks.FERN) {
                             snowModel = models.get(snowy_fern);
+                        } else if (onBlock == Blocks.DANDELION) {
+                            snowModel = models.get(snowy_dandelion);
                         } else snowModel = models.get(snowy_grass);
                     } else if (flag == FLAG_GRASS_LARGE) {
                         if (onBlock == Blocks.TALL_GRASS) {

@@ -23,4 +23,9 @@ public interface MixinLevelTimeAccess extends LevelTimeAccess{
         // TeaStory.logger(p_46943_,dayTime());
         return SolarAngelHelper.getSeasonCelestialAngle(dayTime(),(LevelTimeAccess)(Object)this);
     }
+
+    @Override
+    default int getMoonPhase() {
+        return this.dimensionType().moonPhase(this.dayTime());
+    }
 }
