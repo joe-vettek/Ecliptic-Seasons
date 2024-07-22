@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -101,8 +102,14 @@ public class ClientSetup {
         // BlockState birchLeaves = Blocks.BIRCH_LEAVES.defaultBlockState();
         // BlockColors blockColors = event.getBlockColors();
 
-        // event.register(new GrassBlockColor(),Blocks.GRASS);
-        // event.register(new BirchLeavesColor(), Blocks.BIRCH_LEAVES);
+
+        event.register((p_276241_, p_276242_, p_276243_, p_276244_) -> {
+            if (p_276244_ != 0) {
+                return p_276242_ != null && p_276243_ != null ? BiomeColors.getAverageGrassColor(p_276242_, p_276243_) : GrassColor.getDefaultColor();
+            } else {
+                return -1;
+            }
+        }, Blocks.DANDELION);
     }
 
     @SubscribeEvent

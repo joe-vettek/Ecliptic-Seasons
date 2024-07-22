@@ -1,7 +1,10 @@
 package com.teamtea.ecliptic.client.core;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.config.ClientConfig;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
@@ -63,6 +66,19 @@ public class ModelManager {
     public static final int ChunkSizeLoc = ChunkSize - 1;
     public static final int ChunkSizeAxis = 4 * 5;
 
+    public static Boolean shouldisFaceVisible(BlockRenderer blockRenderer, BlockRenderContext ctx, Direction face, Operation<Boolean> original) {
+        if (face != null
+                && face != Direction.DOWN
+                && getHeightOrUpdate(ctx.pos(), false) == ctx.pos().getY()
+        ) {
+            var bl = ctx.world().getBlockState(ctx.pos().above()).getBlock();
+            if (bl instanceof FlowerBlock || bl instanceof PinkPetalsBlock || bl instanceof DoublePlantBlock)
+                return true;
+        }
+
+        return original.call(blockRenderer, ctx, face);
+    }
+
     public static class ChunkHeightMap {
         private final int[][] matrix = new int[ChunkSize][ChunkSize];
         private final Object[][] lockArray = new Object[ChunkSize][ChunkSize];
@@ -120,7 +136,8 @@ public class ModelManager {
 
     // TODO:内存更新，双链表+Hash，用LRU
     public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024, 0.5f);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new HashMap<>(1024, 0.5f);
 
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
@@ -173,9 +190,8 @@ public class ModelManager {
     public static final int FLAG_LEAVES = 4;
     public static final int FLAG_GRASS = 5;
     public static final int FLAG_GRASS_LARGE = 501;
-    public static final List<Block> LowerPlant = List.of(Blocks.GRASS, Blocks.FERN,Blocks.DANDELION);
+    public static final List<Block> LowerPlant = List.of(Blocks.GRASS, Blocks.FERN, Blocks.DANDELION);
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
-
 
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
@@ -211,7 +227,6 @@ public class ModelManager {
             } else if (LARGE_GRASS.contains(onBlock)) {
                 flag = FLAG_GRASS_LARGE;
             } else return list;
-
             var onPos = getHeightOrUpdate(pos, false);
             boolean isLight = false;
             int offset = 0;
@@ -238,14 +253,21 @@ public class ModelManager {
                     && onBlock != Blocks.SNOW_BLOCK
                     && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
                 // DynamicLeavesBlock
-                var cc = quadMap.getOrDefault(list, null);
+                boolean isFlowerAbove = false;
+                if ((flag == FLAG_BLOCK)) {
+                    var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
+                    isFlowerAbove = bl instanceof FlowerBlock || bl instanceof PinkPetalsBlock || bl instanceof DoublePlantBlock;
+                }
+                // isFlowerAbove=false;
+                var useMap = isFlowerAbove ? quadMap_1 : quadMap;
+                var cc = useMap.getOrDefault(list, null);
                 if (cc != null) {
                     return cc;
                 } else {
                     BakedModel snowModel = null;
                     BlockState snowState = null;
                     if (snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
-                        snowModel = snowOverlayBlock.resolve().get();
+                        snowModel = !isFlowerAbove ? snowOverlayBlock.resolve().get() : models.get(overlay_2);
                         // snowModel = models.get(overlay_2);
                     } else if (snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
                         snowModel = snowOverlayLeaves.resolve().get();
@@ -288,7 +310,7 @@ public class ModelManager {
                             newList.addAll(list);
                             newList.addAll(snowList);
                         }
-                        quadMap.put(list, newList);
+                        useMap.put(list, newList);
                         list = newList;
                     }
                 }
