@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.mixin.common.bee;
+package com.teamtea.ecliptic.mixin.common.entity.bee;
 
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;

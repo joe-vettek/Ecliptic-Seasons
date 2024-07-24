@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(FireBlock.class)
 public class MixinFireBlock {
 
-    @Unique
     @WrapOperation(
             method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z", ordinal = 0)
@@ -27,7 +26,6 @@ public class MixinFireBlock {
         return WeatherManager.isRainingAt(level, blockPos);
     }
 
-    @Unique
     @WrapOperation(
             method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z", ordinal = 1)

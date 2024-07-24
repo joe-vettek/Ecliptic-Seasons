@@ -10,6 +10,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Final;
@@ -74,7 +76,8 @@ public abstract class MixinLevelRender {
     private float mixin$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
         // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
         // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
-        return ClientWeatherChecker.getRainLevel(1.0f,level);
+        LightningBolt
+        return ClientWeatherChecker.getRainLevel(level, 1.0f);
     }
 
 

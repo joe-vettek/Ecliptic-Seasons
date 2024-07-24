@@ -32,7 +32,10 @@ import java.util.function.Supplier;
 @Mixin({ServerLevel.class})
 public abstract class MixinServerLevel extends Level {
 
-    @Shadow @Final private ServerLevelData serverLevelData;
+    @Shadow
+    @Final
+    private ServerLevelData serverLevelData;
+
     protected MixinServerLevel(WritableLevelData p_270739_, ResourceKey<Level> p_270683_, RegistryAccess p_270200_, Holder<DimensionType> p_270240_, Supplier<ProfilerFiller> p_270692_, boolean p_270904_, boolean p_270470_, long p_270248_, int p_270466_) {
         super(p_270739_, p_270683_, p_270200_, p_270240_, p_270692_, p_270904_, p_270470_, p_270248_, p_270466_);
     }
@@ -45,7 +48,7 @@ public abstract class MixinServerLevel extends Level {
 
     @Inject(at = {@At("HEAD")}, method = {"advanceWeatherCycle"}, cancellable = true)
     public void mixin_advanceWeatherCycle(CallbackInfo ci) {
-        boolean cancel = WeatherManager.agentAdvanceWeatherCycle((ServerLevel) (Object) this,serverLevelData,levelData,random);
+        boolean cancel = WeatherManager.agentAdvanceWeatherCycle((ServerLevel) (Object) this, serverLevelData, levelData, random);
         if (cancel)
             ci.cancel();
     }
@@ -55,20 +58,31 @@ public abstract class MixinServerLevel extends Level {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
     private Biome.Precipitation mixin$tickChunk_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        return WeatherManager.getPrecipitationAt((ServerLevel)(Object)this,biome,pos);
+        return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
     }
-
 
 
     @WrapOperation(
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
     )
-    private boolean mixin$tickChunk_isRaining(ServerLevel serverLevel,Operation<Boolean> original,@Local(ordinal = 0) LevelChunk levelChunk) {
-        var chunkpos=levelChunk.getPos();
+    private boolean mixin$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+        var chunkpos = levelChunk.getPos();
         int i = chunkpos.getMiddleBlockX();
         int j = chunkpos.getMiddleBlockZ();
-        BlockPos blockpos1 =((ServerLevel)(Object)this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
-        return WeatherManager.isRainingAt((ServerLevel)(Object)this, blockpos1);
+        BlockPos blockpos1 = ((ServerLevel) (Object) this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
+        return WeatherManager.isRainingAt((ServerLevel) (Object) this, blockpos1);
+    }
+
+    @WrapOperation(
+            method = "tickChunk",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z")
+    )
+    private boolean mixin$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+        var chunkpos = levelChunk.getPos();
+        int i = chunkpos.getMiddleBlockX();
+        int j = chunkpos.getMiddleBlockZ();
+        BlockPos blockpos1 = ((ServerLevel) (Object) this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
+        return WeatherManager.isThunderAt((ServerLevel) (Object) this, blockpos1);
     }
 }

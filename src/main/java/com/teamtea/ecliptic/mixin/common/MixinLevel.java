@@ -34,4 +34,19 @@ public class MixinLevel {
             cir.setReturnValue(WeatherManager.isRainingAt(serverLevel, p_46759_));
         }
     }
+
+
+    @Inject(at = {@At("HEAD")}, method = {"isThundering"}, cancellable = true)
+    private void mixin_isThundering(CallbackInfoReturnable<Boolean> cir) {
+        if ((Object) this instanceof ServerLevel serverLevel) {
+            cir.setReturnValue(WeatherManager.isThunderAnywhere(serverLevel));
+        }
+    }
+
+    @Inject(at = {@At("HEAD")}, method = {"getThunderLevel"}, cancellable = true)
+    private void mixin_getThunderLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
+        if ((Object) this instanceof ServerLevel serverLevel) {
+            cir.setReturnValue(WeatherManager.getMaximumThunderLevel( serverLevel,p_46723_));
+        }
+    }
 }

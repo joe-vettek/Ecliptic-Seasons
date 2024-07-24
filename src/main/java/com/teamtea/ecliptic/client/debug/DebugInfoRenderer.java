@@ -61,12 +61,13 @@ public final class DebugInfoRenderer {
 
                             String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
                             String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
+                            String thunderTimeS = "Thunder Time: " + biomeWeather.thunderTime;
                             String snowDepthS = "Snow Depth: " + biomeWeather.snowDepth;
 
                             drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
+                            drawInfo(matrixStack, screenWidth, screenHeight, thunderTimeS, index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, snowDepthS, index++);
-
 
                             break;
                         }

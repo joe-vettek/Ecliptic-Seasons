@@ -51,9 +51,9 @@ public class NetworkdUtil {
                 var lists = WeatherManager.getBiomeList(NetworkdUtil.getClient());
                 if (lists != null) {
                     for (WeatherManager.BiomeWeather biomeWeather : lists) {
-                        biomeWeather.rainTime = biomeWeatherMessage.rain[biomeWeather.id] * 100000;
-                        biomeWeather.clearTime = biomeWeatherMessage.clear[biomeWeather.id] * 100000;
-                        biomeWeather.thunderTime = biomeWeatherMessage.thuder[biomeWeather.id] * 100000;
+                        biomeWeather.rainTime = biomeWeatherMessage.rain[biomeWeather.id] * 10000;
+                        biomeWeather.clearTime = biomeWeatherMessage.clear[biomeWeather.id] * 10000;
+                        biomeWeather.thunderTime = biomeWeatherMessage.thuder[biomeWeather.id] * 10000;
                         biomeWeather.snowDepth = biomeWeatherMessage.snowDepth[biomeWeather.id];
                     }
                 }

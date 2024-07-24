@@ -7,6 +7,7 @@ import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -58,6 +59,50 @@ public class WeatherManager {
                 }
             }
         return false;
+    }
+
+
+    public static Float getMaximumThunderLevel(Level level, float p46723) {
+        var ws = getBiomeList(level);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
+                if (biomeWeather.shouldThunder()) {
+                    return 1.0f;
+                }
+            }
+        return 0.0f;
+    }
+
+    public static Boolean isThunderAnywhere(ServerLevel serverLevel) {
+        var ws = getBiomeList(serverLevel);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
+                if (biomeWeather.shouldThunder()) {
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    public static Boolean isThunderAtBiome(ServerLevel serverLevel, Biome biome) {
+        var ws = getBiomeList(serverLevel);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
+                if (biome == biomeWeather.biomeHolder.get()) {
+                    return biomeWeather.shouldThunder();
+                }
+            }
+        return false;
+    }
+
+    public static Boolean isThunderAt(ServerLevel serverLevel, BlockPos pos) {
+        if (!serverLevel.canSeeSky(pos)) {
+            return false;
+        } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
+            return false;
+        }
+        var biome = serverLevel.getBiome(pos);
+        return isThunderAtBiome(serverLevel, biome.get());
     }
 
     public static Boolean isRainingAt(ServerLevel serverLevel, BlockPos pos) {
@@ -198,7 +243,7 @@ public class WeatherManager {
     }
 
     public static boolean wantsToEnterHiveCheckRain(Bee bee) {
-        return isRainingAt((ServerLevel) bee.level(), bee.getOnPos().above());
+        return isRainingAt((ServerLevel) bee.level(), bee.blockPosition());
         // return bee.level().isRainingAt(bee.getOnPos().above());
     }
 
@@ -288,6 +333,13 @@ public class WeatherManager {
             } else {
                 if (biomeWeather.shouldRain()) {
                     biomeWeather.rainTime--;
+                    if (!biomeWeather.shouldThunder()) {
+                        BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+                        float weight = biomeRain.getThunderChance();
+                        if (level.getRandom().nextInt(1000) / 1000.f < weight) {
+                            biomeWeather.thunderTime = ServerLevel.THUNDER_DURATION.sample(random) / size;
+                        }
+                    }
                 } else {
                     BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
                     float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
@@ -298,6 +350,10 @@ public class WeatherManager {
                         biomeWeather.clearTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                     }
                 }
+            }
+
+            if (biomeWeather.shouldThunder()) {
+                biomeWeather.thunderTime--;
             }
             // if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
             //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);

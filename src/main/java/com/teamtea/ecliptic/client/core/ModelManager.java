@@ -30,6 +30,8 @@ import com.teamtea.ecliptic.Ecliptic;
 
 import java.util.*;
 
+// https://github.com/DoubleNegation/CompactOres/blob/1.18/src/main/java/doublenegation/mods/compactores/CompactOresResourcePack.java#L164
+// 未来可以基于RepositorySource实现动态纹理生成（看情况，因为目前不需要，对内存消耗比较大）
 public class ModelManager {
     public static Map<ResourceLocation, BakedModel> models;
     public static
