@@ -22,7 +22,7 @@
     "client.MixinBlockRenderVanilla",
     "client.MixinClientLevel",
     "client.MixinClientLevelChunk",
-    "client.MixinClientLevelRender",
+    "client.MixinLevelRender",
     "client.MixinClientBiome",
     "compat.embeddium.MixinBlockRender2"
   ],

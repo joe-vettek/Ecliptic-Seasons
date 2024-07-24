@@ -3,6 +3,7 @@ package com.teamtea.ecliptic.mixin.client;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.teamtea.ecliptic.client.core.ClientWeatherChecker;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import javax.annotation.Nullable;
 
 @Mixin(LevelRenderer.class)
-public abstract class MixinClientLevelRender {
+public abstract class MixinLevelRender {
 
 
     @Shadow
@@ -72,7 +73,8 @@ public abstract class MixinClientLevelRender {
     )
     private float mixin$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
         // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
-        return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
+        // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
+        return ClientWeatherChecker.getRainLevel(1.0f,level);
     }
 
 

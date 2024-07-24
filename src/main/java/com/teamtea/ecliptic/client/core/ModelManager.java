@@ -53,6 +53,7 @@ public class ModelManager {
     public static ResourceLocation snowy_tall_grass_top = Ecliptic.rl("block/snowy_tall_grass_top");
     public static ResourceLocation snowy_dandelion = Ecliptic.rl("block/snowy_dandelion");
     public static ResourceLocation overlay_2 = Ecliptic.rl("block/overlay_2");
+    public static ResourceLocation snow_height2 = Ecliptic.rl("block/snow_height2");
 
     public static ResourceLocation mrl(String s) {
         return mrl(s, "");
@@ -62,19 +63,23 @@ public class ModelManager {
         return new ModelResourceLocation(Ecliptic.rl(s), s2);
     }
 
+    public static ResourceLocation vrl(String s, String s2) {
+        return new ModelResourceLocation(new ResourceLocation(s), s2);
+    }
+
     public static final int ChunkSize = 16 * 32;
     public static final int ChunkSizeLoc = ChunkSize - 1;
     public static final int ChunkSizeAxis = 4 * 5;
 
     public static Boolean shouldisFaceVisible(BlockRenderer blockRenderer, BlockRenderContext ctx, Direction face, Operation<Boolean> original) {
-        if (face != null
-                && face != Direction.DOWN
-                && getHeightOrUpdate(ctx.pos(), false) == ctx.pos().getY()
-        ) {
-            var bl = ctx.world().getBlockState(ctx.pos().above()).getBlock();
-            if (bl instanceof FlowerBlock || bl instanceof PinkPetalsBlock || bl instanceof DoublePlantBlock)
-                return true;
-        }
+        // if (face != null
+        //         && face != Direction.DOWN
+        //         && getHeightOrUpdate(ctx.pos(), false) == ctx.pos().getY()
+        // ) {
+        //     var bl = ctx.world().getBlockState(ctx.pos().above()).getBlock();
+        //     if (bl instanceof FlowerBlock || bl instanceof PinkPetalsBlock || bl instanceof DoublePlantBlock)
+        //         return true;
+        // }
 
         return original.call(blockRenderer, ctx, face);
     }
@@ -254,9 +259,17 @@ public class ModelManager {
                     && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
                 // DynamicLeavesBlock
                 boolean isFlowerAbove = false;
-                if ((flag == FLAG_BLOCK)) {
+                if ((flag == FLAG_BLOCK)&&ClientConfig.Renderer.deeperSnow.get()) {
                     var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
-                    isFlowerAbove = bl instanceof FlowerBlock || bl instanceof PinkPetalsBlock || bl instanceof DoublePlantBlock;
+                    isFlowerAbove = bl instanceof FlowerBlock
+                            || bl instanceof PinkPetalsBlock
+                            || bl instanceof DoublePlantBlock
+                            || bl instanceof SaplingBlock;
+
+                    if(!isFlowerAbove){
+                        isFlowerAbove= random.nextInt(12)>0;
+                        // isFlowerAbove=true;
+                    }
                 }
                 // isFlowerAbove=false;
                 var useMap = isFlowerAbove ? quadMap_1 : quadMap;
@@ -267,8 +280,8 @@ public class ModelManager {
                     BakedModel snowModel = null;
                     BlockState snowState = null;
                     if (snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
-                        snowModel = !isFlowerAbove ? snowOverlayBlock.resolve().get() : models.get(overlay_2);
-                        // snowModel = models.get(overlay_2);
+                        // snowModel = !isFlowerAbove ? snowOverlayBlock.resolve().get() : models.get(overlay_2);
+                        snowModel = snowOverlayBlock.resolve().get();
                     } else if (snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
                         snowModel = snowOverlayLeaves.resolve().get();
                     } else if (snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
@@ -304,7 +317,18 @@ public class ModelManager {
                         if (flag == FLAG_GRASS) {
                             newList = new ArrayList<>(snowList);
                         } else if (direction == Direction.UP) {
-                            newList = new ArrayList<>(snowList);
+
+                            if (isFlowerAbove) {
+                                newList= new ArrayList<>();
+                                var layerState=Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1);
+                                var layerBlock = models.get(BlockModelShaper.stateToModelLocation(layerState));
+                                layerBlock=models.get(snow_height2);
+
+                                for (Direction direction1 : List.of(Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.UP)) {
+                                    newList.addAll(layerBlock.getQuads(layerState, direction1, random));
+                                }
+
+                            } else newList = new ArrayList<>(snowList);
                         } else {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());
                             newList.addAll(list);

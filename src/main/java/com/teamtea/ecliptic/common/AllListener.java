@@ -2,6 +2,7 @@ package com.teamtea.ecliptic.common;
 
 
 import com.teamtea.ecliptic.Ecliptic;
+import com.teamtea.ecliptic.api.EclipticBiomeTags;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
@@ -56,6 +57,7 @@ public class AllListener {
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
         BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
         WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess());
+        EclipticBiomeTags.BIOME_TAG_KEY_MAP.clear();
     }
 
 

@@ -40,6 +40,7 @@ public class ClientSetup {
         event.register(ModelManager.snowy_large_fern_bottom);
         event.register(ModelManager.snowy_dandelion);
         event.register(ModelManager.overlay_2);
+        event.register(ModelManager.snow_height2);
     }
 
     @SubscribeEvent

@@ -18,3 +18,5 @@ TODO：
 isRainingAt 要区分下雨和下雪
 
 月相
+
+雷雨

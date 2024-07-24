@@ -8,6 +8,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +30,17 @@ public class EclipticBiomeTags {
     }
 
 
+    public static final Map<Biome, TagKey<Biome>> BIOME_TAG_KEY_MAP = new HashMap<>(128);
+
+
     public static TagKey<Biome> getTag(Biome biome) {
-        Level level = WeatherManager.getMainServerLevel();
-        if (level != null) {
+        return getTag(WeatherManager.getMainServerLevel(), biome);
+    }
+
+    public static TagKey<Biome> getTag(Level level, Biome biome) {
+        var bt = BIOME_TAG_KEY_MAP.getOrDefault(biome, null);
+
+        if (bt == null && level != null) {
             var biomes = level.registryAccess().registry(Registries.BIOME);
             if (biomes.isPresent()) {
                 for (Map.Entry<ResourceKey<Biome>, Biome> resourceKeyBiomeEntry : biomes.get().entrySet()) {
@@ -40,14 +49,16 @@ public class EclipticBiomeTags {
                         if (holder.isPresent()) {
                             var tag = holder.get().tags().filter(BIOMES::contains).findFirst();
                             if (tag.isPresent()) {
-                                return tag.get();
+                                bt = tag.get();
                             }
                         }
                     }
                 }
             }
         }
-        return RAINLESS;
-
+        if (bt == null)
+            bt = RAINLESS;
+        BIOME_TAG_KEY_MAP.put(biome, bt);
+        return bt;
     }
 }
