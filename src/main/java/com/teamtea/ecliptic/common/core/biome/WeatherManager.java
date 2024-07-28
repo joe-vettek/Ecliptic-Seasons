@@ -96,6 +96,9 @@ public class WeatherManager {
     }
 
     public static Boolean isThunderAt(ServerLevel serverLevel, BlockPos pos) {
+        if (!isThunderAnywhere(serverLevel)) {
+            return false;
+        }
         if (!serverLevel.canSeeSky(pos)) {
             return false;
         } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
@@ -106,6 +109,9 @@ public class WeatherManager {
     }
 
     public static Boolean isRainingAt(ServerLevel serverLevel, BlockPos pos) {
+        if (!isRainingAnywhere(serverLevel)) {
+            return false;
+        }
         if (!serverLevel.canSeeSky(pos)) {
             return false;
         } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
@@ -387,6 +393,7 @@ public class WeatherManager {
     }
 
     public static void sendBiomePacket(ArrayList<BiomeWeather> levelBiomeWeather, List<ServerPlayer> players) {
+        if (players.isEmpty()) return;
         byte[] rains = new byte[levelBiomeWeather.size()];
         byte[] thunders = new byte[levelBiomeWeather.size()];
         byte[] clears = new byte[levelBiomeWeather.size()];
