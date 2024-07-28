@@ -76,7 +76,6 @@ public abstract class MixinLevelRender {
     private float mixin$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
         // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
         // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
-        LightningBolt
         return ClientWeatherChecker.getRainLevel(level, 1.0f);
     }
 

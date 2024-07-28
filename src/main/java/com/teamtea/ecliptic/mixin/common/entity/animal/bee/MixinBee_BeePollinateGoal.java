@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.mixin.common.entity.bee;
+package com.teamtea.ecliptic.mixin.common.entity.animal.bee;
 
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Bee.BeePollinateGoal.class)
+@SuppressWarnings("")
 public class MixinBee_BeePollinateGoal {
 
     // @Shadow @Final private Bee this$0;

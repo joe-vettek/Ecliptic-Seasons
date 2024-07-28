@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.mixin.common.entity.pandas;
+package com.teamtea.ecliptic.mixin.common.entity.animal.pandas;
 
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

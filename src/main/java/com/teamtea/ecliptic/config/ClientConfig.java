@@ -46,7 +46,7 @@ public class ClientConfig
             snowyWinter = builder.comment("If snow falls during cold weather, it will gradually cover all solid blocks and grass.")
                     .define("snowyWinter", true);
             deeperSnow = builder.comment("Occasionally a thicker layer of snow will cover the flowers and grass, especially.")
-                    .define("deeperSnow", true);
+                    .define("deeperSnow", false);
             builder.pop();
         }
     }

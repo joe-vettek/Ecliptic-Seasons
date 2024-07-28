@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "ecliptic.refmap.json",
   "mixins": [
-
     "common.MixinBiome",
     "common.MixinDimensionType",
     "common.MixinLevel",
@@ -13,12 +12,13 @@
     "common.block.MixinFireBlock",
     "common.block.MixinLightningRodBlock",
     "common.command.MixinWeatherCommand",
-    "common.entity.bee.MixinBee",
-    "common.entity.bee.MixinBee_BeePollinateGoal",
-    "common.entity.bee.MixinBeehiveBlockEntity",
-    "common.entity.fox.MixinFox",
-    "common.entity.fox.MixinFox_SeekShelterGoal",
-    "common.entity.pandas.MixinPanda",
+    "common.entity.animal.bee.MixinBee",
+    "common.entity.animal.bee.MixinBee_BeePollinateGoal",
+    "common.block.MixinBeehiveBlockEntity",
+    "common.entity.animal.fox.MixinFox",
+    "common.entity.animal.fox.MixinFox_SeekShelterGoal",
+    "common.entity.animal.pandas.MixinPanda",
+    "common.entity.monster.MixinMonster",
     "common.entity.projectile.MixinThrownTrident",
     "common.loot.MixinWeatherCheck"
   ],
