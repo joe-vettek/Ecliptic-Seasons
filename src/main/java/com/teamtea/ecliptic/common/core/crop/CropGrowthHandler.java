@@ -21,7 +21,7 @@ public final class CropGrowthHandler
         var world = event.getLevel();
         BlockPos pos = event.getPos();
         CropSeasonInfo seasonInfo = CropInfoManager.getSeasonInfo(block);
-        if (seasonInfo != null && ServerConfig.Season.enable.get())
+        if (seasonInfo != null && ServerConfig.Season.enableCrop.get())
         {
             if (seasonInfo.isSuitable(SolarUtil.getSeason((Level) world)))
             {

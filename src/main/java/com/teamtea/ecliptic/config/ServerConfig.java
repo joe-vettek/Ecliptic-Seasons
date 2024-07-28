@@ -23,18 +23,23 @@ public class ServerConfig {
     }
 
     public static class Season {
-        public static ForgeConfigSpec.BooleanValue enable;
+        public static ForgeConfigSpec.BooleanValue enableCrop;
+        public static ForgeConfigSpec.BooleanValue enableInform;
         public static ForgeConfigSpec.IntValue lastingDaysOfEachTerm;
         public static ForgeConfigSpec.IntValue initialSolarTermIndex;
 
         private static void load(ForgeConfigSpec.Builder builder) {
             builder.push("Season");
-            enable = builder.comment("Enable solar term season system.")
-                    .define("EnableSeason", true);
             lastingDaysOfEachTerm = builder.comment("The lasting days of each term (24 in total).")
                     .defineInRange("LastingDaysOfEachTerm", 7, 1, 30);
             initialSolarTermIndex = builder.comment("The index of the initial solar term.")
                     .defineInRange("InitialSolarTermIndex", 1, 1, 24);
+
+            enableCrop = builder.comment("Enable seasonal crop.")
+                    .define("EnableSeasonalCrop", true);
+
+            enableInform = builder.comment("Enable solar term change inform.")
+                    .define("EnableInform", true);
             builder.pop();
         }
     }

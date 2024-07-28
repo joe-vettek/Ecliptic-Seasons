@@ -34,10 +34,10 @@ import java.util.Map;
 
 public class SolarDataManager extends SavedData {
 
-    private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
-    private int solarTermsTicks = 0;
+    protected int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
+    protected int solarTermsTicks = 0;
 
-    private WeakReference<Level> levelWeakReference;
+    protected WeakReference<Level> levelWeakReference;
 
     public SolarDataManager(Level level) {
         levelWeakReference = new WeakReference<>(level);

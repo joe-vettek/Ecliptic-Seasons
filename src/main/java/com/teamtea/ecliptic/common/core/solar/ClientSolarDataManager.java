@@ -34,14 +34,9 @@ import java.util.Map;
 
 public class ClientSolarDataManager extends SolarDataManager {
 
-    private int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
-    private int solarTermsTicks = 0;
-
-    private WeakReference<Level> levelWeakReference;
-
     public ClientSolarDataManager(Level level) {
         super(level);
-        levelWeakReference = new WeakReference<>(level);
+        this.levelWeakReference = new WeakReference<>(level);
     }
 
     public ClientSolarDataManager(Level level, CompoundTag nbt) {
@@ -49,13 +44,12 @@ public class ClientSolarDataManager extends SolarDataManager {
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
         var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
-        if (levelWeakReference.get() != null) {
-            var biomeWeathers =WeatherManager.getBiomeList(levelWeakReference.get());
+        if (this.levelWeakReference.get() != null) {
+            var biomeWeathers = WeatherManager.getBiomeList(this.levelWeakReference.get());
             for (int i = 0; i < listTag.size(); i++) {
                 var location = listTag.getCompound(i).getString("biome");
                 for (WeatherManager.BiomeWeather biomeWeather : biomeWeathers) {
-                    if (location.equals(biomeWeather.location.toString()))
-                    {
+                    if (location.equals(biomeWeather.location.toString())) {
                         biomeWeather.deserializeNBT(listTag.getCompound(i));
                         break;
                     }

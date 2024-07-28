@@ -39,7 +39,7 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void addTooltips(ItemTooltipEvent event) {
 
-        if (ServerConfig.Season.enable.get()) {
+        if (ServerConfig.Season.enableCrop.get()) {
             if (event.getItemStack().getItem() instanceof BlockItem) {
                 if (CropInfoManager.getHumidityCrops().contains(((BlockItem) event.getItemStack().getItem()).getBlock())) {
                     CropHumidityInfo info = CropInfoManager.getHumidityInfo(((BlockItem) event.getItemStack().getItem()).getBlock());

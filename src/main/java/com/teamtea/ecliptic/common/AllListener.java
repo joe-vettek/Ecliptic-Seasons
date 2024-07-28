@@ -113,7 +113,7 @@ public class AllListener {
 
     @SubscribeEvent
     public static void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Season.enable.get() && !event.level.isClientSide() && event.level.dimension() == Level.OVERWORLD) {
+        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Season.enableInform.get() && !event.level.isClientSide() && event.level.dimension() == Level.OVERWORLD) {
             getSaveDataLazy(event.level).ifPresent(data ->
             {
                 if (!event.level.players().isEmpty()) {
@@ -139,7 +139,7 @@ public class AllListener {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 
         if (event.getEntity() instanceof ServerPlayer && !(event.getEntity() instanceof FakePlayer)) {
-            if (ServerConfig.Season.enable.get()) {
+            if (ServerConfig.Season.enableInform.get()) {
                 getSaveDataLazy(event.getEntity().level()).ifPresent(t ->
                 {
                     SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new SolarTermsMessage(t.getSolarTermsDay()));
@@ -156,7 +156,8 @@ public class AllListener {
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 
         if (event.getEntity() instanceof ServerPlayer && !(event.getEntity() instanceof FakePlayer)) {
-            if (ServerConfig.Season.enable.get()) {
+            if (ServerConfig.Season.enableInform.get())
+            {
                 WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(event.getEntity().level()), List.of((ServerPlayer) event.getEntity()));
             }
         }
