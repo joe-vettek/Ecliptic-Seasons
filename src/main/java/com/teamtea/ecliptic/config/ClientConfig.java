@@ -11,6 +11,7 @@ public class ClientConfig
     {
         GUI.load(builder);
         Renderer.load(builder);
+        Sound.load(builder);
     }
 
     public static class GUI
@@ -47,6 +48,19 @@ public class ClientConfig
                     .define("snowyWinter", true);
             deeperSnow = builder.comment("Occasionally a thicker layer of snow will cover the flowers and grass, especially.")
                     .define("deeperSnow", false);
+            builder.pop();
+        }
+    }
+
+    public static class Sound
+    {
+        public static ForgeConfigSpec.BooleanValue sound;
+
+        private static void load(ForgeConfigSpec.Builder builder)
+        {
+            builder.push("Renderer");
+            sound = builder.comment("Ambient Sound.")
+                    .define("Sound", true);
             builder.pop();
         }
     }

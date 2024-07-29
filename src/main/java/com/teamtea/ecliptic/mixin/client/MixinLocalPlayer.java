@@ -3,6 +3,7 @@ package com.teamtea.ecliptic.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.teamtea.ecliptic.client.sound.SeasonalBiomeAmbientSoundsHandler;
+import com.teamtea.ecliptic.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -20,11 +21,13 @@ import java.util.List;
 @Mixin({LocalPlayer.class})
 public abstract class MixinLocalPlayer {
 
-    @Shadow @Final private List<AmbientSoundHandler> ambientSoundHandlers;
+    @Shadow
+    @Final
+    private List<AmbientSoundHandler> ambientSoundHandlers;
 
     @Inject(at = {@At("RETURN")}, method = {"<init>"})
     private void mixin_init(CallbackInfo ci, @Local Minecraft minecraft, @Local ClientLevel clientLevel) {
-        if(clientLevel.dimensionType().natural())
-       ambientSoundHandlers.add(new SeasonalBiomeAmbientSoundsHandler((LocalPlayer) (Object)this, minecraft.getSoundManager(), clientLevel.getBiomeManager()));
+        if (ClientConfig.Sound.sound.get() && clientLevel.dimensionType().natural())
+            ambientSoundHandlers.add(new SeasonalBiomeAmbientSoundsHandler((LocalPlayer) (Object) this, minecraft.getSoundManager(), clientLevel.getBiomeManager()));
     }
 }

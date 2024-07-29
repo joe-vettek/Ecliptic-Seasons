@@ -3,6 +3,7 @@ package com.teamtea.ecliptic.client.sound;
 import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.solar.Season;
 import com.teamtea.ecliptic.common.AllListener;
+import com.teamtea.ecliptic.common.core.solar.SolarAngelHelper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.*;
@@ -56,7 +57,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
         var biome = this.biomeManager.getNoiseBiomeAtPosition(this.player.getX(), this.player.getY(), this.player.getZ());
         if (biome.value() != this.previousBiome) {
             this.previousBiome = biome.value();
-        } else return;
+        }
 
         var saveDataLazy = AllListener.getSaveDataLazy(player.level());
         if (saveDataLazy.resolve().isPresent()) {
@@ -74,16 +75,19 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                     }
                 }
                 case SUMMER -> {
-                    if (player.level().isNight()) {
+                    // if (player.level().isNight())
+                    // 客户端不计算是否为夜晚
+                    var aa = SolarAngelHelper.getSolarAngelTime(player.level().getDayTime(), player.level());
+                    if (12000 < aa && aa < 22000) {
                         if (!(biome.is(BiomeTags.IS_SAVANNA)
-                                &&! biome.is(Tags.Biomes.IS_CAVE)
-                                &&! biome.is(Tags.Biomes.IS_DESERT)
-                                &&! biome.is(BiomeTags.IS_BADLANDS)
-                                &&! biome.is(Tags.Biomes.IS_PEAK)) ) {
+                                && !biome.is(Tags.Biomes.IS_CAVE)
+                                && !biome.is(Tags.Biomes.IS_DESERT)
+                                && !biome.is(BiomeTags.IS_BADLANDS)
+                                && !biome.is(Tags.Biomes.IS_PEAK))) {
                             soundEvent = Ecliptic.SoundEventsRegistry.night_river;
                         }
                     } else {
-                        if ((biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_RIVER)) ) {
+                        if ((biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_RIVER))) {
                             soundEvent = Ecliptic.SoundEventsRegistry.garden_wind;
                         }
                     }
@@ -98,8 +102,8 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                     if (!biome.is(Tags.Biomes.IS_CAVE)) {
                         if (biome.is(BiomeTags.IS_FOREST)) {
                             soundEvent = Ecliptic.SoundEventsRegistry.winter_forest;
-                        }
-                    } else soundEvent = Ecliptic.SoundEventsRegistry.winter_cold;
+                        } else soundEvent = Ecliptic.SoundEventsRegistry.winter_cold;
+                    }
                 }
                 case NONE -> {
                 }
@@ -128,7 +132,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             super(p_119658_, SoundSource.AMBIENT, SoundInstance.createUnseededRandom());
             this.looping = true;
             this.delay = 0;
-            this.volume = 1.0F;
+            this.volume = 0.5F;
             this.relative = true;
         }
 
