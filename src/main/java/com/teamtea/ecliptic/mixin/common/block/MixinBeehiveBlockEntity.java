@@ -22,7 +22,7 @@ public class MixinBeehiveBlockEntity {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isRaining()Z")
     )
     private static boolean releaseOccupantCheckRain(Level level, Operation<Boolean> original,  @Local(ordinal = 0) BlockPos blockPos  ) {
-        return WeatherManager.isRainingAtBiome((ServerLevel) level, level.getBiome(blockPos).get());
+        return !WeatherManager.isRainingAt((ServerLevel) level, blockPos);
     }
 
 }

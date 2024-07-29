@@ -9,12 +9,12 @@
     "common.MixinLevel",
     "common.MixinLevelTimeAccess",
     "common.MixinServerLevel",
+    "common.block.MixinBeehiveBlockEntity",
     "common.block.MixinFireBlock",
     "common.block.MixinLightningRodBlock",
     "common.command.MixinWeatherCommand",
     "common.entity.animal.bee.MixinBee",
     "common.entity.animal.bee.MixinBee_BeePollinateGoal",
-    "common.block.MixinBeehiveBlockEntity",
     "common.entity.animal.fox.MixinFox",
     "common.entity.animal.fox.MixinFox_SeekShelterGoal",
     "common.entity.animal.pandas.MixinPanda",
@@ -30,6 +30,7 @@
     "client.MixinClientLevelChunk",
     "client.MixinLevelRender",
     "client.block.MixinLightningRodBlock",
+    "client.block.MixinLeavesBlock",
     "compat.embeddium.MixinBlockRender2"
   ],
   "injectors": {

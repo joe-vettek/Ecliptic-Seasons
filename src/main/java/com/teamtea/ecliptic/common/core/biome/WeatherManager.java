@@ -109,6 +109,9 @@ public class WeatherManager {
     }
 
     public static Boolean isRainingAt(ServerLevel serverLevel, BlockPos pos) {
+        if (!serverLevel.dimensionType().natural()) {
+            return false;
+        }
         if (!isRainingAnywhere(serverLevel)) {
             return false;
         }
