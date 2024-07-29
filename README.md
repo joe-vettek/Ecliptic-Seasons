@@ -10,6 +10,13 @@
 *   For resources: CC BY-NC-SA 4.0
 *   对于资源文件：署名-非商业性使用-相同方式共享 4.0 国际
 
+春天的森林 许可:CC-BY 作者:梦醒时光 来源:耳聆网 https://www.ear0.com/sound/20322
+公园风声 许可:CC-BY 作者:goodnames 来源:耳聆网 https://www.ear0.com/sound/40449
+夜晚小河 许可:CC-BY 作者:goodnames 来源:耳聆网 https://www.ear0.com/sound/40451
+风吹树叶 许可:CC0 作者:Nausicaa 来源:耳聆网 https://www.ear0.com/sound/17371
+冬天的森林氛围 许可:CC0 作者:Caoilfhionn 来源:耳聆网 https://www.ear0.com/sound/14951
+寒冷冬天的实地录音 许可:CC0 作者:Robert 来源:耳聆网 https://www.ear0.com/sound/12239
+
 
 TODO：
 枯萎的花
@@ -20,3 +27,7 @@ isRainingAt 要区分下雨和下雪
 月相
 
 起床后加速天气计算
+
+使得能够蜂房养蜂
+
+局部雷雨会破坏睡觉设定

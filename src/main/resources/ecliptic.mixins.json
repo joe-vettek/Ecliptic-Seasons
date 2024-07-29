@@ -29,8 +29,9 @@
     "client.MixinClientLevel",
     "client.MixinClientLevelChunk",
     "client.MixinLevelRender",
-    "client.block.MixinLightningRodBlock",
+    "client.MixinLocalPlayer",
     "client.block.MixinLeavesBlock",
+    "client.block.MixinLightningRodBlock",
     "compat.embeddium.MixinBlockRender2"
   ],
   "injectors": {

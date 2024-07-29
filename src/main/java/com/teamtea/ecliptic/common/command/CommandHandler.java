@@ -42,17 +42,17 @@ public class CommandHandler {
                         .requires((source) -> source.hasPermission(2))
                         .then(Commands.argument("biome", ResourceOrTagArgument.resourceOrTag(event.getBuildContext(), Registries.BIOME))
                                 .then(Commands.literal("rain")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), true,false)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), true, false)))
                                 .then(Commands.literal("thunder")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), true,true)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), true, true)))
                                 .then(Commands.literal("clear")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), false,false)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), false, false)))
                         )
                 )
         );
     }
 
-    public static int setBiomeRain(CommandSourceStack sourceStack, ResourceOrTagArgument.Result<Biome> result, boolean setRain,boolean isThunder) throws CommandSyntaxException {
+    public static int setBiomeRain(CommandSourceStack sourceStack, ResourceOrTagArgument.Result<Biome> result, boolean setRain, boolean isThunder) throws CommandSyntaxException {
         var levelBiomeWeather = WeatherManager.getBiomeList(sourceStack.getLevel());
         if (levelBiomeWeather != null) {
             boolean found = false;
@@ -63,7 +63,7 @@ public class CommandHandler {
                     biomeWeather.rainTime = setRain ? ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size : 0;
                     biomeWeather.clearTime = setRain ? 0 : ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size;
 
-                    biomeWeather.thunderTime = isThunder ? 0 : ServerLevel.THUNDER_DURATION.sample(sourceStack.getLevel().getRandom()) / size;
+                    biomeWeather.thunderTime =  isThunder ? ServerLevel.THUNDER_DURATION.sample(sourceStack.getLevel().getRandom()) / size: 0;
 
                     found = true;
                 }

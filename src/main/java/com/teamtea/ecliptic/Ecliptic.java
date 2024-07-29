@@ -6,14 +6,20 @@ import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.teamtea.ecliptic.data.start;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -21,6 +27,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,5 +119,27 @@ public class Ecliptic {
         public static RegistryObject<Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS::defaultBlockState, BlockBehaviour.Properties.copy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
         public static RegistryObject<Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
         public static RegistryObject<Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+    }
+
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class SoundEventsRegistry {
+        public final static SoundEvent spring_forest = SoundEvent.createVariableRangeEvent(rl( "ambient.spring_forest"));
+        public final static SoundEvent garden_wind = SoundEvent.createVariableRangeEvent(rl( "ambient.garden_wind"));
+        public final static SoundEvent night_river = SoundEvent.createVariableRangeEvent(rl( "ambient.night_river"));
+        public final static SoundEvent windy_leave = SoundEvent.createVariableRangeEvent(rl( "ambient.windy_leave"));
+        public final static SoundEvent winter_forest = SoundEvent.createVariableRangeEvent(rl( "ambient.winter_forest"));
+        public final static SoundEvent winter_cold = SoundEvent.createVariableRangeEvent(rl( "ambient.winter_cold"));
+        @SubscribeEvent
+        public static void blockRegister(RegisterEvent event) {
+            // MultiPackResourceManager
+            event.register(Registries.SOUND_EVENT, soundEventRegisterHelper -> {
+                soundEventRegisterHelper.register(spring_forest.getLocation(), spring_forest);
+                soundEventRegisterHelper.register(garden_wind.getLocation(), garden_wind);
+                soundEventRegisterHelper.register(night_river.getLocation(), night_river);
+                soundEventRegisterHelper.register(windy_leave.getLocation(), windy_leave);
+                soundEventRegisterHelper.register(winter_forest.getLocation(), winter_forest);
+                soundEventRegisterHelper.register(winter_cold.getLocation(), winter_cold);
+            });
+        }
     }
 }

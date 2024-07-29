@@ -8,8 +8,19 @@ public class ServerConfig {
     protected ServerConfig(ForgeConfigSpec.Builder builder) {
         Temperature.load(builder);
         Season.load(builder);
+        Debug.load(builder);
     }
 
+    public static class Debug {
+        public static ForgeConfigSpec.BooleanValue debugMode;
+
+        private static void load(ForgeConfigSpec.Builder builder) {
+            builder.push("Debug");
+            debugMode = builder.comment("Enable debug option to detect illegal use of functions.")
+                    .define("Debug", false);
+            builder.pop();
+        }
+    }
 
     public static class Temperature {
         public static ForgeConfigSpec.BooleanValue iceMelt;
@@ -27,6 +38,7 @@ public class ServerConfig {
         public static ForgeConfigSpec.BooleanValue enableInform;
         public static ForgeConfigSpec.IntValue lastingDaysOfEachTerm;
         public static ForgeConfigSpec.IntValue initialSolarTermIndex;
+        public static ForgeConfigSpec.IntValue rainChanceMultiplier;
 
         private static void load(ForgeConfigSpec.Builder builder) {
             builder.push("Season");
@@ -40,6 +52,9 @@ public class ServerConfig {
 
             enableInform = builder.comment("Enable solar term change inform.")
                     .define("EnableInform", true);
+
+            rainChanceMultiplier = builder.comment("Set the percentage multiplier of the probability of rain, the range should be between 0 and 1000.")
+                    .defineInRange("RainChancePercentMultiplier", 60, 0, 1000);
             builder.pop();
         }
     }

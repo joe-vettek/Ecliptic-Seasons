@@ -1,89 +1,53 @@
 {
-  "block.cup_broken": {
-    "category": "blocks",
+  "ambient.garden_wind": {
+    "category": "ambient",
     "sounds": [
       {
-        "name": "teastory:block/cup_broken"
+        "name": "ecliptic:ambient/garden_wind"
       }
     ]
   },
-  "record.picking_tea": {
-    "category": "records",
+  "ambient.night_river": {
+    "category": "ambient",
     "sounds": [
       {
-        "name": "teastory:record/picking_tea",
+        "name": "ecliptic:ambient/night_river",
         "stream": true
       }
     ]
   },
-  "record.moving_up": {
-    "category": "records",
+  "ambient.spring_forest": {
+    "category": "ambient",
     "sounds": [
       {
-        "name": "teastory:record/moving_up",
+        "name": "ecliptic:ambient/spring_forest",
         "stream": true
       }
     ]
   },
-  "record.spring_festival_overture": {
-    "category": "records",
+  "ambient.windy_leave": {
+    "category": "ambient",
     "sounds": [
       {
-        "name": "teastory:record/spring_festival_overture",
+        "name": "ecliptic:ambient/windy_leave",
         "stream": true
       }
     ]
   },
-  "record.flowers_and_moon": {
-    "category": "records",
+  "ambient.winter_cold": {
+    "category": "ambient",
     "sounds": [
       {
-        "name": "teastory:record/flowers_and_moon",
+        "name": "ecliptic:ambient/winter_cold",
         "stream": true
       }
     ]
   },
-  "record.dancing_golden_snake": {
-    "category": "records",
+  "ambient.winter_forest": {
+    "category": "ambient",
     "sounds": [
       {
-        "name": "teastory:record/dancing_golden_snake",
-        "stream": true
-      }
-    ]
-  },
-  "record.joyful": {
-    "category": "records",
-    "sounds": [
-      {
-        "name": "teastory:record/joyful",
-        "stream": true
-      }
-    ]
-  },
-  "record.green_willow": {
-    "category": "records",
-    "sounds": [
-      {
-        "name": "teastory:record/green_willow",
-        "stream": true
-      }
-    ]
-  },
-  "record.purple_bamboo_melody": {
-    "category": "records",
-    "sounds": [
-      {
-        "name": "teastory:record/purple_bamboo_melody",
-        "stream": true
-      }
-    ]
-  },
-  "record.welcome_march": {
-    "category": "records",
-    "sounds": [
-      {
-        "name": "teastory:record/welcome_march",
+        "name": "ecliptic:ambient/winter_forest",
         "stream": true
       }
     ]

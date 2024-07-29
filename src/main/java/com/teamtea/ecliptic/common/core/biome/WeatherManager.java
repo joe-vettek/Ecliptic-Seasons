@@ -7,6 +7,7 @@ import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
+import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -38,7 +39,16 @@ public class WeatherManager {
         return BIOME_WEATHER_LIST.get(level);
     }
 
-
+    public static Float getMinRainLevel(Level level, float p46723) {
+        var ws = getBiomeList(level);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
+                if (!biomeWeather.shouldRain()) {
+                    return 0.0f;
+                }
+            }
+        return 1.0f;
+    }
     public static Float getMaximumRainLevel(Level level, float p46723) {
         var ws = getBiomeList(level);
         if (ws != null)
@@ -59,6 +69,17 @@ public class WeatherManager {
                 }
             }
         return false;
+    }
+
+    public static Float getMinThunderLevel(Level level, float p46723) {
+        var ws = getBiomeList(level);
+        if (ws != null)
+            for (BiomeWeather biomeWeather : ws) {
+                if (!biomeWeather.shouldThunder()) {
+                    return 0.0f;
+                }
+            }
+        return 1.0f;
     }
 
 
@@ -351,7 +372,9 @@ public class WeatherManager {
                     }
                 } else {
                     BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                    float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
+                    float weight = biomeRain.getRainChane()
+                            * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall())
+                            * ((ServerConfig.Season.rainChanceMultiplier.get()*1f)/100f);
                     if (level.getRandom().nextInt(1000) / 1000.f < weight) {
                         biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                     } else {
