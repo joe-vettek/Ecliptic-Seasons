@@ -1,22 +1,22 @@
 package com.teamtea.ecliptic;
 
 
+import com.teamtea.ecliptic.common.misc.HeatStrokeEffect;
 import com.teamtea.ecliptic.compat.CompatModule;
 import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.teamtea.ecliptic.data.start;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -141,5 +141,20 @@ public class Ecliptic {
                 soundEventRegisterHelper.register(winter_cold.getLocation(), winter_cold);
             });
         }
+    }
+
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static final class EffectRegistry {
+        public static final MobEffect HEAT_STROKE = new HeatStrokeEffect(MobEffectCategory.NEUTRAL, 0xf9d27d);
+    
+        @SubscribeEvent
+        public static void blockRegister(RegisterEvent event) {
+            event.register(Registries.MOB_EFFECT, soundEventRegisterHelper -> {
+                soundEventRegisterHelper.register(rl( "heat_stroke"), HEAT_STROKE);
+            });
+        }
+    
+    
+    
     }
 }

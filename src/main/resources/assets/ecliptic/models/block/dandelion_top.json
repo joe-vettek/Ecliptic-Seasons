@@ -1,0 +1,6 @@
+{
+	"parent": "block/cross",
+	"textures": {
+		"cross": "ecliptic:block/dandelion_top"
+	}
+}

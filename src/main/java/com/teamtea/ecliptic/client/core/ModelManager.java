@@ -54,6 +54,7 @@ public class ModelManager {
     public static ResourceLocation snowy_tall_grass_bottom = Ecliptic.rl("block/snowy_tall_grass_bottom");
     public static ResourceLocation snowy_tall_grass_top = Ecliptic.rl("block/snowy_tall_grass_top");
     public static ResourceLocation snowy_dandelion = Ecliptic.rl("block/snowy_dandelion");
+    public static ResourceLocation dandelion_top = Ecliptic.rl("block/dandelion_top");
     public static ResourceLocation overlay_2 = Ecliptic.rl("block/overlay_2");
     public static ResourceLocation snow_height2 = Ecliptic.rl("block/snow_height2");
 
@@ -336,8 +337,15 @@ public class ModelManager {
                             newList.addAll(list);
                             newList.addAll(snowList);
                         }
+
+                        if (onBlock == Blocks.DANDELION){
+                            newList.addAll(models.get(dandelion_top).getQuads(null,null,null));
+                        }
+
                         useMap.put(list, newList);
                         list = newList;
+
+
                     }
                 }
             }

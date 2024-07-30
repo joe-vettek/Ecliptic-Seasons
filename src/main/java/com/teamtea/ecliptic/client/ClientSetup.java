@@ -39,6 +39,7 @@ public class ClientSetup {
         // 注意这里使用地址和model地址效果不同，后者需要写blockstate
         event.register(ModelManager.snowy_large_fern_bottom);
         event.register(ModelManager.snowy_dandelion);
+        event.register(ModelManager.dandelion_top);
         event.register(ModelManager.overlay_2);
         event.register(ModelManager.snow_height2);
     }
@@ -104,9 +105,9 @@ public class ClientSetup {
         // BlockColors blockColors = event.getBlockColors();
 
 
-        event.register((p_276241_, p_276242_, p_276243_, p_276244_) -> {
-            if (p_276244_ != 0) {
-                return p_276242_ != null && p_276243_ != null ? BiomeColors.getAverageGrassColor(p_276242_, p_276243_) : GrassColor.getDefaultColor();
+        event.register((state, blockAndTintGetter, pos, i) -> {
+            if (i == 1) {
+                return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColor.getDefaultColor();
             } else {
                 return -1;
             }

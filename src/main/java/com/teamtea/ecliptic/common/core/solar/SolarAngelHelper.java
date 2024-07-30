@@ -1,6 +1,7 @@
 package com.teamtea.ecliptic.common.core.solar;
 
 
+import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import net.minecraft.util.Mth;

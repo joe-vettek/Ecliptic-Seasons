@@ -58,7 +58,7 @@ public class ClientConfig
 
         private static void load(ForgeConfigSpec.Builder builder)
         {
-            builder.push("Renderer");
+            builder.push("Sound");
             sound = builder.comment("Ambient Sound.")
                     .define("Sound", true);
             builder.pop();
