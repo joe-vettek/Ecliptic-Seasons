@@ -27,7 +27,7 @@ public class HeatStrokeEffect extends MobEffect {
         if (!entityLivingBaseIn.isInWaterOrRain()
                 && ((isDaytime && (entityLivingBaseIn.level().canSeeSky(pos.above()))))
         ) {
-            entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().inFire(),entityLivingBaseIn.getHealth()*0.05f+0.001f);
+            entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().inFire(),entityLivingBaseIn.getHealth()*0.025f+0.001f);
 
         }
     }
