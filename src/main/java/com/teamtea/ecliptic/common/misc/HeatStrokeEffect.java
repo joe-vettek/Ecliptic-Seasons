@@ -21,12 +21,7 @@ public class HeatStrokeEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entityLivingBaseIn, int amplifier) {
-        boolean isDaytime = entityLivingBaseIn.level().getDayTime() < 14000L;
-
-        BlockPos pos = entityLivingBaseIn.getOnPos();
-        if (!entityLivingBaseIn.isInWaterOrRain()
-                && ((isDaytime && (entityLivingBaseIn.level().canSeeSky(pos.above()))))
-        ) {
+         {
             entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().inFire(),entityLivingBaseIn.getHealth()*0.025f+0.001f);
 
         }

@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.solar.Season;
+import com.teamtea.ecliptic.api.solar.SolarTerm;
 import com.teamtea.ecliptic.client.sound.SeasonalBiomeAmbientSoundsHandler;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.config.ClientConfig;
@@ -38,13 +39,16 @@ public abstract class MixinServerPlayer extends Player {
     private void mixin_init(CallbackInfo ci) {
         if (level().getRandom().nextInt(60) == 0)
             AllListener.getSaveDataLazy(level()).ifPresent(solarDataManager -> {
-                if (solarDataManager.getSolarTerm().getSeason() == Season.SUMMER
-                ) {
+                if (solarDataManager.getSolarTerm().isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = this.level().getBiome(this.blockPosition()).value();
-                    if (b.warmEnoughToRain(this.blockPosition())) {
-                        if (!this.hasEffect(Ecliptic.EffectRegistry.HEAT_STROKE)) {
-                            this.addEffect(new MobEffectInstance(Ecliptic.EffectRegistry.HEAT_STROKE,1200));
-                        }
+                    if (b.getTemperature(this.blockPosition()) > 0.5f) {
+                        boolean isDaytime = this.level().getDayTime() < 14000L;
+                        if (!this.isInWaterOrRain()
+                                && ((isDaytime && (this.level().canSeeSky(this.blockPosition()))))
+                        )
+                            if (!this.hasEffect(Ecliptic.EffectRegistry.HEAT_STROKE)) {
+                                this.addEffect(new MobEffectInstance(Ecliptic.EffectRegistry.HEAT_STROKE, 1200));
+                            }
                     }
                 }
 
