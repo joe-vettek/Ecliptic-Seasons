@@ -36,14 +36,14 @@ public abstract class MixinServerPlayer extends Player {
 
     @Inject(at = {@At("RETURN")}, method = {"tick"})
     private void mixin_init(CallbackInfo ci) {
-        if (level().getRandom().nextInt(10) == 0)
+        if (level().getRandom().nextInt(60) == 0)
             AllListener.getSaveDataLazy(level()).ifPresent(solarDataManager -> {
                 if (solarDataManager.getSolarTerm().getSeason() == Season.SUMMER
                 ) {
                     var b = this.level().getBiome(this.blockPosition()).value();
                     if (b.warmEnoughToRain(this.blockPosition())) {
                         if (!this.hasEffect(Ecliptic.EffectRegistry.HEAT_STROKE)) {
-                            this.addEffect(new MobEffectInstance(Ecliptic.EffectRegistry.HEAT_STROKE,120));
+                            this.addEffect(new MobEffectInstance(Ecliptic.EffectRegistry.HEAT_STROKE,1200));
                         }
                     }
                 }
