@@ -5,7 +5,7 @@ import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.core.solar.SolarAngelHelper;
-import com.teamtea.ecliptic.api.biome.Humidity;
+import com.teamtea.ecliptic.api.constant.biome.Humidity;
 import net.minecraft.client.Minecraft;
 
 import net.minecraft.client.player.LocalPlayer;
@@ -41,7 +41,7 @@ public final class OverlayEventHandler {
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);
                     double env = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
-                    int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level().getDayTime(), clientPlayer.level());
+                    int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level(), clientPlayer.level().getDayTime());
 
                     BAR_4.renderStatusBar(event.getGuiGraphics(), event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),level,clientPlayer, solar, dayTime, env, solarTime);
                 }

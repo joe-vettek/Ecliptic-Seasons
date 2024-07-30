@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.api.biome;
+package com.teamtea.ecliptic.api.constant.biome;
 
 
 import net.minecraft.ChatFormatting;

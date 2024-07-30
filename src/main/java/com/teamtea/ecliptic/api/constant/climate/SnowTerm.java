@@ -1,6 +1,6 @@
-package com.teamtea.ecliptic.api.climate;
+package com.teamtea.ecliptic.api.constant.climate;
 
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 
 public enum SnowTerm {
 

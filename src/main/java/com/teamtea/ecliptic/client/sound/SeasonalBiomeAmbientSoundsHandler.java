@@ -1,23 +1,19 @@
 package com.teamtea.ecliptic.client.sound;
 
 import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.solar.Season;
+import com.teamtea.ecliptic.api.constant.solar.Season;
+import com.teamtea.ecliptic.api.util.SimpleUtil;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.solar.SolarAngelHelper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.*;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.biome.AmbientAdditionsSettings;
-import net.minecraft.world.level.biome.AmbientMoodSettings;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,7 +21,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
     private static final int LOOP_SOUND_CROSS_FADE_TIME = 40;
@@ -77,8 +72,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                 case SUMMER -> {
                     // if (player.level().isNight())
                     // 客户端不计算是否为夜晚
-                    var aa = SolarAngelHelper.getSolarAngelTime(player.level().getDayTime(), player.level());
-                    if (12000 < aa && aa < 22000) {
+                    if (!SimpleUtil.isDay(player.level())) {
                         if (!(biome.is(BiomeTags.IS_SAVANNA)
                                 && !biome.is(Tags.Biomes.IS_CAVE)
                                 && !biome.is(Tags.Biomes.IS_DESERT)

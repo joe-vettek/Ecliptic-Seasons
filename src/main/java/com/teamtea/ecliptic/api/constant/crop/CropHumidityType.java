@@ -1,7 +1,7 @@
-package com.teamtea.ecliptic.api.crop;
+package com.teamtea.ecliptic.api.constant.crop;
 
 
-import com.teamtea.ecliptic.api.biome.Humidity;
+import com.teamtea.ecliptic.api.constant.biome.Humidity;
 import net.minecraft.resources.ResourceLocation;
 import com.teamtea.ecliptic.Ecliptic;
 

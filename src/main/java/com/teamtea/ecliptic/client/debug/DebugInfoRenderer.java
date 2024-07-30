@@ -1,7 +1,7 @@
 package com.teamtea.ecliptic.client.debug;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
@@ -10,7 +10,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import org.lwjgl.opengl.GL11;

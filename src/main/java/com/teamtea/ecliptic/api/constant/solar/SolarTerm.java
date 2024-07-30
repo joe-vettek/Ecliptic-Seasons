@@ -1,8 +1,8 @@
-package com.teamtea.ecliptic.api.solar;
+package com.teamtea.ecliptic.api.constant.solar;
 
-import com.teamtea.ecliptic.api.EclipticBiomeTags;
-import com.teamtea.ecliptic.api.climate.*;
-import com.teamtea.ecliptic.api.solar.color.*;
+import com.teamtea.ecliptic.api.constant.climate.*;
+import com.teamtea.ecliptic.api.constant.solar.color.*;
+import com.teamtea.ecliptic.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -75,19 +75,19 @@ public enum SolarTerm {
     }
 
     public SolarTermColor getSolarTermColor(TagKey<Biome> biomeTagKey) {
-        if (biomeTagKey.equals(EclipticBiomeTags.RAINLESS)) {
+        if (biomeTagKey.equals(SeasonTypeBiomeTags.RAINLESS)) {
             return NoneSolarTermColors.get(this.ordinal());
-        } else if (biomeTagKey.equals(EclipticBiomeTags.ARID)) {
+        } else if (biomeTagKey.equals(SeasonTypeBiomeTags.ARID)) {
             return NoneSolarTermColors.get(this.ordinal());
-        } else if (biomeTagKey.equals(EclipticBiomeTags.DROUGHTY)) {
+        } else if (biomeTagKey.equals(SeasonTypeBiomeTags.DROUGHTY)) {
             return SlightlySolarTermColors.get(this.ordinal());
-        } else if (biomeTagKey.equals(EclipticBiomeTags.SOFT)) {
+        } else if (biomeTagKey.equals(SeasonTypeBiomeTags.SOFT)) {
             return SlightlySolarTermColors.get(this.ordinal());
-        } else if (biomeTagKey.equals(EclipticBiomeTags.RAINY)) {
+        } else if (biomeTagKey.equals(SeasonTypeBiomeTags.RAINY)) {
             return SlightlySolarTermColors.get(this.ordinal());
-        } else if (biomeTagKey.equals(EclipticBiomeTags.MONSOONAL)) {
+        } else if (biomeTagKey.equals(SeasonTypeBiomeTags.MONSOONAL)) {
             return RainySolarTermColors.values()[this.ordinal()];
-        } else if (biomeTagKey.equals(EclipticBiomeTags.SEASONAL)) {
+        } else if (biomeTagKey.equals(SeasonTypeBiomeTags.SEASONAL)) {
             return TemperateSolarTermColors.values()[this.ordinal()];
         } else {
             return NoneSolarTermColors.get(this.ordinal());
@@ -108,17 +108,17 @@ public enum SolarTerm {
 
 
     public BiomeRain getBiomeRain(Holder<Biome> biomeHolder) {
-        if (!biomeHolder.is(BiomeTags.IS_OVERWORLD) || biomeHolder.is(EclipticBiomeTags.RAINLESS)) {
+        if (!biomeHolder.is(BiomeTags.IS_OVERWORLD) || biomeHolder.is(SeasonTypeBiomeTags.RAINLESS)) {
             return FlatRain.RAINLESS;
-        } else if (biomeHolder.is(EclipticBiomeTags.ARID)) {
+        } else if (biomeHolder.is(SeasonTypeBiomeTags.ARID)) {
             return FlatRain.ARID;
-        } else if (biomeHolder.is(EclipticBiomeTags.DROUGHTY)) {
+        } else if (biomeHolder.is(SeasonTypeBiomeTags.DROUGHTY)) {
             return FlatRain.DROUGHTY;
-        } else if (biomeHolder.is(EclipticBiomeTags.SOFT)) {
+        } else if (biomeHolder.is(SeasonTypeBiomeTags.SOFT)) {
             return FlatRain.SOFT;
-        } else if (biomeHolder.is(EclipticBiomeTags.RAINY)) {
+        } else if (biomeHolder.is(SeasonTypeBiomeTags.RAINY)) {
             return FlatRain.RAINY;
-        } else if (biomeHolder.is(EclipticBiomeTags.MONSOONAL)) {
+        } else if (biomeHolder.is(SeasonTypeBiomeTags.MONSOONAL)) {
             return MonsoonRain.values()[this.ordinal()];
         } else {
             return TemperateRain.values()[this.ordinal()];

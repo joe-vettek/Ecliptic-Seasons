@@ -1,13 +1,12 @@
 package com.teamtea.ecliptic.common.core.solar;
 
 import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.common.network.SolarTermsMessage;
 import com.teamtea.ecliptic.config.ServerConfig;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;

@@ -1,31 +1,20 @@
 package com.teamtea.ecliptic.mixin.common.entity.player;
 
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.solar.Season;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.client.sound.SeasonalBiomeAmbientSoundsHandler;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
+import com.teamtea.ecliptic.api.util.SimpleUtil;
 import com.teamtea.ecliptic.common.AllListener;
-import com.teamtea.ecliptic.config.ClientConfig;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.resources.sounds.AmbientSoundHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin({ServerPlayer.class})
 public abstract class MixinServerPlayer extends Player {
@@ -42,7 +31,7 @@ public abstract class MixinServerPlayer extends Player {
                 if (solarDataManager.getSolarTerm().isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = this.level().getBiome(this.blockPosition()).value();
                     if (b.getTemperature(this.blockPosition()) > 0.5f) {
-                        boolean isDaytime = this.level().getDayTime() < 14000L;
+                        boolean isDaytime = SimpleUtil.isDay(level());
                         if (!this.isInWaterOrRain()
                                 && ((isDaytime && (this.level().canSeeSky(this.blockPosition()))))
                         )

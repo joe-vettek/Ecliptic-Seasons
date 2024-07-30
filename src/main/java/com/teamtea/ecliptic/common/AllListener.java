@@ -2,8 +2,8 @@ package com.teamtea.ecliptic.common;
 
 
 import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.EclipticBiomeTags;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.util.EclipticTagTool;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.core.crop.CropGrowthHandler;
@@ -25,7 +25,6 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -57,7 +56,7 @@ public class AllListener {
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
         BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
         WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess());
-        EclipticBiomeTags.BIOME_TAG_KEY_MAP.clear();
+        EclipticTagTool.BIOME_TAG_KEY_MAP.clear();
     }
 
 

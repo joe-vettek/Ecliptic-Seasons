@@ -1,8 +1,7 @@
 package com.teamtea.ecliptic.common.core.solar;
 
 
-import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -11,11 +10,11 @@ import net.minecraft.world.level.LevelTimeAccess;
 
 public class SolarAngelHelper {
 
-    public static float getSeasonCelestialAngle(long worldTime, LevelTimeAccess world) {
-        return getCelestialAngle(getSolarAngelTime(worldTime, world));
+    public static float getSeasonCelestialAngle( LevelTimeAccess world,long worldTime) {
+        return getCelestialAngle(getSolarAngelTime(world, worldTime));
     }
 
-    public static int getSolarAngelTime(long worldTime, LevelTimeAccess world)
+    public static int getSolarAngelTime(LevelTimeAccess world,long worldTime)
     {
         if (world instanceof Level level &&AllListener.getSaveData(level)!=null)
         {

@@ -1,8 +1,8 @@
 package com.teamtea.ecliptic.common.core.biome;
 
-import com.teamtea.ecliptic.Ecliptic;
-import com.teamtea.ecliptic.api.EclipticBiomeTags;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.util.EclipticTagTool;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.tag.SeasonTypeBiomeTags;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
@@ -54,6 +54,6 @@ public class BiomeClimateManager {
     }
 
     public static Boolean agent$hasPrecipitation(Biome biome) {
-       return ! EclipticBiomeTags.getTag(biome).equals(EclipticBiomeTags.RAINLESS);
+       return ! EclipticTagTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
     }
 }

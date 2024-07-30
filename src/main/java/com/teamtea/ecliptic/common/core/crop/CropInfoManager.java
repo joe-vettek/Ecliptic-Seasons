@@ -1,12 +1,11 @@
 package com.teamtea.ecliptic.common.core.crop;
 
 
-import com.teamtea.ecliptic.api.crop.CropHumidityInfo;
-import com.teamtea.ecliptic.api.crop.CropHumidityType;
-import com.teamtea.ecliptic.api.crop.CropSeasonInfo;
-import com.teamtea.ecliptic.api.crop.CropSeasonType;
+import com.teamtea.ecliptic.api.constant.crop.CropHumidityInfo;
+import com.teamtea.ecliptic.api.constant.crop.CropHumidityType;
+import com.teamtea.ecliptic.api.constant.crop.CropSeasonInfo;
+import com.teamtea.ecliptic.api.constant.crop.CropSeasonType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;

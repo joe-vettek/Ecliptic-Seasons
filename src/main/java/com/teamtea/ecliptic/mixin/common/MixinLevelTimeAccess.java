@@ -21,7 +21,7 @@ public interface MixinLevelTimeAccess extends LevelTimeAccess{
     @Override
     default float getTimeOfDay(float p_46943_) {
         // TeaStory.logger(p_46943_,dayTime());
-        return SolarAngelHelper.getSeasonCelestialAngle(dayTime(),(LevelTimeAccess)(Object)this);
+        return SolarAngelHelper.getSeasonCelestialAngle((LevelTimeAccess)(Object)this, dayTime());
     }
 
     @Override

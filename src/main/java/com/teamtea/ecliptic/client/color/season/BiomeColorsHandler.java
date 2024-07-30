@@ -1,9 +1,9 @@
 package com.teamtea.ecliptic.client.color.season;
 
-import com.teamtea.ecliptic.api.EclipticBiomeTags;
-import com.teamtea.ecliptic.api.EclipticBiomeTagsClientTool;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
-import com.teamtea.ecliptic.api.solar.color.SolarTermColor;
+import com.teamtea.ecliptic.api.util.EclipticTagClientTool;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.solar.color.SolarTermColor;
+import com.teamtea.ecliptic.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.ecliptic.client.core.ColorHelper;
 import com.teamtea.ecliptic.common.AllListener;
 import net.minecraft.client.Minecraft;
@@ -44,7 +44,7 @@ public class BiomeColorsHandler {
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
 
-                int[] newGrassBuffer = newGrassBufferMap.getOrDefault(EclipticBiomeTagsClientTool.getTag(biome), GrassColor.pixels);
+                int[] newGrassBuffer = newGrassBufferMap.getOrDefault(EclipticTagClientTool.getTag(biome), GrassColor.pixels);
                 return k > newGrassBuffer.length ? -65281 : newGrassBuffer[k];
             }).orElse(originColor);
         } else return -1;
@@ -68,7 +68,7 @@ public class BiomeColorsHandler {
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
                 
-                int[] newFoliageBuffer = newFoliageBufferMap.getOrDefault(EclipticBiomeTagsClientTool.getTag(biome), FoliageColor.pixels);
+                int[] newFoliageBuffer = newFoliageBufferMap.getOrDefault(EclipticTagClientTool.getTag(biome), FoliageColor.pixels);
                 return k > newFoliageBuffer.length ? originColor : newFoliageBuffer[k];
             }).orElse(originColor);
         } else return biome.getFoliageColor();
@@ -80,7 +80,7 @@ public class BiomeColorsHandler {
             if (clientLevel != null) {
                 AllListener.getSaveDataLazy(clientLevel).ifPresent(data ->
                 {
-                    for (TagKey<Biome> biomeTagKey : EclipticBiomeTags.BIOMES) {
+                    for (TagKey<Biome> biomeTagKey : SeasonTypeBiomeTags.BIOMES) {
                         int[] newFoliageBuffer = new int[65536];
                         int[] newGrassBuffer = new int[65536];
                         int[] foliageBuffer = FoliageColor.pixels;

@@ -1,14 +1,13 @@
 package com.teamtea.ecliptic.common.core.biome;
 
-import com.teamtea.ecliptic.api.climate.BiomeRain;
-import com.teamtea.ecliptic.api.climate.SnowTerm;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.climate.BiomeRain;
+import com.teamtea.ecliptic.api.constant.climate.SnowTerm;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;

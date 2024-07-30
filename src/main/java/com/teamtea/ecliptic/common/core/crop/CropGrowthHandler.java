@@ -1,9 +1,9 @@
 package com.teamtea.ecliptic.common.core.crop;
 
 
-import com.teamtea.ecliptic.api.biome.Humidity;
-import com.teamtea.ecliptic.api.crop.CropHumidityInfo;
-import com.teamtea.ecliptic.api.crop.CropSeasonInfo;
+import com.teamtea.ecliptic.api.constant.biome.Humidity;
+import com.teamtea.ecliptic.api.constant.crop.CropHumidityInfo;
+import com.teamtea.ecliptic.api.constant.crop.CropSeasonInfo;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.config.ServerConfig;
 import net.minecraft.core.BlockPos;

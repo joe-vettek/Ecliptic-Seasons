@@ -1,6 +1,6 @@
-package com.teamtea.ecliptic.api;
+package com.teamtea.ecliptic.api.util;
 
-import com.teamtea.ecliptic.Ecliptic;
+import com.teamtea.ecliptic.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -9,25 +9,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class EclipticBiomeTags {
-
-    public static final TagKey<Biome> SEASONAL = create("seasonal");
-    public static final TagKey<Biome> MONSOONAL = create("monsoonal");
-
-    public static final TagKey<Biome> RAINLESS = create("rainless");
-    public static final TagKey<Biome> ARID = create("arid");
-    public static final TagKey<Biome> DROUGHTY = create("droughty");
-    public static final TagKey<Biome> SOFT = create("soft");
-    public static final TagKey<Biome> RAINY = create("rainy");
-
-    public static final List<TagKey<Biome>> BIOMES = List.of(SEASONAL, MONSOONAL, RAINLESS, ARID, DROUGHTY, SOFT, RAINY);
-
-    private static TagKey<Biome> create(String s) {
-        return TagKey.create(Registries.BIOME, Ecliptic.rl(s));
-    }
+public class EclipticTagTool {
 
 
     public static final Map<Biome, TagKey<Biome>> BIOME_TAG_KEY_MAP = new HashMap<>(128);
@@ -47,7 +31,7 @@ public class EclipticBiomeTags {
                     if (resourceKeyBiomeEntry.getValue() == biome) {
                         var holder = biomes.get().getHolder(resourceKeyBiomeEntry.getKey());
                         if (holder.isPresent()) {
-                            var tag = holder.get().tags().filter(BIOMES::contains).findFirst();
+                            var tag = holder.get().tags().filter(SeasonTypeBiomeTags.BIOMES::contains).findFirst();
                             if (tag.isPresent()) {
                                 bt = tag.get();
                             }
@@ -57,7 +41,7 @@ public class EclipticBiomeTags {
             }
         }
         if (bt == null)
-            bt = RAINLESS;
+            bt = SeasonTypeBiomeTags.RAINLESS;
         BIOME_TAG_KEY_MAP.put(biome, bt);
         return bt;
     }

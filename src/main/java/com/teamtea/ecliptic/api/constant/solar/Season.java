@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.api.solar;
+package com.teamtea.ecliptic.api.constant.solar;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

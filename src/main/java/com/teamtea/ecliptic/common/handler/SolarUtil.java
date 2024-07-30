@@ -1,7 +1,7 @@
 package com.teamtea.ecliptic.common.handler;
 
-import com.teamtea.ecliptic.api.solar.Season;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
+import com.teamtea.ecliptic.api.constant.solar.Season;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
 import net.minecraft.world.level.Level;

@@ -38,6 +38,7 @@ public class ClientConfig
         public static ForgeConfigSpec.BooleanValue forceChunkRenderUpdate;
         public static ForgeConfigSpec.BooleanValue snowyWinter;
         public static ForgeConfigSpec.BooleanValue deeperSnow;
+        public static ForgeConfigSpec.BooleanValue particle;
 
         private static void load(ForgeConfigSpec.Builder builder)
         {
@@ -48,6 +49,8 @@ public class ClientConfig
                     .define("snowyWinter", true);
             deeperSnow = builder.comment("Occasionally a thicker layer of snow will cover the flowers and grass, especially.")
                     .define("deeperSnow", false);
+            particle = builder.comment("Particle.")
+                    .define("Particle", true);
             builder.pop();
         }
     }

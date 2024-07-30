@@ -1,8 +1,7 @@
-package com.teamtea.ecliptic.api.climate;
+package com.teamtea.ecliptic.api.constant.climate;
 
-import com.teamtea.ecliptic.api.solar.Season;
-import com.teamtea.ecliptic.api.solar.SolarTerm;
-import net.minecraft.network.chat.Component;
+import com.teamtea.ecliptic.api.constant.solar.Season;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 
 public enum TemperateRain implements BiomeRain {
     // Spring Solar Terms

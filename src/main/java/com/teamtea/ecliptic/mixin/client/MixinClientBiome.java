@@ -1,18 +1,15 @@
 package com.teamtea.ecliptic.mixin.client;
 
 
-import com.teamtea.ecliptic.api.EclipticBiomeTags;
-import com.teamtea.ecliptic.api.EclipticBiomeTagsClientTool;
-import com.teamtea.ecliptic.common.core.biome.BiomeClimateManager;
+import com.teamtea.ecliptic.api.util.EclipticTagClientTool;
+import com.teamtea.ecliptic.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -30,6 +27,6 @@ public abstract class MixinClientBiome {
     @Inject(at = {@At("HEAD")}, method = {"hasPrecipitation"}, cancellable = true)
     public void mixin_hasPrecipitation(CallbackInfoReturnable<Boolean > cir) {
         if (FMLLoader.getDist()== Dist.CLIENT)
-            cir.setReturnValue(! EclipticBiomeTagsClientTool.getTag((Biome)(Object)this).equals(EclipticBiomeTags.RAINLESS));
+            cir.setReturnValue(! EclipticTagClientTool.getTag((Biome)(Object)this).equals(SeasonTypeBiomeTags.RAINLESS));
     }
 }

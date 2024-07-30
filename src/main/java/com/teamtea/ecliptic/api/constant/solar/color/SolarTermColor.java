@@ -1,4 +1,4 @@
-package com.teamtea.ecliptic.api.solar.color;
+package com.teamtea.ecliptic.api.constant.solar.color;
 
 public interface SolarTermColor {
 
