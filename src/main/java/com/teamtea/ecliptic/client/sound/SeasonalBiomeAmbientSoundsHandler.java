@@ -3,8 +3,6 @@ package com.teamtea.ecliptic.client.sound;
 import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.constant.solar.Season;
 import com.teamtea.ecliptic.api.util.SimpleUtil;
-import com.teamtea.ecliptic.common.AllListener;
-import com.teamtea.ecliptic.common.core.solar.SolarAngelHelper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.*;
@@ -34,6 +32,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
     @Nullable
     private Biome previousBiome;
     private Season previousSeason;
+    private boolean previousIsDay;
 
     public SeasonalBiomeAmbientSoundsHandler(LocalPlayer localPlayer, SoundManager soundManager, BiomeManager biomeManager) {
         this.random = localPlayer.level().getRandom();
@@ -54,12 +53,13 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             this.previousBiome = biome.value();
         }
 
-        var saveDataLazy = AllListener.getSaveDataLazy(player.level());
-        if (saveDataLazy.resolve().isPresent()) {
-            var solarDataManager = saveDataLazy.resolve().get();
-            var season = solarDataManager.getSolarTerm().getSeason();
-            if (season != this.previousSeason) {
+        {
+            var season = SimpleUtil.getNowSolarTerm(player.level()).getSeason();
+            boolean isDayNow = SimpleUtil.isDay(player.level());
+            if (season != this.previousSeason || isDayNow != this.previousIsDay) {
                 this.loopSounds.values().forEach(SeasonalBiomeAmbientSoundsHandler.LoopSoundInstance::fadeOut);
+                this.previousSeason = season;
+                this.previousIsDay = isDayNow;
             }
 
             SoundEvent soundEvent = null;
@@ -72,7 +72,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                 case SUMMER -> {
                     // if (player.level().isNight())
                     // 客户端不计算是否为夜晚
-                    if (!SimpleUtil.isDay(player.level())) {
+                    if (!isDayNow) {
                         if (!(biome.is(BiomeTags.IS_SAVANNA)
                                 && !biome.is(Tags.Biomes.IS_CAVE)
                                 && !biome.is(Tags.Biomes.IS_DESERT)

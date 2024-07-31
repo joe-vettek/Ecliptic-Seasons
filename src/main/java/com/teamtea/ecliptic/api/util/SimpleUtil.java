@@ -34,4 +34,8 @@ public class SimpleUtil {
         } else return dayTime >= 24000 + (6000 - (halfTermTime))
                 || dayTime <= 6000 + (halfTermTime);
     }
+
+    public static boolean isNight(Level level) {
+        return !isDay(level);
+    }
 }

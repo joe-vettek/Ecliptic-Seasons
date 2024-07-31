@@ -21,8 +21,10 @@ public class HeatStrokeEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entityLivingBaseIn, int amplifier) {
-        if (entityLivingBaseIn.getHealth() > 0.1F) {
-            entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().magic(), entityLivingBaseIn.getHealth() * 0.025f + 0.001f);
+        // if (entityLivingBaseIn.getHealth() > 0.1F)
+        {
+            // need a damage tag is bypasses_armor
+            entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().generic(), entityLivingBaseIn.getHealth() * 0.025f + 0.001f);
         }
     }
 

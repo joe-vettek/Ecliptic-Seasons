@@ -1,7 +1,9 @@
 package com.teamtea.ecliptic.common.command;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
+import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import com.teamtea.ecliptic.common.core.solar.SolarDataManager;
@@ -15,6 +17,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -22,6 +25,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.teamtea.ecliptic.Ecliptic;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +40,26 @@ public class CommandHandler {
                         .then(Commands.literal("set")
                                 .then(Commands.argument("day", IntegerArgumentType.integer())
                                         .executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
+                        .then(Commands.literal("setTerm")
+                                .then(Commands.argument("term", StringArgumentType.word()).suggests((context, builder) -> {
+                                            String pre = "";
+                                            try {
+                                                pre = context.getArgument("term", ResourceLocation.class).getPath();
+                                            } catch (IllegalArgumentException e) {
+                                                // e.printStackTrace();
+                                            }
+                                            String finalPre = pre;
+                                            Arrays.stream(SolarTerm.values())
+                                                    .filter(solarTerm -> solarTerm!=SolarTerm.NONE)
+                                                    .map(Enum::toString)
+                                                    .filter(s -> s.contains(finalPre)).forEach(builder::suggest);
+                                            return builder.buildFuture();
+                                        })
+                                        .executes(commandContext -> {
+                                            String s = StringArgumentType.getString(commandContext, "term");
+                                            int day=SolarTerm.valueOf(s).ordinal()*7;
+                                            return setDay(commandContext.getSource(), day);
+                                        })))
                         .then(Commands.literal("add")
                                 .then(Commands.argument("day", IntegerArgumentType.integer()).executes(commandContext -> addDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day"))))))
                 .then(Commands.literal("weather")
@@ -63,7 +87,7 @@ public class CommandHandler {
                     biomeWeather.rainTime = setRain ? ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size : 0;
                     biomeWeather.clearTime = setRain ? 0 : ServerLevel.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size;
 
-                    biomeWeather.thunderTime =  isThunder ? ServerLevel.THUNDER_DURATION.sample(sourceStack.getLevel().getRandom()) / size: 0;
+                    biomeWeather.thunderTime = isThunder ? ServerLevel.THUNDER_DURATION.sample(sourceStack.getLevel().getRandom()) / size : 0;
 
                     found = true;
                 }
