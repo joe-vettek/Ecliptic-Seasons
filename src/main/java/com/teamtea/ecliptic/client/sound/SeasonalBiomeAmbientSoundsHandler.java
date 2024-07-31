@@ -60,6 +60,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                 this.loopSounds.values().forEach(SeasonalBiomeAmbientSoundsHandler.LoopSoundInstance::fadeOut);
                 this.previousSeason = season;
                 this.previousIsDay = isDayNow;
+                this.loopSounds.clear();
             }
 
             SoundEvent soundEvent = null;
