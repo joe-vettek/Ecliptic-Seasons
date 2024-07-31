@@ -38,4 +38,10 @@ public class SimpleUtil {
     public static boolean isNight(Level level) {
         return !isDay(level);
     }
+
+    public static boolean isNoon(Level level) {
+        long dayTime = level.dimensionType().fixedTime().orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
+        long termTime = getNowSolarTerm(level).getDayTime();
+        return 6000 - (termTime / 6) < dayTime && dayTime < 6000 + (termTime / 4);
+    }
 }

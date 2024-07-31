@@ -3,8 +3,10 @@ package com.teamtea.ecliptic.api.util;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.stats.ServerRecipeBook;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 
