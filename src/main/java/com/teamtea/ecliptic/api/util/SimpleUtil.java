@@ -31,6 +31,7 @@ public class SimpleUtil {
         long halfTermTime = termTime / 2;
         if (termTime <= 12000) {
             return 6000 - (halfTermTime) < dayTime && dayTime < 6000 + (halfTermTime);
-        } else return dayTime <= 24000 + (6000 - (halfTermTime)) && dayTime >= 6000 + (halfTermTime);
+        } else return dayTime >= 24000 + (6000 - (halfTermTime))
+                || dayTime <= 6000 + (halfTermTime);
     }
 }

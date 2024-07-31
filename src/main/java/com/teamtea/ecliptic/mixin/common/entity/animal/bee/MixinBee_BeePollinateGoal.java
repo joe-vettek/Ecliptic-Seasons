@@ -1,10 +1,9 @@
 package com.teamtea.ecliptic.mixin.common.entity.animal.bee;
 
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.teamtea.ecliptic.common.core.biome.WeatherManager;
+import com.teamtea.ecliptic.api.util.WeatherUtil;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
@@ -26,7 +25,7 @@ public class MixinBee_BeePollinateGoal {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isRaining()Z")
     )
     private boolean canBeeUseCheckRain(Level instance, Operation<Boolean> original) {
-        return WeatherManager.wantsToEnterHiveCheckRain(this$0);
+        return WeatherUtil.isEntityInRain(this$0);
     }
 
 
@@ -35,7 +34,7 @@ public class MixinBee_BeePollinateGoal {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isRaining()Z")
     )
     private boolean canBeeContinueToUseCheckRain(Level instance, Operation<Boolean> original) {
-        return WeatherManager.wantsToEnterHiveCheckRain(this$0);
+        return WeatherUtil.isEntityInRain(this$0);
     }
 
 }

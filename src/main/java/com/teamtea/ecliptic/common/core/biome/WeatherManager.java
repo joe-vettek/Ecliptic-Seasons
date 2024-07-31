@@ -1,8 +1,10 @@
 package com.teamtea.ecliptic.common.core.biome;
 
+import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.constant.climate.BiomeRain;
 import com.teamtea.ecliptic.api.constant.climate.SnowTerm;
 import com.teamtea.ecliptic.api.constant.solar.SolarTerm;
+import com.teamtea.ecliptic.api.util.SimpleUtil;
 import com.teamtea.ecliptic.common.AllListener;
 import com.teamtea.ecliptic.common.handler.SolarUtil;
 import com.teamtea.ecliptic.common.network.BiomeWeatherMessage;
@@ -18,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -48,6 +50,7 @@ public class WeatherManager {
             }
         return 1.0f;
     }
+
     public static Float getMaximumRainLevel(Level level, float p46723) {
         var ws = getBiomeList(level);
         if (ws != null)
@@ -141,12 +144,6 @@ public class WeatherManager {
             return false;
         }
         var biome = serverLevel.getBiome(pos);
-        // if (getBiomeList(serverLevel) != null)
-        //     for (BiomeWeather biomeWeather : getBiomeList(serverLevel)) {
-        //         if (biome == biomeWeather.biomeHolder) {
-        //             return biomeWeather.shouldRain();
-        //         }
-        //     }
         return isRainingAtBiome(serverLevel, biome.get());
     }
 
@@ -271,9 +268,23 @@ public class WeatherManager {
         }
     }
 
-    public static boolean wantsToEnterHiveCheckRain(Bee bee) {
-        return isRainingAt((ServerLevel) bee.level(), bee.blockPosition());
-        // return bee.level().isRainingAt(bee.getOnPos().above());
+    public static void tickPlayerSeasonEffecct(ServerPlayer player) {
+        var level = player.level();
+        if (level.getRandom().nextInt(60) == 0)
+            AllListener.getSaveDataLazy(level).ifPresent(solarDataManager -> {
+                if (SimpleUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
+                    var b = level.getBiome(player.blockPosition()).value();
+                    if (b.getTemperature(player.blockPosition()) > 0.5f) {
+                        boolean isDaytime = SimpleUtil.isDay(level);
+                        if (!player.isInWaterOrRain()
+                                && ((isDaytime && (level.canSeeSky(player.blockPosition()))))
+                        )
+                            if (!player.hasEffect(Ecliptic.EffectRegistry.HEAT_STROKE)) {
+                                player.addEffect(new MobEffectInstance(Ecliptic.EffectRegistry.HEAT_STROKE, 120));
+                            }
+                    }
+                }
+            });
     }
 
 
@@ -373,7 +384,7 @@ public class WeatherManager {
                     BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
                     float weight = biomeRain.getRainChane()
                             * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall())
-                            * ((ServerConfig.Season.rainChanceMultiplier.get()*1f)/100f);
+                            * ((ServerConfig.Season.rainChanceMultiplier.get() * 1f) / 100f);
                     if (level.getRandom().nextInt(1000) / 1000.f < weight) {
                         biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                     } else {

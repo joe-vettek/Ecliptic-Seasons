@@ -32,10 +32,20 @@ public class ParticleUtil {
         //
         //     }
         // }
-        if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN) {
+        // if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN)
+        {
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+            var sd=SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
+            int chanceW=19;
+            switch (sd){
+                case SPRING -> chanceW=21;
+                case SUMMER -> chanceW=31;
+                case AUTUMN -> chanceW=9;
+                case WINTER -> chanceW=15;
+            }
+
             for (int j = 0; j < 667; ++j) {
-                if (clientLevel.getRandom().nextInt(15) == 0) {
+                if (clientLevel.getRandom().nextInt(chanceW) == 0) {
                     doAnimateTick(clientLevel, x, y, z, 16, clientLevel.getRandom(), blockpos$mutableblockpos);
                     doAnimateTick(clientLevel, x, y, z, 32, clientLevel.getRandom(), blockpos$mutableblockpos);
                 }
