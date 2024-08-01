@@ -3,7 +3,9 @@ package com.teamtea.ecliptic.mixin.common.entity.animal.pandas;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.teamtea.ecliptic.client.core.ClientWeatherChecker;
 import com.teamtea.ecliptic.common.core.biome.WeatherManager;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.entity.animal.Panda;
@@ -19,7 +21,7 @@ public class MixinPanda {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
     private boolean mixin$tick(Level instance, Operation<Boolean> original) {
-        return WeatherManager.isThunderAt((ServerLevel) ((Panda)(Object)this).level(),((Panda)(Object)this).blockPosition());
+        return WeatherManager.isThunderAt((ServerLevel) ((Panda) (Object) this).level(), ((Panda) (Object) this).blockPosition());
     }
 
     @WrapOperation(
@@ -27,6 +29,10 @@ public class MixinPanda {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
     private boolean mixin$isScared(Level instance, Operation<Boolean> original) {
-        return WeatherManager.isThunderAt((ServerLevel) ((Panda)(Object)this).level(),((Panda)(Object)this).blockPosition());
+        if (instance instanceof ServerLevel serverLevel)
+            return WeatherManager.isThunderAt(serverLevel, ((Panda) (Object) this).blockPosition());
+        else if (instance instanceof ClientLevel clientLevel)
+            return ClientWeatherChecker.isThunderAt(clientLevel, ((Panda) (Object) this).blockPosition());
+        return original.call(instance);
     }
 }

@@ -29,14 +29,12 @@ public class EclipticMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-
         int st = mixinClassName.indexOf(MIXIN_COMPAT_PACKAGE);
         if (st > -1) {
             String sub = Arrays.stream(mixinClassName.split(MIXIN_COMPAT_PACKAGE)).toList().get(1);
             String modid = Arrays.stream(sub.split("\\.")).toList().get(0);
             return FMLLoader.getLoadingModList().getModFileById(modid) != null;
         }
-
         return true;
     }
 
