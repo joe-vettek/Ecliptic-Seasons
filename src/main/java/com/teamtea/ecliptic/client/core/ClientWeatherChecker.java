@@ -55,6 +55,7 @@ public class ClientWeatherChecker {
         if (lists != null)
             for (WeatherManager.BiomeWeather biomeWeather : lists) {
                 if (biomeWeather.biomeHolder == biomeHolder) {
+                    //  0.2<f<3(2.3)
                     return biomeWeather.rainTime > 0 ? 1f : 0.0f;
                 }
             }
@@ -169,5 +170,10 @@ public class ClientWeatherChecker {
             return false;
         }
         return getStandardThunderLevel(1.0f, clientLevel, clientLevel.getBiome(blockPos)) > 0.9f;
+    }
+
+    // 0-》15
+    public static int ModifySnowAmount(int constant) {
+        return 15;
     }
 }

@@ -61,4 +61,14 @@ public class NetworkdUtil {
         });
         return true;
     }
+
+    public static boolean processEmptyMessage(EmptyMessage emptyMessage, Supplier<NetworkEvent.Context> context) {
+        context.get().enqueueWork(() ->
+        {
+            if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+               Minecraft.getInstance().levelRenderer.allChanged();
+            }
+        });
+        return true;
+    }
 }

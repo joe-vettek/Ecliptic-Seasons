@@ -5,6 +5,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +14,9 @@ import java.util.Set;
  * since otherwise the log gets spammed with warnings.
  */
 public class EclipticMixinPlugin implements IMixinConfigPlugin {
+
+    public static final String MIXIN_COMPAT_PACKAGE = "mixin.compat.";
+
     @Override
     public void onLoad(String mixinPackage) {
 
@@ -25,9 +29,14 @@ public class EclipticMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.endsWith("MixinBlockRender2")) {
-            return FMLLoader.getLoadingModList().getModFileById("embeddium") != null;
+
+        int st = mixinClassName.indexOf(MIXIN_COMPAT_PACKAGE);
+        if (st > -1) {
+            String sub = Arrays.stream(mixinClassName.split(MIXIN_COMPAT_PACKAGE)).toList().get(1);
+            String modid = Arrays.stream(sub.split("\\.")).toList().get(0);
+            return FMLLoader.getLoadingModList().getModFileById(modid) != null;
         }
+
         return true;
     }
 

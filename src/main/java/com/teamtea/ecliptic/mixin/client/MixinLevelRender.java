@@ -18,6 +18,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import javax.annotation.Nullable;
 
@@ -95,5 +98,31 @@ public abstract class MixinLevelRender {
     )
     private Biome.Precipitation mixin$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         return WeatherManager.getPrecipitationAt(level,biome,pos);
+    }
+
+
+    @Redirect(method = "renderSnowAndRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;getLightColor(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;)I"))
+    private int mixin$getAdjustedLightColorForSnow(BlockAndTintGetter level, BlockPos pos)
+    {
+        final int packedLight = LevelRenderer.getLightColor(level, pos);
+        // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
+        {
+            // Adjusts the light color via a heuristic that mojang uses to make snow appear more white
+            // This targets both paths, but since we always use the rain rendering, it's fine.
+            final int lightU = packedLight & 0xffff;
+            final int lightV = (packedLight >> 16) & 0xffff;
+            final int brightLightU = (lightU * 3 + 240) / 4;
+            final int brightLightV = (lightV * 3 + 240) / 4;
+            return brightLightU | (brightLightV << 16);
+        }
+        // return packedLight;
+    }
+
+
+    @ModifyConstant(method = "renderSnowAndRain", constant = {@Constant(intValue = 5), @Constant(intValue = 10)})
+    private int mixin$ModifySnowAmount(int constant)
+    {
+        // This constant is used to control how much snow is rendered - 5 with default, 10 with fancy graphics. By default, we bump this all the way to 15.
+        return ClientWeatherChecker.ModifySnowAmount(constant);
     }
 }

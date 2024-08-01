@@ -38,8 +38,8 @@ public class ParticleUtil {
             var sd=SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
             int chanceW=19;
             switch (sd){
-                case SPRING -> chanceW=21;
-                case SUMMER -> chanceW=31;
+                case SPRING -> chanceW=17;
+                case SUMMER -> chanceW=27;
                 case AUTUMN -> chanceW=9;
                 case WINTER -> chanceW=15;
             }

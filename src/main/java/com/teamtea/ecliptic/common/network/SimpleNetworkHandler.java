@@ -3,6 +3,7 @@ package com.teamtea.ecliptic.common.network;
 
 import com.teamtea.ecliptic.Ecliptic;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.NetworkRegistry;
@@ -29,12 +30,24 @@ public final class SimpleNetworkHandler {
         if (FMLLoader.getDist() == Dist.CLIENT)
             a.consumerNetworkThread(NetworkdUtil::processSolarTermsMessage);
         a.add();
+        
         var c = CHANNEL.messageBuilder(BiomeWeatherMessage.class, id++)
                 .encoder(BiomeWeatherMessage::toBytes)
                 .decoder(BiomeWeatherMessage::new);
         if (FMLLoader.getDist() == Dist.CLIENT)
             c.consumerNetworkThread(NetworkdUtil::processBiomeWeatherMessage);
         c.add();
+
+
+        var d = CHANNEL.messageBuilder(EmptyMessage.class, id++)
+                .encoder(EmptyMessage::toBytes)
+                .decoder(EmptyMessage::new);
+        if (FMLLoader.getDist() == Dist.CLIENT)
+            d.consumerNetworkThread(NetworkdUtil::processEmptyMessage);
+        d.add();
+    }
+
+    private static void registerMessage(int i, Class<BiomeWeatherMessage> biomeWeatherMessageClass, Object o) {
     }
 
     // private static <T extends INormalMessage> void registerMessage(int index, Class<T> messageType, Function<FriendlyByteBuf, T> decoder) {
@@ -52,7 +65,12 @@ public final class SimpleNetworkHandler {
         SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
 
-    public static <MSG> void send(List<ServerPlayer> player, MSG msg) {
-        player.forEach(serverPlayer -> send(serverPlayer, msg));
+    public static <MSG> void send(List<ServerPlayer> players, MSG msg) {
+        players.forEach(player -> {
+            // if (player instanceof ServerPlayer serverPlayer)
+            {
+                send(player, msg);
+            }
+        });
     }
 }
