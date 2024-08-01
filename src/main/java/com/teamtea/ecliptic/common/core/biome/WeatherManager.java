@@ -22,10 +22,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -292,53 +294,57 @@ public class WeatherManager {
     }
 
     public static void runWeather(ServerLevel level, BiomeWeather biomeWeather, RandomSource random, int size) {
-        {
-            if (biomeWeather.shouldClear()) {
-                biomeWeather.clearTime--;
-            } else {
-                if (biomeWeather.shouldRain()) {
-                    biomeWeather.rainTime--;
-                    if (!biomeWeather.shouldThunder()) {
-                        BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                        float weight = biomeRain.getThunderChance();
-                        if (level.getRandom().nextInt(1000) / 1000.f < weight) {
-                            biomeWeather.thunderTime = ServerLevel.THUNDER_DURATION.sample(random) / size;
-                        }
-                    }
-                } else {
+
+        if (biomeWeather.shouldClear()) {
+            biomeWeather.clearTime--;
+        } else {
+            if (biomeWeather.shouldRain()) {
+                biomeWeather.rainTime--;
+                if (!biomeWeather.shouldThunder()) {
                     BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                    float weight = biomeRain.getRainChane()
-                            * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall())
-                            * ((ServerConfig.Season.rainChanceMultiplier.get() * 1f) / 100f);
+                    float weight = biomeRain.getThunderChance();
                     if (level.getRandom().nextInt(1000) / 1000.f < weight) {
-                        biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
-                    } else {
-                        // biomeWeather.clearTime = 10 / (size / 30);
-                        biomeWeather.clearTime = ServerLevel.RAIN_DURATION.sample(random) / size;
+                        biomeWeather.thunderTime = ServerLevel.THUNDER_DURATION.sample(random) / size;
                     }
                 }
-            }
-
-            if (biomeWeather.shouldThunder()) {
-                biomeWeather.thunderTime--;
-            }
-            // if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
-            //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-            //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
-            //     //
-            //     // Ecliptic.logger(biomeWeather,weight) ;
-            // }
-
-
-            if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 1) {
-                var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.get(), null);
-                if (snow == WeatherManager.SnowRenderStatus.SNOW) {
-                    biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
-                } else if (snow == WeatherManager.SnowRenderStatus.SNOW_MELT) {
-                    biomeWeather.snowDepth = (byte) Math.max(0, biomeWeather.snowDepth - 1);
+            } else {
+                BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+                float downfall = biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall();
+                if (biomeWeather.biomeHolder.is(BiomeTags.IS_SAVANNA)) {
+                    downfall += 0.2f;
+                }
+                float weight = biomeRain.getRainChane()
+                        * Math.max(0.01f, downfall)
+                        * ((ServerConfig.Season.rainChanceMultiplier.get() * 1f) / 100f);
+                if (level.getRandom().nextInt(1000) / 1000.f < weight) {
+                    biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
+                } else {
+                    // biomeWeather.clearTime = 10 / (size / 30);
+                    biomeWeather.clearTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                 }
             }
         }
+
+        if (biomeWeather.shouldThunder()) {
+            biomeWeather.thunderTime--;
+        }
+        // if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
+        //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+        //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
+        //     //
+        //     // Ecliptic.logger(biomeWeather,weight) ;
+        // }
+
+
+        if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 1) {
+            var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.get(), null);
+            if (snow == WeatherManager.SnowRenderStatus.SNOW) {
+                biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
+            } else if (snow == WeatherManager.SnowRenderStatus.SNOW_MELT) {
+                biomeWeather.snowDepth = (byte) Math.max(0, biomeWeather.snowDepth - 1);
+            }
+        }
+
     }
 
     public static void updateAfterSleep(ServerLevel level, long newTime, long oldDayTime) {
@@ -455,7 +461,7 @@ public class WeatherManager {
             int size = levelBiomeWeather.size();
             var biomeWeather = getBiomeList(level).get(pos);
 
-            runWeather(level,biomeWeather,random,size);
+            runWeather(level, biomeWeather, random, size);
 
             pos++;
         } else {
