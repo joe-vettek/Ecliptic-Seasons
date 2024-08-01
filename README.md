@@ -30,3 +30,6 @@ isRainingAt 要区分下雨和下雪
 
 
 动态雨量
+
+
+更高级的作物生长控制系统（https://zhuanlan.zhihu.com/p/685648430）

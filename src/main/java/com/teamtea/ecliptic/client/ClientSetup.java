@@ -42,6 +42,7 @@ public class ClientSetup {
         event.register(ModelManager.dandelion_top);
         event.register(ModelManager.overlay_2);
         event.register(ModelManager.snow_height2);
+        event.register(ModelManager.snow_height2_top);
     }
 
     @SubscribeEvent
@@ -83,7 +84,7 @@ public class ClientSetup {
         Ecliptic.logger(test);
 
         ModelManager.quadMap.clear();
-
+        ModelManager.quadMap_1.clear();
         // net.minecraft.client.resources.model.ModelManager.reload
         // p_251134_.listPacks().toList().get(0).getResource(PackType.CLIENT_RESOURCES, completablefuture.get().entrySet().stream().toList().get(0).getKey()).get().readAllBytes()
         // p_251134_.listPacks().toList().get(1).getResource(PackType.CLIENT_RESOURCES, Ecliptic.rl("textures/block/icon.png")).get().readAllBytes()

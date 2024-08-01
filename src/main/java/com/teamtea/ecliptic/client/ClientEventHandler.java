@@ -154,6 +154,9 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
+            // ModelManager.quadMap.clear();
+            // ModelManager.quadMap_1.clear();
+
             WeatherManager.createLevelBiomeWeatherList(clientLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入

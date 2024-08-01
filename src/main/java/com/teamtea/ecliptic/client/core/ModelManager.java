@@ -7,6 +7,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRende
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.loading.FMLLoader;
 import com.teamtea.ecliptic.Ecliptic;
@@ -57,6 +59,7 @@ public class ModelManager {
     public static ResourceLocation dandelion_top = Ecliptic.rl("block/dandelion_top");
     public static ResourceLocation overlay_2 = Ecliptic.rl("block/overlay_2");
     public static ResourceLocation snow_height2 = Ecliptic.rl("block/snow_height2");
+    public static ResourceLocation snow_height2_top = Ecliptic.rl("block/snow_height2_top");
 
     public static ResourceLocation mrl(String s) {
         return mrl(s, "");
@@ -85,6 +88,15 @@ public class ModelManager {
         // }
 
         return original.call(blockRenderer, ctx, face);
+    }
+
+    public static boolean shouldCutoutMipped(BlockState state) {
+        if (Minecraft.getInstance().level != null)
+            if (state.getBlock() instanceof SlabBlock || state.getBlock() instanceof FarmBlock || state.getBlock() instanceof StairBlock
+                    || state.getBlock().isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, new BlockPos(0, 0, 0))) {
+                return true;
+            }
+        return false;
     }
 
     public static class ChunkHeightMap {
@@ -198,6 +210,7 @@ public class ModelManager {
     public static final int FLAG_LEAVES = 4;
     public static final int FLAG_GRASS = 5;
     public static final int FLAG_GRASS_LARGE = 501;
+    public static final int FLAG_FARMLAND = 6;
     public static final List<Block> LowerPlant = List.of(Blocks.GRASS, Blocks.FERN, Blocks.DANDELION);
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
 
@@ -234,7 +247,10 @@ public class ModelManager {
                 flag = FLAG_GRASS;
             } else if (LARGE_GRASS.contains(onBlock)) {
                 flag = FLAG_GRASS_LARGE;
-            } else return list;
+            } else if ((onBlock instanceof FarmBlock||onBlock instanceof DirtPathBlock) && direction == null) {
+                flag = FLAG_FARMLAND;
+            }
+            else return list;
             var onPos = getHeightOrUpdate(pos, false);
             boolean isLight = false;
             int offset = 0;
@@ -262,15 +278,15 @@ public class ModelManager {
                     && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
                 // DynamicLeavesBlock
                 boolean isFlowerAbove = false;
-                if ((flag == FLAG_BLOCK)&&ClientConfig.Renderer.deeperSnow.get()) {
+                if ((flag == FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
                     var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
                     isFlowerAbove = bl instanceof FlowerBlock
                             || bl instanceof PinkPetalsBlock
                             || bl instanceof DoublePlantBlock
                             || bl instanceof SaplingBlock;
 
-                    if(!isFlowerAbove){
-                        isFlowerAbove= random.nextInt(12)>0;
+                    if (!isFlowerAbove) {
+                        isFlowerAbove = random.nextInt(12) > 0;
                         // isFlowerAbove=true;
                     }
                 }
@@ -310,6 +326,9 @@ public class ModelManager {
                         } else if (onBlock == Blocks.LARGE_FERN) {
                             snowModel = models.get(offset == 1 ? snowy_large_fern_bottom : snowy_large_fern_top);
                         } else snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
+                    } else if (flag == FLAG_FARMLAND) {
+                        snowModel = models.get(snow_height2_top);
+                        // snowModel = snowOverlayBlock.resolve().get();
                     }
 
                     if (snowModel != null) {
@@ -317,20 +336,18 @@ public class ModelManager {
                         var snowList = snowModel.getQuads(snowState, direction, null);
                         ArrayList<BakedQuad> newList;
 
-                        if (flag == FLAG_GRASS) {
+                        if (flag == FLAG_GRASS ) {
                             newList = new ArrayList<>(snowList);
                         } else if (direction == Direction.UP) {
-
                             if (isFlowerAbove) {
-                                newList= new ArrayList<>();
-                                var layerState=Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1);
+                                newList = new ArrayList<>();
+                                var layerState = Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1);
                                 var layerBlock = models.get(BlockModelShaper.stateToModelLocation(layerState));
-                                layerBlock=models.get(snow_height2);
+                                layerBlock = models.get(snow_height2);
 
                                 for (Direction direction1 : List.of(Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.UP)) {
                                     newList.addAll(layerBlock.getQuads(layerState, direction1, random));
                                 }
-
                             } else newList = new ArrayList<>(snowList);
                         } else {
                             newList = new ArrayList<BakedQuad>(size + snowList.size());
@@ -338,11 +355,18 @@ public class ModelManager {
                             newList.addAll(snowList);
                         }
 
-                        if (onBlock == Blocks.DANDELION){
-                            newList.addAll(models.get(dandelion_top).getQuads(null,null,null));
+                        if (onBlock == Blocks.DANDELION) {
+                            newList.addAll(models.get(dandelion_top).getQuads(null, null, null));
                         }
 
-                        useMap.put(list, newList);
+                        if (flag==FLAG_FARMLAND){
+
+                            for (Direction direction1 : List.of( Direction.EAST,Direction.WEST,Direction.SOUTH, Direction.NORTH, Direction.UP)) {
+                                newList.addAll(snowModel.getQuads(null, direction1, random));
+                            }
+                        }
+
+                        useMap.putIfAbsent(list, newList);
                         list = newList;
 
 
