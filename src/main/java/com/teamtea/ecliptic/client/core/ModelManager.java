@@ -19,6 +19,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -91,11 +92,15 @@ public class ModelManager {
     }
 
     public static boolean shouldCutoutMipped(BlockState state) {
-        if (Minecraft.getInstance().level != null)
-            if (state.getBlock() instanceof SlabBlock || state.getBlock() instanceof FarmBlock || state.getBlock() instanceof StairBlock
-                    || state.getBlock().isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, new BlockPos(0, 0, 0))) {
-                return true;
+        if (Minecraft.getInstance().level != null) {
+            var onBlock = state.getBlock();
+            if (!(onBlock instanceof FenceBlock)) {
+                if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
+                        || onBlock.isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, BlockPos.ZERO)) {
+                    return true;
+                }
             }
+        }
         return false;
     }
 
@@ -161,6 +166,8 @@ public class ModelManager {
 
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
+        if (ClientConfig.Renderer.useVanillaCheck.get())
+            return Integer.MIN_VALUE;
         int x = blockToSectionCoord(pos.getX());
         int z = blockToSectionCoord(pos.getZ());
         ChunkPos chunkPos = new ChunkPos(x, z);
@@ -176,8 +183,18 @@ public class ModelManager {
         if (map != null) {
             h = map.getHeight(pos);
             if (h == Integer.MIN_VALUE || shouldUpdate) {
-                map.updateHeight(pos, Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1);
-                h = map.getHeight(pos);
+                var rh = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
+                if (ClientConfig.Renderer.underSnow.get()) {
+                    var rmPos = new BlockPos.MutableBlockPos(pos.getX(), rh, pos.getZ());
+                    var s = Minecraft.getInstance().level.getBlockState(rmPos);
+                    while ((!(s.getBlock() instanceof LeavesBlock) && !s.isFaceSturdy(Minecraft.getInstance().level, rmPos, Direction.DOWN))) {
+                        rh--;
+                        s = Minecraft.getInstance().level.getBlockState(new BlockPos(pos.getX(), rh, pos.getZ()));
+                        rmPos.move(Direction.DOWN, 1);
+                    }
+                }
+                map.updateHeight(pos, rh);
+                h = rh;
             }
             // return h;
         } else {
@@ -247,29 +264,32 @@ public class ModelManager {
                 flag = FLAG_GRASS;
             } else if (LARGE_GRASS.contains(onBlock)) {
                 flag = FLAG_GRASS_LARGE;
-            } else if ((onBlock instanceof FarmBlock||onBlock instanceof DirtPathBlock) && direction == null) {
+            } else if ((onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock) && direction == null) {
                 flag = FLAG_FARMLAND;
-            }
-            else return list;
-            var onPos = getHeightOrUpdate(pos, false);
-            boolean isLight = false;
+            } else return list;
+
             int offset = 0;
             if (flag == FLAG_GRASS || flag == FLAG_GRASS_LARGE) {
                 if (flag == FLAG_GRASS) {
-                    isLight = onPos == pos.getY() - 1;
                     offset = 1;
                 }
                 // 这里不忽略这个警告，因为后续会有优化
                 else if (flag == FLAG_GRASS_LARGE) {
                     if (state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-                        isLight = onPos == pos.getY() - 1;
                         offset = 1;
                     } else {
-                        isLight = onPos == pos.getY() - 2;
                         offset = 2;
                     }
                 }
-            } else isLight = onPos == pos.getY();
+            }
+
+
+            boolean isLight = false;
+
+            isLight = ClientConfig.Renderer.useVanillaCheck.get() && Minecraft.getInstance().level != null ?
+                    Minecraft.getInstance().level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >=15
+                    : getHeightOrUpdate(pos, false) == pos.getY() - offset;
+
 
             // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
@@ -336,7 +356,7 @@ public class ModelManager {
                         var snowList = snowModel.getQuads(snowState, direction, null);
                         ArrayList<BakedQuad> newList;
 
-                        if (flag == FLAG_GRASS ) {
+                        if (flag == FLAG_GRASS) {
                             newList = new ArrayList<>(snowList);
                         } else if (direction == Direction.UP) {
                             if (isFlowerAbove) {
@@ -359,9 +379,9 @@ public class ModelManager {
                             newList.addAll(models.get(dandelion_top).getQuads(null, null, null));
                         }
 
-                        if (flag==FLAG_FARMLAND){
+                        if (flag == FLAG_FARMLAND) {
 
-                            for (Direction direction1 : List.of( Direction.EAST,Direction.WEST,Direction.SOUTH, Direction.NORTH, Direction.UP)) {
+                            for (Direction direction1 : List.of(Direction.EAST, Direction.WEST, Direction.SOUTH, Direction.NORTH, Direction.UP)) {
                                 newList.addAll(snowModel.getQuads(null, direction1, random));
                             }
                         }

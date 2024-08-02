@@ -9,12 +9,15 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -35,13 +38,13 @@ public class ParticleUtil {
         // if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN)
         {
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-            var sd=SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
-            int chanceW=19;
-            switch (sd){
-                case SPRING -> chanceW=17;
-                case SUMMER -> chanceW=27;
-                case AUTUMN -> chanceW=9;
-                case WINTER -> chanceW=15;
+            var sd = SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
+            int chanceW = 19;
+            switch (sd) {
+                case SPRING -> chanceW = 17;
+                case SUMMER -> chanceW = 27;
+                case AUTUMN -> chanceW = 9;
+                case WINTER -> chanceW = 15;
             }
 
             for (int j = 0; j < 667; ++j) {
@@ -62,6 +65,11 @@ public class ParticleUtil {
         BlockState blockstate = clientLevel.getBlockState(blockpos$mutableblockpos);
         if (blockstate.getBlock() instanceof LeavesBlock) {
             destroy(clientLevel, blockpos$mutableblockpos, blockstate);
+        } else if (blockstate.is(BlockTags.FLOWERS)) {
+            // CampfireBlock.
+            if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
+                    && SimpleUtil.isEvening(clientLevel))
+                clientLevel.addParticle(ParticleTypes.GLOW, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 
         }
     }

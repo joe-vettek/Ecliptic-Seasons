@@ -154,7 +154,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             if (this.fade < 0) {
                 this.stop();
             }
-            // Ecliptic.logger(this.fade);
+            // Ecliptic.logger(this,this.fade);
             this.fade += this.fadeDirection;
             this.volume = Mth.clamp((float) this.fade / 40.0F, 0.0F, 1.0F);
 

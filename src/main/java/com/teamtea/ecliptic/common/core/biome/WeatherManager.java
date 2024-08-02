@@ -25,6 +25,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
@@ -276,18 +282,30 @@ public class WeatherManager {
 
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
         var level = player.level();
-        if (level.getRandom().nextInt(60) == 0)
+        if (level.getRandom().nextInt(1) == 0)
             AllListener.getSaveDataLazy(level).ifPresent(solarDataManager -> {
                 if (SimpleUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = level.getBiome(player.blockPosition()).value();
                     if (b.getTemperature(player.blockPosition()) > 0.5f) {
-                        boolean isDaytime = SimpleUtil.isNoon(level);
+
                         if (!player.isInWaterOrRain()
-                                && ((isDaytime && (level.canSeeSky(player.blockPosition()))))
-                        )
-                            if (!player.hasEffect(Ecliptic.EffectRegistry.HEAT_STROKE)) {
+                                && (( SimpleUtil.isNoon(level) && (level.canSeeSky(player.blockPosition()))))
+                        ) {
+                            boolean isColdHe = false;
+                            for (ItemStack itemstack : player.getArmorSlots()) {
+                                Item item = itemstack.getItem();
+                                if (item instanceof ArmorItem armorItem) {
+                                    if (armorItem.getType() == ArmorItem.Type.HELMET) {
+                                        if (armorItem.getEnchantmentLevel(itemstack, Enchantments.FIRE_PROTECTION) > 0) {
+                                            isColdHe = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!player.hasEffect(Ecliptic.EffectRegistry.HEAT_STROKE) && !isColdHe) {
                                 player.addEffect(new MobEffectInstance(Ecliptic.EffectRegistry.HEAT_STROKE, 600));
                             }
+                        }
                     }
                 }
             });

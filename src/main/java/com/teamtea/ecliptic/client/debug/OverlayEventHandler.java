@@ -33,7 +33,7 @@ public final class OverlayEventHandler {
             // if(event.getOverlay().id().getPath().equals("all"))
             {
                 if (ClientConfig.GUI.debugInfo.get()
-                        || !FMLEnvironment.production
+                        // || !FMLEnvironment.production
                 )
                 {
                     var solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new SolarDataManager(clientPlayer.level())).getSolarTerm();

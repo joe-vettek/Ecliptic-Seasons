@@ -44,4 +44,10 @@ public class SimpleUtil {
         long termTime = getNowSolarTerm(level).getDayTime();
         return 6000 - (termTime / 6) < dayTime && dayTime < 6000 + (termTime / 4);
     }
+
+    public static boolean isEvening(Level level) {
+        long dayTime = level.dimensionType().fixedTime().orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
+        long termTime = getNowSolarTerm(level).getDayTime();
+        return 6000 + (termTime * 5 / 6) < dayTime && dayTime < 6000 + (termTime * 5 / 4);
+    }
 }

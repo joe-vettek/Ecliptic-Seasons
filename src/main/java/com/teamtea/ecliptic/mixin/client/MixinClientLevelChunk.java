@@ -25,7 +25,7 @@ public abstract class MixinClientLevelChunk {
             method = "setBlockState", locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
     public void mixin_setBlockState(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_, CallbackInfoReturnable<BlockState> cir) {
-        if (level instanceof ClientLevel clientLevel){
+        if (level instanceof ClientLevel clientLevel ){
             ModelManager.getHeightOrUpdate(p_62865_,true);
         }
     }
