@@ -40,6 +40,13 @@ public class CommandHandler {
                         .then(Commands.literal("set")
                                 .then(Commands.argument("day", IntegerArgumentType.integer())
                                         .executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
+                        .then(Commands.literal("get")
+                                .executes(commandContext -> {
+                                    var solar=AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
+                                    commandContext.getSource().sendSuccess(()->Component.literal(""+solar), true);
+                                    return 0;
+                                })
+                        )
                         .then(Commands.literal("setTerm")
                                 .then(Commands.argument("term", StringArgumentType.word()).suggests((context, builder) -> {
                                             String pre = "";
@@ -60,6 +67,13 @@ public class CommandHandler {
                                             int day=SolarTerm.valueOf(s).ordinal()*7;
                                             return setDay(commandContext.getSource(), day);
                                         })))
+                        .then(Commands.literal("getTerm")
+                                .executes(commandContext -> {
+                                    var solar=AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
+                                    commandContext.getSource().sendSuccess(solar::getTranslation, true);
+                                    return 0;
+                                })
+                        )
                         .then(Commands.literal("add")
                                 .then(Commands.argument("day", IntegerArgumentType.integer()).executes(commandContext -> addDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day"))))))
                 .then(Commands.literal("weather")

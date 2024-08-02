@@ -3,6 +3,7 @@ package com.teamtea.ecliptic.client.particle;
 import com.teamtea.ecliptic.Ecliptic;
 import com.teamtea.ecliptic.api.constant.solar.Season;
 import com.teamtea.ecliptic.api.util.SimpleUtil;
+import com.teamtea.ecliptic.api.util.WeatherUtil;
 import com.teamtea.ecliptic.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.Tags;
 
 public class ParticleUtil {
     public static void createParticle(ClientLevel clientLevel, int x, int y, int z) {
@@ -68,8 +70,11 @@ public class ParticleUtil {
         } else if (blockstate.is(BlockTags.FLOWERS)) {
             // CampfireBlock.
             if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
-                    && SimpleUtil.isEvening(clientLevel))
-                clientLevel.addParticle(ParticleTypes.GLOW, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
+                    && SimpleUtil.isEvening(clientLevel)
+                    && !clientLevel.isRainingAt(blockpos$mutableblockpos)
+            &&random.nextInt(4)==0
+            )
+                clientLevel.addParticle(Ecliptic.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 
         }
     }

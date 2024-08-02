@@ -65,7 +65,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             else
                 loopSoundInstance.fadeIn();
         }
-        if (indoor)return;
+        if (indoor) return;
 
         var biome = this.biomeManager.getNoiseBiomeAtPosition(this.player.getX(), this.player.getY(), this.player.getZ());
         if (biome.value() != this.previousBiome) {
@@ -85,7 +85,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             SoundEvent soundEvent = null;
             switch (season) {
                 case SPRING -> {
-                    if ((biome.is(Biomes.CHERRY_GROVE)|| biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS)) && !biome.is(Tags.Biomes.IS_COLD)) {
+                    if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS)) && !biome.is(Tags.Biomes.IS_COLD)) {
                         soundEvent = Ecliptic.SoundEventsRegistry.spring_forest;
                     }
                 }
@@ -101,20 +101,20 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                             soundEvent = Ecliptic.SoundEventsRegistry.night_river;
                         }
                     } else {
-                        if ((biome.is(Biomes.CHERRY_GROVE)||biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_RIVER))) {
+                        if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_RIVER))) {
                             soundEvent = Ecliptic.SoundEventsRegistry.garden_wind;
                         }
                     }
 
                 }
                 case AUTUMN -> {
-                    if ((biome.is(Biomes.CHERRY_GROVE)||biome.is(BiomeTags.IS_FOREST))) {
+                    if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST))) {
                         soundEvent = Ecliptic.SoundEventsRegistry.windy_leave;
                     }
                 }
                 case WINTER -> {
                     if (!biome.is(Tags.Biomes.IS_CAVE)) {
-                        if (biome.is(Biomes.CHERRY_GROVE)||biome.is(BiomeTags.IS_FOREST)) {
+                        if (biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST)) {
                             soundEvent = Ecliptic.SoundEventsRegistry.winter_forest;
                         } else soundEvent = Ecliptic.SoundEventsRegistry.winter_cold;
                     }
@@ -130,6 +130,9 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                         this.soundManager.play(loopSoundInstance);
                     }
 
+                    if (!this.soundManager.isActive(loopSoundInstance)) {
+                        this.soundManager.play(loopSoundInstance);
+                    }
 
                     return loopSoundInstance;
                 });

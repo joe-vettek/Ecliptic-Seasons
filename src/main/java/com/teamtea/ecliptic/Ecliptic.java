@@ -1,12 +1,17 @@
 package com.teamtea.ecliptic;
 
 
+import com.teamtea.ecliptic.client.particle.FireflyParticle;
 import com.teamtea.ecliptic.common.misc.HeatStrokeEffect;
 import com.teamtea.ecliptic.compat.CompatModule;
 import com.teamtea.ecliptic.config.ClientConfig;
 import com.teamtea.ecliptic.common.network.SimpleNetworkHandler;
 import com.teamtea.ecliptic.config.ServerConfig;
 import com.teamtea.ecliptic.data.start;
+import net.minecraft.client.particle.CherryParticle;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -17,6 +22,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -123,12 +129,13 @@ public class Ecliptic {
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class SoundEventsRegistry {
-        public final static SoundEvent spring_forest = SoundEvent.createVariableRangeEvent(rl( "ambient.spring_forest"));
-        public final static SoundEvent garden_wind = SoundEvent.createVariableRangeEvent(rl( "ambient.garden_wind"));
-        public final static SoundEvent night_river = SoundEvent.createVariableRangeEvent(rl( "ambient.night_river"));
-        public final static SoundEvent windy_leave = SoundEvent.createVariableRangeEvent(rl( "ambient.windy_leave"));
-        public final static SoundEvent winter_forest = SoundEvent.createVariableRangeEvent(rl( "ambient.winter_forest"));
-        public final static SoundEvent winter_cold = SoundEvent.createVariableRangeEvent(rl( "ambient.winter_cold"));
+        public final static SoundEvent spring_forest = SoundEvent.createVariableRangeEvent(rl("ambient.spring_forest"));
+        public final static SoundEvent garden_wind = SoundEvent.createVariableRangeEvent(rl("ambient.garden_wind"));
+        public final static SoundEvent night_river = SoundEvent.createVariableRangeEvent(rl("ambient.night_river"));
+        public final static SoundEvent windy_leave = SoundEvent.createVariableRangeEvent(rl("ambient.windy_leave"));
+        public final static SoundEvent winter_forest = SoundEvent.createVariableRangeEvent(rl("ambient.winter_forest"));
+        public final static SoundEvent winter_cold = SoundEvent.createVariableRangeEvent(rl("ambient.winter_cold"));
+
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
             // MultiPackResourceManager
@@ -146,15 +153,36 @@ public class Ecliptic {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class EffectRegistry {
         public static final MobEffect HEAT_STROKE = new HeatStrokeEffect(MobEffectCategory.NEUTRAL, 0xf9d27d);
-    
+
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
             event.register(Registries.MOB_EFFECT, soundEventRegisterHelper -> {
-                soundEventRegisterHelper.register(rl( "heat_stroke"), HEAT_STROKE);
+                soundEventRegisterHelper.register(rl("heat_stroke"), HEAT_STROKE);
+            });
+
+
+        }
+
+
+    }
+
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static final class ParticleRegistry {
+        public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
+
+        @SubscribeEvent
+        public static void blockRegister(RegisterEvent event) {
+            event.register(Registries.PARTICLE_TYPE, particleTypeRegisterHelper -> {
+                particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
             });
         }
-    
-    
-    
+
+        @SubscribeEvent
+        public static void blockRegister(RegisterParticleProvidersEvent event) {
+            event.registerSpriteSet(FIREFLY, (p_277215_) ->
+                    (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
+                            new FireflyParticle(level, x, y, z, p_277215_));
+        }
+
     }
 }

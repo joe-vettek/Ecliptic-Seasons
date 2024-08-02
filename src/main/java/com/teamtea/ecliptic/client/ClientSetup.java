@@ -5,6 +5,9 @@ import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.*;
@@ -27,6 +30,7 @@ public class ClientSetup {
     public static boolean isGlassLanternValidLayer(RenderType layerToCheck) {
         return layerToCheck == RenderType.cutoutMipped() || layerToCheck == RenderType.translucent();
     }
+
 
 
     @SubscribeEvent
