@@ -350,7 +350,7 @@ public class WeatherManager {
         // }
 
 
-        if (biomeWeather.shouldRain() && level.getRandom().nextInt(5) > 1) {
+        if (biomeWeather.shouldRain() || level.getRandom().nextInt(5) > 1) {
             var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.get(), null);
             if (snow == WeatherManager.SnowRenderStatus.SNOW) {
                 biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
