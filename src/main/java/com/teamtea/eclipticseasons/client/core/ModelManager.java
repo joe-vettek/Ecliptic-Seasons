@@ -1,11 +1,12 @@
 package com.teamtea.eclipticseasons.client.core;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.teamtea.eclipticseasons.api.constant.solar.Season;
+import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
+import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
-import me.jellysquid.mods.sodium.client.world.WorldSlice;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.loading.FMLLoader;
 import com.teamtea.eclipticseasons.EclipticSeasons;
@@ -59,6 +61,8 @@ public class ModelManager {
     public static ResourceLocation overlay_2 = EclipticSeasons.rl("block/overlay_2");
     public static ResourceLocation snow_height2 = EclipticSeasons.rl("block/snow_height2");
     public static ResourceLocation snow_height2_top = EclipticSeasons.rl("block/snow_height2_top");
+    public static ResourceLocation grass_flower = EclipticSeasons.rl("block/grass_flower");
+
 
     public static ResourceLocation mrl(String s) {
         return mrl(s, "");
@@ -76,18 +80,6 @@ public class ModelManager {
     public static final int ChunkSizeLoc = ChunkSize - 1;
     public static final int ChunkSizeAxis = 4 * 5;
 
-    public static Boolean shouldisFaceVisible(BlockRenderer blockRenderer, BlockRenderContext ctx, Direction face, Operation<Boolean> original) {
-        // if (face != null
-        //         && face != Direction.DOWN
-        //         && getHeightOrUpdate(ctx.pos(), false) == ctx.pos().getY()
-        // ) {
-        //     var bl = ctx.world().getBlockState(ctx.pos().above()).getBlock();
-        //     if (bl instanceof FlowerBlock || bl instanceof PinkPetalsBlock || bl instanceof DoublePlantBlock)
-        //         return true;
-        // }
-
-        return original.call(blockRenderer, ctx, face);
-    }
 
     public static boolean shouldCutoutMipped(BlockState state) {
         if (Minecraft.getInstance().level != null) {
@@ -161,6 +153,7 @@ public class ModelManager {
     public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new HashMap<>(1024, 0.5f);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new HashMap<>(128, 0.5f);
 
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
@@ -285,112 +278,145 @@ public class ModelManager {
             boolean isLight = false;
 
             isLight = ClientConfig.Renderer.useVanillaCheck.get() && Minecraft.getInstance().level != null ?
-                    Minecraft.getInstance().level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >=15
+                    Minecraft.getInstance().level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >= 15
                     : getHeightOrUpdate(pos, false) == pos.getY() - offset;
 
 
             // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
-            if (isLight
-                    && onBlock != Blocks.SNOW_BLOCK
-                    && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
-                // DynamicLeavesBlock
-                boolean isFlowerAbove = false;
-                if ((flag == FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
-                    var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
-                    isFlowerAbove = bl instanceof FlowerBlock
-                            || bl instanceof PinkPetalsBlock
-                            || bl instanceof DoublePlantBlock
-                            || bl instanceof SaplingBlock;
+            if (isLight) {
+                if (onBlock != Blocks.SNOW_BLOCK
+                        && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
+                    // DynamicLeavesBlock
+                    boolean isFlowerAbove = false;
+                    if ((flag == FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
+                        var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
+                        isFlowerAbove = bl instanceof FlowerBlock
+                                || bl instanceof PinkPetalsBlock
+                                || bl instanceof DoublePlantBlock
+                                || bl instanceof SaplingBlock;
 
-                    if (!isFlowerAbove) {
-                        isFlowerAbove = random.nextInt(12) > 0;
-                        // isFlowerAbove=true;
+                        if (!isFlowerAbove) {
+                            isFlowerAbove = random.nextInt(12) > 0;
+                            // isFlowerAbove=true;
+                        }
                     }
-                }
-                // isFlowerAbove=false;
-                var useMap = isFlowerAbove ? quadMap_1 : quadMap;
-                var cc = useMap.getOrDefault(list, null);
-                if (cc != null) {
-                    return cc;
-                } else {
-                    BakedModel snowModel = null;
-                    BlockState snowState = null;
-                    if (snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
-                        // snowModel = !isFlowerAbove ? snowOverlayBlock.resolve().get() : models.get(overlay_2);
-                        snowModel = snowOverlayBlock.resolve().get();
-                    } else if (snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
-                        snowModel = snowOverlayLeaves.resolve().get();
-                    } else if (snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
-                        snowModel = snowySlabBottom.resolve().get();
-                    } else if (models != null && flag == FLAG_STAIRS) {
-                        snowState = EclipticSeasons.ModContents.snowyStairs.get().defaultBlockState()
-                                .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
-                                .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
-                                .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
-                        // 楼梯的方向是无
-                        snowModel = models.get(BlockModelShaper.stateToModelLocation(snowState));
-                    } else if (flag == FLAG_GRASS) {
-                        if (onBlock == Blocks.GRASS) {
-                            snowModel = models.get(snowy_grass);
-                        } else if (onBlock == Blocks.FERN) {
-                            snowModel = models.get(snowy_fern);
-                        } else if (onBlock == Blocks.DANDELION) {
-                            snowModel = models.get(snowy_dandelion);
-                        } else snowModel = models.get(snowy_grass);
-                    } else if (flag == FLAG_GRASS_LARGE) {
-                        if (onBlock == Blocks.TALL_GRASS) {
-                            snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
-                        } else if (onBlock == Blocks.LARGE_FERN) {
-                            snowModel = models.get(offset == 1 ? snowy_large_fern_bottom : snowy_large_fern_top);
-                        } else snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
-                    } else if (flag == FLAG_FARMLAND) {
-                        snowModel = models.get(snow_height2_top);
-                        // snowModel = snowOverlayBlock.resolve().get();
-                    }
+                    // isFlowerAbove=false;
+                    var useMap = isFlowerAbove ? quadMap_1 : quadMap;
+                    var cc = useMap.getOrDefault(list, null);
+                    if (cc != null) {
+                        return cc;
+                    } else {
+                        BakedModel snowModel = null;
+                        BlockState snowState = null;
+                        if (snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
+                            // snowModel = !isFlowerAbove ? snowOverlayBlock.resolve().get() : models.get(overlay_2);
+                            snowModel = snowOverlayBlock.resolve().get();
+                        } else if (snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
+                            snowModel = snowOverlayLeaves.resolve().get();
+                        } else if (snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
+                            snowModel = snowySlabBottom.resolve().get();
+                        } else if (models != null && flag == FLAG_STAIRS) {
+                            snowState = EclipticSeasons.ModContents.snowyStairs.get().defaultBlockState()
+                                    .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
+                                    .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
+                                    .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
+                            // 楼梯的方向是无
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(snowState));
+                        } else if (flag == FLAG_GRASS) {
+                            if (onBlock == Blocks.GRASS) {
+                                snowModel = models.get(snowy_grass);
+                            } else if (onBlock == Blocks.FERN) {
+                                snowModel = models.get(snowy_fern);
+                            } else if (onBlock == Blocks.DANDELION) {
+                                snowModel = models.get(snowy_dandelion);
+                            } else snowModel = models.get(snowy_grass);
+                        } else if (flag == FLAG_GRASS_LARGE) {
+                            if (onBlock == Blocks.TALL_GRASS) {
+                                snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
+                            } else if (onBlock == Blocks.LARGE_FERN) {
+                                snowModel = models.get(offset == 1 ? snowy_large_fern_bottom : snowy_large_fern_top);
+                            } else snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
+                        } else if (flag == FLAG_FARMLAND) {
+                            snowModel = models.get(snow_height2_top);
+                            // snowModel = snowOverlayBlock.resolve().get();
+                        }
 
-                    if (snowModel != null) {
-                        int size = list.size();
-                        var snowList = snowModel.getQuads(snowState, direction, null);
-                        ArrayList<BakedQuad> newList;
+                        if (snowModel != null) {
+                            int size = list.size();
+                            var snowList = snowModel.getQuads(snowState, direction, null);
+                            ArrayList<BakedQuad> newList;
 
-                        if (flag == FLAG_GRASS) {
-                            newList = new ArrayList<>(snowList);
-                        } else if (direction == Direction.UP) {
-                            if (isFlowerAbove) {
-                                newList = new ArrayList<>();
-                                var layerState = Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1);
-                                var layerBlock = models.get(BlockModelShaper.stateToModelLocation(layerState));
-                                layerBlock = models.get(snow_height2);
+                            if (flag == FLAG_GRASS) {
+                                newList = new ArrayList<>(snowList);
+                            } else if (direction == Direction.UP) {
+                                if (isFlowerAbove) {
+                                    newList = new ArrayList<>();
+                                    var layerState = Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1);
+                                    var layerBlock = models.get(BlockModelShaper.stateToModelLocation(layerState));
+                                    layerBlock = models.get(snow_height2);
 
-                                for (Direction direction1 : List.of(Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.UP)) {
-                                    newList.addAll(layerBlock.getQuads(layerState, direction1, random));
+                                    for (Direction direction1 : List.of(Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.UP)) {
+                                        newList.addAll(layerBlock.getQuads(layerState, direction1, random));
+                                    }
+                                } else newList = new ArrayList<>(snowList);
+                            } else {
+                                newList = new ArrayList<BakedQuad>(size + snowList.size());
+                                newList.addAll(list);
+                                newList.addAll(snowList);
+                            }
+
+                            if (onBlock == Blocks.DANDELION) {
+                                newList.addAll(models.get(dandelion_top).getQuads(null, null, null));
+                            }
+
+                            if (flag == FLAG_FARMLAND) {
+
+                                for (Direction direction1 : List.of(Direction.EAST, Direction.WEST, Direction.SOUTH, Direction.NORTH, Direction.UP)) {
+                                    newList.addAll(snowModel.getQuads(null, direction1, random));
                                 }
-                            } else newList = new ArrayList<>(snowList);
+                            }
+
+                            useMap.putIfAbsent(list, newList);
+                            list = newList;
+
+
+                        }
+                    }
+                } else if (direction == Direction.UP
+                        && state.getBlock() instanceof GrassBlock
+                        && random.nextInt(15) == 0
+                ) {
+                    var level = Minecraft.getInstance().level;
+                    var solarTerm = SolarTerm.NONE;
+                    int weight=100;
+                    if (level != null) {
+                        solarTerm = SimpleUtil.getNowSolarTerm(level);
+                        weight=Math.abs(solarTerm.ordinal()-3)+1;
+                    }
+                    if (solarTerm.getSeason() == Season.SPRING
+                    &&random.nextInt(weight*4)==0
+                    &&blockAndTintGetter.getBlockState(pos.above()).isAir()) {
+                        var cc = quadMap_GRASS.getOrDefault(list, null);
+                        if (cc != null) {
+                            return cc;
                         } else {
-                            newList = new ArrayList<BakedQuad>(size + snowList.size());
-                            newList.addAll(list);
-                            newList.addAll(snowList);
-                        }
-
-                        if (onBlock == Blocks.DANDELION) {
-                            newList.addAll(models.get(dandelion_top).getQuads(null, null, null));
-                        }
-
-                        if (flag == FLAG_FARMLAND) {
-
-                            for (Direction direction1 : List.of(Direction.EAST, Direction.WEST, Direction.SOUTH, Direction.NORTH, Direction.UP)) {
-                                newList.addAll(snowModel.getQuads(null, direction1, random));
+                            BakedModel snowModel = models.get(grass_flower);
+                            if (snowModel != null) {
+                                int size = list.size();
+                                var snowList = snowModel.getQuads(null, direction, null);
+                                ArrayList<BakedQuad> newList;
+                                newList = new ArrayList<BakedQuad>(size + snowList.size());
+                                newList.addAll(list);
+                                newList.addAll(snowList);
+                                quadMap_GRASS.putIfAbsent(list, newList);
+                                list = newList;
                             }
                         }
-
-                        useMap.putIfAbsent(list, newList);
-                        list = newList;
-
-
                     }
                 }
             }
+
 
         }
         return list;
@@ -409,27 +435,4 @@ public class ModelManager {
         // >= random.nextInt(100));
     }
 
-    public static int getLight(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
-        // Ecliptic.logger(pos);
-        int result = 0;
-        if (FMLLoader.getLoadingModList().getModFileById("embeddium") != null) {
-            if (blockAndTintGetter instanceof WorldSlice worldSlice) {
-                result = Minecraft.getInstance().level.getLightEngine().getRawBrightness(pos.above(), 0);
-            }
-            // return blockAndTintGetter.getRawBrightness( pos,0);
-        } else {
-            result = blockAndTintGetter.getLightEngine().getRawBrightness(pos.above(), 0);
-        }
-        result += blockAndTintGetter.getBlockState(pos.above()).is(BlockTags.SNOW) ? 15 : 0;
-        // TODO:这里等会传Blocksate进来
-        result += state.is(BlockTags.SNOW) ? -100 : 0;
-        // result += SolarUtil.getProvider(Minecraft.getInstance().level).getSolarTerm().getSeason() == Season.WINTER ? 0 : -100;
-        if (result >= 15) {
-            // TODO:未来设置为降雨
-            // Ecliptic.logger(SolarUtil.getProvider(Minecraft.getInstance().level).getSnowLayer());
-            result += shouldSnowAt(blockAndTintGetter, pos, state, random, seed) ? 0 : -100;
-            // result+=blockAndTintGetter.getBlockState(pos.above()).isAir() ? 0 : -100;
-        }
-        return result;
-    }
 }

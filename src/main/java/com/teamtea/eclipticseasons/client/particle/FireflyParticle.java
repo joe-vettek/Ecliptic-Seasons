@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
@@ -95,6 +96,8 @@ public class FireflyParticle extends TextureSheetParticle {
             vertexConsumer.vertex(avector3f[2].x(), avector3f[2].y(), avector3f[2].z()).uv(f6, f4).color(this.rCol, this.gCol, this.bCol, 0.5f).uv2(j).endVertex();
             vertexConsumer.vertex(avector3f[3].x(), avector3f[3].y(), avector3f[3].z()).uv(f6, f5).color(this.rCol, this.gCol, this.bCol, 0.5f).uv2(j).endVertex();
         }
+
+
     }
 
     @Override
@@ -102,11 +105,11 @@ public class FireflyParticle extends TextureSheetParticle {
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
-        if (this.age++ >= this.lifetime) {
+        if (this.age++ >= this.lifetime || onGround) {
             this.remove();
         } else {
             // Ecliptic.logger(spriteSet.get(this.age, this.lifetime));
-            isBlink = this.age % 8 > 4;
+            isBlink = this.age % 8 > 4 && this.age < this.lifetime * 0.8;
             // setSprite(spriteSet.get(isBlink ? 0 : 1, 1));
             var nowPos = new Vec3(x, y, z);
             var targetPosition = BlockPos.containing(x + xd, y + yd, z + zd);

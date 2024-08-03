@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.client;
 
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
+import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -12,6 +13,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -28,7 +30,12 @@ public class ClientSetup {
         return layerToCheck == RenderType.cutoutMipped() || layerToCheck == RenderType.translucent();
     }
 
-
+    @SubscribeEvent
+    public static void blockRegister(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(EclipticSeasons.ParticleRegistry.FIREFLY, (p_277215_) ->
+                (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
+                        new FireflyParticle(level, x, y, z, p_277215_));
+    }
 
     @SubscribeEvent
     public static void registerExtraModels(ModelEvent.RegisterAdditional event) {
@@ -44,6 +51,7 @@ public class ClientSetup {
         event.register(ModelManager.overlay_2);
         event.register(ModelManager.snow_height2);
         event.register(ModelManager.snow_height2_top);
+        event.register(ModelManager.grass_flower);
     }
 
     @SubscribeEvent

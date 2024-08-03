@@ -175,12 +175,7 @@ public class EclipticSeasons {
             });
         }
 
-        @SubscribeEvent
-        public static void blockRegister(RegisterParticleProvidersEvent event) {
-            event.registerSpriteSet(FIREFLY, (p_277215_) ->
-                    (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
-                            new FireflyParticle(level, x, y, z, p_277215_));
-        }
+
 
     }
 }

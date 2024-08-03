@@ -62,7 +62,8 @@ public class ParticleUtil {
             if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
                     && SimpleUtil.isEvening(clientLevel)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
-            &&random.nextInt(2)==0
+                    && clientLevel.canSeeSky(blockpos$mutableblockpos)
+            &&random.nextInt(3)==0
             )
                 clientLevel.addParticle(EclipticSeasons.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 

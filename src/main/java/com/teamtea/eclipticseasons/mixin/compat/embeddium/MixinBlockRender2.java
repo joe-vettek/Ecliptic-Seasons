@@ -43,12 +43,12 @@ public abstract class MixinBlockRender2 {
         return ModelManager.appendOverlay(ctx.world(),ctx.state(),ctx.pos(),face,random,ctx.seed(),original);
     }
 
-    @WrapOperation(
-            remap = false,
-            method = "renderModel",
-            at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderer;isFaceVisible(Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderContext;Lnet/minecraft/core/Direction;)Z")
-    )
-    private boolean mixin$renderModel_isFaceVisible(BlockRenderer blockRenderer, BlockRenderContext ctx, Direction face, Operation<Boolean> original) {
-        return ModelManager.shouldisFaceVisible(blockRenderer,ctx,face,original);
-    }
+    // @WrapOperation(
+    //         remap = false,
+    //         method = "renderModel",
+    //         at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderer;isFaceVisible(Lme/jellysquid/mods/sodium/client/render/chunk/compile/pipeline/BlockRenderContext;Lnet/minecraft/core/Direction;)Z")
+    // )
+    // private boolean mixin$renderModel_isFaceVisible(BlockRenderer blockRenderer, BlockRenderContext ctx, Direction face, Operation<Boolean> original) {
+    //     return ModelManager.shouldisFaceVisible(blockRenderer,ctx,face,original);
+    // }
 }
