@@ -1,0 +1,6 @@
+{
+	"parent": "eclipticseasons:block/cross",
+	"textures": {
+		"cross": "eclipticseasons:block/snowy_dandelion"
+	}
+}
