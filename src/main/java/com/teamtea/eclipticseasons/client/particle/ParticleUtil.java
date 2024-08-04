@@ -74,6 +74,13 @@ public class ParticleUtil {
                 clientLevel.addParticle(EclipticSeasons.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 
         }
+
+        if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN
+                && SimpleUtil.isNoon(clientLevel)
+
+                && random.nextInt(255) == 0) {
+            clientLevel.addParticle(EclipticSeasons.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
+        }
     }
 
     public static void destroy(ClientLevel level, BlockPos pos, BlockState state) {

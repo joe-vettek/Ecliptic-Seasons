@@ -167,11 +167,13 @@ public class EclipticSeasons {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class ParticleRegistry {
         public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
+        public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
             event.register(Registries.PARTICLE_TYPE, particleTypeRegisterHelper -> {
                 particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
+                particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
             });
         }
 
