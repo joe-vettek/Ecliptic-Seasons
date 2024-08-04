@@ -62,7 +62,9 @@ public class ModelManager {
     public static ResourceLocation snow_height2 = EclipticSeasons.rl("block/snow_height2");
     public static ResourceLocation snow_height2_top = EclipticSeasons.rl("block/snow_height2_top");
     public static ResourceLocation grass_flower = EclipticSeasons.rl("block/grass_flower");
-
+    public static ResourceLocation butterfly1 = EclipticSeasons.rl("block/butterfly_blue");
+    public static ResourceLocation butterfly2 = EclipticSeasons.rl("block/butterfly_magenta");
+    public static ResourceLocation butterfly3 = EclipticSeasons.rl("block/butterfly_red");
 
     public static ResourceLocation mrl(String s) {
         return mrl(s, "");

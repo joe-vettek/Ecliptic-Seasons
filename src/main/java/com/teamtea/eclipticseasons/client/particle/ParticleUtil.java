@@ -1,15 +1,20 @@
 package com.teamtea.eclipticseasons.client.particle;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
+import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -17,6 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class ParticleUtil {
     public static void createParticle(ClientLevel clientLevel, int x, int y, int z) {
         if (!ClientConfig.Renderer.particle.get()) return;
+
         var pos = new BlockPos(x, y, z);
         // clientLevel.addParticle(ParticleTypes.CHERRY_LEAVES, (double) pos.getX(), (double) pos.getY() - 0.5f, (double) pos.getZ(), 0.0D, 0.0D, 0.0D);
         // if (clientLevel.getGameTime() % 10 == 0) {
@@ -63,7 +69,7 @@ public class ParticleUtil {
                     && SimpleUtil.isEvening(clientLevel)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                     && clientLevel.canSeeSky(blockpos$mutableblockpos)
-            &&random.nextInt(3)==0
+                    && random.nextInt(3) == 0
             )
                 clientLevel.addParticle(EclipticSeasons.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 

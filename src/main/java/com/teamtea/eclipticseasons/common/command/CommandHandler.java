@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
+import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
@@ -18,6 +19,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.commands.TimeCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -34,6 +36,14 @@ public class CommandHandler {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         var dispatcher = event.getDispatcher();
+
+        // Reset time command
+        dispatcher.register(Commands.literal("time").requires((sourceStack) -> sourceStack.hasPermission(2))
+                .then(Commands.literal("set")
+                .then(Commands.literal("night")
+                        .executes((source) -> TimeCommand.setTime(source.getSource(),  SimpleUtil.getNightTime(source.getSource().getLevel()))))));
+
+
         dispatcher.register(Commands.literal(EclipticSeasons.SMODID).
                 then(Commands.literal("solar")
                         .requires((source) -> source.hasPermission(2))
@@ -42,8 +52,8 @@ public class CommandHandler {
                                         .executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
                         .then(Commands.literal("get")
                                 .executes(commandContext -> {
-                                    var solar=AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
-                                    commandContext.getSource().sendSuccess(()->Component.literal(""+solar), true);
+                                    var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
+                                    commandContext.getSource().sendSuccess(() -> Component.literal("" + solar), true);
                                     return 0;
                                 })
                         )
@@ -57,19 +67,19 @@ public class CommandHandler {
                                             }
                                             String finalPre = pre;
                                             Arrays.stream(SolarTerm.values())
-                                                    .filter(solarTerm -> solarTerm!=SolarTerm.NONE)
+                                                    .filter(solarTerm -> solarTerm != SolarTerm.NONE)
                                                     .map(Enum::toString)
                                                     .filter(s -> s.contains(finalPre)).forEach(builder::suggest);
                                             return builder.buildFuture();
                                         })
                                         .executes(commandContext -> {
                                             String s = StringArgumentType.getString(commandContext, "term");
-                                            int day=SolarTerm.valueOf(s).ordinal()*7;
+                                            int day = SolarTerm.valueOf(s).ordinal() * 7;
                                             return setDay(commandContext.getSource(), day);
                                         })))
                         .then(Commands.literal("getTerm")
                                 .executes(commandContext -> {
-                                    var solar=AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
+                                    var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
                                     commandContext.getSource().sendSuccess(solar::getTranslation, true);
                                     return 0;
                                 })
