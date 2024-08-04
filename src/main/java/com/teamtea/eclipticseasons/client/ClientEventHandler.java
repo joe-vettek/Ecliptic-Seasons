@@ -222,8 +222,11 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onRenderLevelStageEvent(RenderLevelStageEvent event) {
+        var level = Minecraft.getInstance().level;
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS
-                && SimpleUtil.getNowSolarTerm(Minecraft.getInstance().level).getSeason() == Season.SPRING) {
+                && level != null
+                && SimpleUtil.getNowSolarTerm(level).getSeason() == Season.SPRING
+                && SimpleUtil.isDay(level)) {
             var multiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             // var itr = Minecraft.getInstance().getItemRenderer();
             // var mds = itr.getItemModelShaper();
@@ -232,8 +235,7 @@ public final class ClientEventHandler {
             var cameraEntity = Minecraft.getInstance().cameraEntity;
             // var blockpos4 = Minecraft.getInstance().cameraEntity.blockPosition();
             var blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-            var random = event.getLevelRenderer().level.getRandom();
-            var level = event.getLevelRenderer().level;
+            var random = level.getRandom();
             int b = 32;
             random = RandomSource.create();
             for (int i = 0; i < 20; ++i)
@@ -254,7 +256,7 @@ public final class ClientEventHandler {
 
                                 var blockpos4 = blockpos$mutableblockpos;
                                 Vec3 vec3c = blockpos4.getCenter().add(-0.5f, -0.5f + 0.25f, -0.5f);
-                                vec3c.add(blockstate.getOffset(Minecraft.getInstance().level, blockpos$mutableblockpos));
+                                vec3c.add(blockstate.getOffset(level, blockpos$mutableblockpos));
 
                                 var state = Blocks.CAMPFIRE.defaultBlockState();
                                 Vec3 vec3 = event.getCamera().getPosition();
