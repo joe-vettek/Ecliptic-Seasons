@@ -6,11 +6,11 @@ import net.minecraft.client.particle.RisingParticle;
 import net.minecraft.client.particle.SpriteSet;
 
 public class WildGooseParticle extends RisingParticle {
-    private final SpriteSet sprites;
+    private final SpriteSet spriteSet;
 
     public WildGooseParticle(ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet spriteSet) {
         super(world, x, y, z, xSpeed, ySpeed, zSpeed);
-        this.sprites = spriteSet;
+        this.spriteSet = spriteSet;
         this.scale(2.8F);
         this.lifetime = 200;
         this.hasPhysics = true;
@@ -32,11 +32,11 @@ public class WildGooseParticle extends RisingParticle {
             this.age = this.lifetime + 1;
         }
         super.tick();
-        this.setSpriteFromAge(this.sprites);
+        
+        // this.setSpriteFromAge(this.spriteSet);
         // setSprite(sprites.get(this.age % 8, 1));
-
         try {
-            setSprite(sprites.get(this.age % 27/3, 8));
+            setSprite(spriteSet.get(this.age % 27/3, 8));
         } catch (Exception e) {
             e.printStackTrace();
         }
