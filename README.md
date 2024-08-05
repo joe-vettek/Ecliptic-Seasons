@@ -35,6 +35,9 @@ isRainingAt 要区分下雨和下雪
 更高级的作物生长控制系统（https://zhuanlan.zhihu.com/p/685648430）
 
 
+未来设计控制降雨和下雨的道具
+
+
 ### Credit ###
 
 感谢方块小镇作者Coco几何和Xiao2对于蝴蝶模型的特别授权使用。

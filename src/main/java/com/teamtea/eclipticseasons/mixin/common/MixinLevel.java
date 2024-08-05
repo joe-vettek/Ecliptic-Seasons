@@ -21,7 +21,7 @@ public class MixinLevel {
             if (ServerConfig.Debug.debugMode.get()){
                 throw new IllegalCallerException("Use isRainAt to check if rain");
             }
-            cir.setReturnValue(WeatherManager.isRainingAnywhere(serverLevel));
+            cir.setReturnValue(WeatherManager.isRainingEverywhere(serverLevel));
         }
     }
 
@@ -49,7 +49,7 @@ public class MixinLevel {
             if (ServerConfig.Debug.debugMode.get()){
                 throw new IllegalCallerException("Use isThunderingAt to check if rain");
             }
-            cir.setReturnValue(WeatherManager.isThunderAnywhere(serverLevel));
+            cir.setReturnValue(WeatherManager.isThunderEverywhere(serverLevel));
         }
     }
 

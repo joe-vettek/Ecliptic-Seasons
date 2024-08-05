@@ -1,20 +1,15 @@
 package com.teamtea.eclipticseasons.client.particle;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
-import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -62,7 +57,7 @@ public class ParticleUtil {
         blockpos$mutableblockpos.set(i, j, k);
         BlockState blockstate = clientLevel.getBlockState(blockpos$mutableblockpos);
         if (blockstate.getBlock() instanceof LeavesBlock) {
-            destroy(clientLevel, blockpos$mutableblockpos, blockstate);
+            fallenLeaves(clientLevel, blockpos$mutableblockpos, blockstate);
         } else if (blockstate.is(BlockTags.FLOWERS)) {
             // CampfireBlock.
             if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
@@ -77,13 +72,15 @@ public class ParticleUtil {
 
         if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN
                 && SimpleUtil.isNoon(clientLevel)
-
+                && clientLevel.canSeeSky(blockpos$mutableblockpos)
+                && clientLevel.isEmptyBlock(blockpos$mutableblockpos)
+                && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                 && random.nextInt(255) == 0) {
             clientLevel.addParticle(EclipticSeasons.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
         }
     }
 
-    public static void destroy(ClientLevel level, BlockPos pos, BlockState state) {
+    public static void fallenLeaves(ClientLevel level, BlockPos pos, BlockState state) {
         if (!state.isAir()) {
             VoxelShape voxelshape = state.getShape(level, pos);
             double d0 = 0.25D;

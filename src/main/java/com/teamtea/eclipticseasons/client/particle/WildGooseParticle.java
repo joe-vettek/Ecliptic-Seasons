@@ -32,7 +32,7 @@ public class WildGooseParticle extends RisingParticle {
             this.age = this.lifetime + 1;
         }
         super.tick();
-        
+
         // this.setSpriteFromAge(this.spriteSet);
         // setSprite(sprites.get(this.age % 8, 1));
         try {

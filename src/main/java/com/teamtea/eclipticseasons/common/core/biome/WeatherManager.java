@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.common.core.biome;
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.climate.BiomeRain;
+import com.teamtea.eclipticseasons.api.constant.climate.FlatRain;
 import com.teamtea.eclipticseasons.api.constant.climate.SnowTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
@@ -70,15 +71,19 @@ public class WeatherManager {
         return 0.0f;
     }
 
-    public static Boolean isRainingAnywhere(ServerLevel serverLevel) {
-        var ws = getBiomeList(serverLevel);
-        if (ws != null)
+    public static Boolean isRainingEverywhere(ServerLevel level) {
+        if (!level.dimensionType().natural()) return false;
+        var ws = getBiomeList(level);
+        if (ws != null) {
+            var solarTerm = AllListener.getSaveData(level).getSolarTerm();
             for (BiomeWeather biomeWeather : ws) {
-                if (biomeWeather.shouldRain()) {
-                    return true;
+                if (!biomeWeather.shouldRain()
+                        && !(solarTerm.getBiomeRain(biomeWeather.biomeHolder) == FlatRain.RAINLESS)) {
+                    return false;
                 }
             }
-        return false;
+        }
+        return true;
     }
 
     public static Float getMinThunderLevel(Level level, float p46723) {
@@ -104,15 +109,19 @@ public class WeatherManager {
         return 0.0f;
     }
 
-    public static Boolean isThunderAnywhere(ServerLevel serverLevel) {
-        var ws = getBiomeList(serverLevel);
-        if (ws != null)
+    public static Boolean isThunderEverywhere(ServerLevel level) {
+        if (!level.dimensionType().natural()) return false;
+        var ws = getBiomeList(level);
+        if (ws != null) {
+            var solarTerm = AllListener.getSaveData(level).getSolarTerm();
             for (BiomeWeather biomeWeather : ws) {
-                if (biomeWeather.shouldThunder()) {
-                    return true;
+                if (!biomeWeather.shouldRain()
+                        && !(solarTerm.getBiomeRain(biomeWeather.biomeHolder) == FlatRain.RAINLESS)) {
+                    return false;
                 }
             }
-        return false;
+        }
+        return true;
     }
 
     public static Boolean isThunderAtBiome(ServerLevel serverLevel, Biome biome) {
@@ -127,9 +136,12 @@ public class WeatherManager {
     }
 
     public static Boolean isThunderAt(ServerLevel serverLevel, BlockPos pos) {
-        if (!isThunderAnywhere(serverLevel)) {
+        if (!serverLevel.dimensionType().natural()) {
             return false;
         }
+        // if (!isThunderAnywhere(serverLevel)) {
+        //     return false;
+        // }
         if (!serverLevel.canSeeSky(pos)) {
             return false;
         } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
@@ -143,9 +155,9 @@ public class WeatherManager {
         if (!serverLevel.dimensionType().natural()) {
             return false;
         }
-        if (!isRainingAnywhere(serverLevel)) {
-            return false;
-        }
+        // if (!isRainingAnywhere(serverLevel)) {
+        //     return false;
+        // }
         if (!serverLevel.canSeeSky(pos)) {
             return false;
         } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
@@ -285,7 +297,7 @@ public class WeatherManager {
                     if (b.getTemperature(player.blockPosition()) > 0.5f) {
 
                         if (!player.isInWaterOrRain()
-                                && (( SimpleUtil.isNoon(level) && (level.canSeeSky(player.blockPosition()))))
+                                && ((SimpleUtil.isNoon(level) && (level.canSeeSky(player.blockPosition()))))
                         ) {
                             boolean isColdHe = false;
                             for (ItemStack itemstack : player.getArmorSlots()) {
