@@ -1,9 +1,11 @@
 package com.teamtea.eclipticseasons.client;
 
 
+import com.mojang.blaze3d.shaders.Shader;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
+import com.teamtea.eclipticseasons.client.render.ClientRenderer;
 import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.ClientSolarDataManager;
@@ -12,38 +14,18 @@ import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.common.core.crop.CropInfoManager;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonInfo;
 import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityInfo;
-import me.jellysquid.mods.sodium.mixin.features.render.model.block.BlockModelRendererMixin;
-import net.minecraft.Util;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PandaModel;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Panda;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FlowerBlock;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -56,10 +38,19 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 
-import java.util.Random;
+import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = EclipticSeasons.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
+
+    @SubscribeEvent
+    public static void onRenderTick(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().player != null) {
+            ClientRenderer.applyEffect(Minecraft.getInstance().gameRenderer, Minecraft.getInstance().player);
+        }
+    }
+
 
     public static float prevFogDensity = -1f;
     public static long prevFogTick = -1L;
@@ -70,77 +61,12 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onFogEvent(ViewportEvent.ComputeFogColor event) {
-        renderFogColors(event.getCamera(), (float) event.getPartialTick(), event);
+        ClientRenderer.renderFogColors(event.getCamera(), (float) event.getPartialTick(), event);
     }
 
     @SubscribeEvent
     public static void onFogEvent(ViewportEvent.RenderFog event) {
-        renderFogDensity(event.getCamera(), event);
-    }
-
-    public static void renderFogColors(Camera camera, float partialTick, ViewportEvent.ComputeFogColor event) {
-        if (camera.getEntity() instanceof Player player && camera.getFluidInCamera() == FogType.NONE && prevFogDensity > 0f) {
-            // Calculate color based on time of day
-            final float angle = player.level().getSunAngle(partialTick);
-            final float height = Mth.cos(angle);
-            final float delta = Mth.clamp((height + 0.4f) / 0.8f, 0, 1);
-
-            final int colorDay = 0xbfbfd8;
-            final int colorNight = 0x0c0c19;
-            final float red = ((colorDay >> 16) & 0xFF) * delta + ((colorNight >> 16) & 0xFF) * (1 - delta);
-            final float green = ((colorDay >> 8) & 0xFF) * delta + ((colorNight >> 8) & 0xFF) * (1 - delta);
-            final float blue = (colorDay & 0xFF) * delta + (colorNight & 0xFF) * (1 - delta);
-
-            event.setRed(red / 255f);
-            event.setBlue(blue / 255f);
-            event.setGreen(green / 255f);
-
-            r = red / 255f;
-            g = blue / 255f;
-            b = green / 255f;
-        }
-    }
-
-    public static void renderFogDensity(Camera camera, ViewportEvent.RenderFog event) {
-        if (camera.getEntity() instanceof Player player) {
-            final long thisTick = Util.getMillis();
-            final boolean firstTick = prevFogTick == -1;
-            final float deltaTick = firstTick ? 1e10f : (thisTick - prevFogTick) * 0.00015f;
-
-            prevFogTick = thisTick;
-
-            float expectedFogDensity = 0f;
-
-            final Level level = player.level();
-            final Biome biome = level.getBiome(camera.getBlockPosition()).value();
-            if (level.isRaining() && biome.coldEnoughToSnow(camera.getBlockPosition())) {
-                final int light = level.getBrightness(LightLayer.SKY, BlockPos.containing(player.getEyePosition()));
-                expectedFogDensity = Mth.clampedMap(light, 0f, 15f, 0f, 1f);
-            }
-
-            // Smoothly interpolate fog towards the expected value - increasing faster than it decreases
-            if (expectedFogDensity > prevFogDensity) {
-                prevFogDensity = Math.min(prevFogDensity + 4f * deltaTick, expectedFogDensity);
-            } else if (expectedFogDensity < prevFogDensity) {
-                prevFogDensity = Math.max(prevFogDensity - deltaTick, expectedFogDensity);
-            }
-
-            if (camera.getFluidInCamera() != FogType.NONE) {
-                prevFogDensity = -1; // Immediately cancel fog if there's another fog effect going on
-                prevFogTick = -1;
-            }
-
-            if (prevFogDensity > 0) {
-                final float scaledDelta = 1 - (1 - prevFogDensity) * (1 - prevFogDensity);
-                final float fogDensity = 0.1f;
-                final float farPlaneScale = Mth.lerp(scaledDelta, 1f, fogDensity);
-                final float nearPlaneScale = Mth.lerp(scaledDelta, 1f, 0.3f * fogDensity);
-
-                event.scaleNearPlaneDistance(nearPlaneScale);
-                event.scaleFarPlaneDistance(farPlaneScale);
-                event.setCanceled(true);
-            }
-        }
+        ClientRenderer.renderFogDensity(event.getCamera(), event);
     }
 
     @SubscribeEvent

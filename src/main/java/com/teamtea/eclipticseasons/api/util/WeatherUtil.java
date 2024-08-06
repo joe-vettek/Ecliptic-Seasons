@@ -14,7 +14,6 @@ public class WeatherUtil {
             if (WeatherManager.isRainingAt((ServerLevel) level, pos))
                 return true;
         }
-
         return false;
     }
 

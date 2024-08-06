@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
@@ -48,6 +49,7 @@ public class EclipticSeasons {
     public static final String NETWORK_VERSION = "1.0";
 
     public static void logger(String x) {
+
         // 通过它可以判断是否在哪个服务器
         // ServerLifecycleHooks.getCurrentServer()
         // if (!FMLEnvironment.production||General.bool.get())

@@ -32,6 +32,7 @@
     "client.MixinClientLevel",
     "client.MixinClientLevelChunk",
     "client.MixinClientPanda",
+    "client.MixinGameRenderer",
     "client.MixinLevelRender",
     "client.MixinLocalPlayer",
     "client.block.MixinLeavesBlock",
