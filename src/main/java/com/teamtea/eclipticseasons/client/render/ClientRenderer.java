@@ -19,7 +19,6 @@ import net.minecraft.world.level.material.FogType;
 import net.minecraftforge.client.event.ViewportEvent;
 
 public class ClientRenderer {
-    public static float prevProgress = -1;
     public static long reMainTick = 0;
 
     private static float getProgress(boolean fadeIn) {
@@ -49,13 +48,13 @@ public class ClientRenderer {
                 reMainTick--;
             } else reMainTick = 100;
 
-            float progress = getProgress(blurStatus == ON_BLUR) * 0.1f;
+            float progress = getProgress(blurStatus == ON_BLUR) * 0.03f;
             // if (progress != prevProgress)
             {
                 // prevProgress = progress;
                 updateUniform("Progress", progress);
             }
-            EclipticSeasons.logger(reMainTick, progress, blurStatus, oldBlurStatus);
+            // EclipticSeasons.logger(reMainTick, progress, blurStatus, oldBlurStatus);
             if (reMainTick == 0) {
                 oldBlurStatus = blurStatus;
                 if (oldBlurStatus == NONE_BLUR) {
@@ -68,22 +67,14 @@ public class ClientRenderer {
     }
 
     public static void updateUniform(String name, float value) {
-        // if (_listShaders == null) return;
-        var sg = Minecraft.getInstance().gameRenderer.currentEffect();
-        try {
-            // List<Shader> shaders = (List<Shader>) _listShaders.get(sg);
-            if (sg != null)
-                for (PostPass s : sg.passes) {
-                    // s.getFragmentProgram().
-                    // ShaderDefault su = s.getShaderManager().getShaderUniform(name);
-                    var su = s.getEffect().getUniform(name);
-                    if (su != null) {
-                        su.set(value);
-                    }
+        var postChain = Minecraft.getInstance().gameRenderer.currentEffect();
+        if (postChain != null)
+            for (PostPass postPass : postChain.passes) {
+                var uniform = postPass.getEffect().getUniform(name);
+                if (uniform != null) {
+                    uniform.set(value);
                 }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            }
     }
 
 
