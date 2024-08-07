@@ -104,6 +104,10 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
+            synchronized (ModelManager.RegionList) {
+                ModelManager.RegionList.clear();
+            }
+
             // ModelManager.quadMap.clear();
             // ModelManager.quadMap_1.clear();
 

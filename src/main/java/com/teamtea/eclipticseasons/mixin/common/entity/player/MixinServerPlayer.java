@@ -21,7 +21,7 @@ public abstract class MixinServerPlayer extends Player {
     }
 
     @Inject(at = {@At("RETURN")}, method = {"tick"})
-    private void mixin_init(CallbackInfo ci) {
+    private void ecliptic$init(CallbackInfo ci) {
         WeatherManager.tickPlayerSeasonEffecct((ServerPlayer)(Object)this);
     }
 

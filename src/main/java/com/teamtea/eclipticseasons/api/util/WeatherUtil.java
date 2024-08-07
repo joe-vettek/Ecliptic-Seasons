@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.api.util;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -23,5 +24,27 @@ public class WeatherUtil {
         return entity.level().isRainingAt(blockpos)
                 || entity.level().isRainingAt(BlockPos.containing(blockpos.getX(), entity.getBoundingBox().maxY, blockpos.getZ()));
         // return entity.isInWaterOrRain();
+    }
+
+
+    public static float getTempAt(Level level, BlockPos pos) {
+        var biome = level.getBiome(pos);
+        float bt = biome.value().getModifiedClimateSettings().temperature();
+        bt += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
+        return bt;
+    }
+
+    public static float getBiomeDownFall(Level level, BlockPos pos) {
+        var biome = level.getBiome(pos);
+        float bt = biome.value().getModifiedClimateSettings().downfall();
+        return bt;
+    }
+
+    public static float getHumidityAt(Level level, BlockPos pos) {
+        var biome = level.getBiome(pos);
+        float bt = biome.value().getModifiedClimateSettings().downfall();
+        float bt2 = biome.value().getModifiedClimateSettings().temperature();
+        bt2 += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
+        return Mth.clamp(bt, 0.0F, 1.0F) * Mth.clamp(bt2, 0.0F, 1.0F);
     }
 }

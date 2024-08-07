@@ -74,7 +74,7 @@ public abstract class MixinLevelRender {
             method = "renderSnowAndRain",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getRainLevel(F)F")
     )
-    private float mixin$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
+    private float ecliptic$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
         // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
         // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
         return ClientWeatherChecker.getRainLevel(level, 1.0f);
@@ -86,7 +86,7 @@ public abstract class MixinLevelRender {
             method = "renderSnowAndRain",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
-    private Biome.Precipitation mixin$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
+    private Biome.Precipitation ecliptic$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         return WeatherManager.getPrecipitationAt(level,biome,pos);
     }
 
@@ -94,13 +94,13 @@ public abstract class MixinLevelRender {
             method = "tickRain",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
-    private Biome.Precipitation mixin$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
+    private Biome.Precipitation ecliptic$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         return WeatherManager.getPrecipitationAt(level,biome,pos);
     }
 
 
     @Redirect(method = "renderSnowAndRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;getLightColor(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;)I"))
-    private int mixin$getAdjustedLightColorForSnow(BlockAndTintGetter level, BlockPos pos)
+    private int ecliptic$getAdjustedLightColorForSnow(BlockAndTintGetter level, BlockPos pos)
     {
         final int packedLight = LevelRenderer.getLightColor(level, pos);
         // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
@@ -118,7 +118,7 @@ public abstract class MixinLevelRender {
 
 
     @ModifyConstant(method = "renderSnowAndRain", constant = {@Constant(intValue = 5), @Constant(intValue = 10)})
-    private int mixin$ModifySnowAmount(int constant)
+    private int ecliptic$ModifySnowAmount(int constant)
     {
         // This constant is used to control how much snow is rendered - 5 with default, 10 with fancy graphics. By default, we bump this all the way to 15.
         return ClientWeatherChecker.ModifySnowAmount(constant);

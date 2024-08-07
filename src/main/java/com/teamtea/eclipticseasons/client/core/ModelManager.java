@@ -165,13 +165,12 @@ public class ModelManager {
         int z = blockToSectionCoord(pos.getZ());
         ChunkPos chunkPos = new ChunkPos(x, z);
         // var map = ChunkMap.getOrDefault(chunkPos, null);
-        ChunkHeightMap map = null;
-        for (ChunkHeightMap chunkHeightMap : RegionList) {
-            if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
-                map = chunkHeightMap;
-                break;
-            }
-        }
+        
+        ChunkHeightMap map = RegionList.stream()
+                .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
+                .findFirst()
+                .orElse(null);
+
         int h = 0;
         if (map != null) {
             h = map.getHeight(pos);

@@ -40,12 +40,12 @@ public abstract class MixinServerLevel extends Level {
 
     // 早晨有可能继续下雨
     @Inject(at = {@At("HEAD")}, method = {"resetWeatherCycle"}, cancellable = true)
-    public void mixin_resetWeatherCycle(CallbackInfo ci) {
+    public void ecliptic$resetWeatherCycle(CallbackInfo ci) {
         ci.cancel();
     }
 
     @Inject(at = {@At("HEAD")}, method = {"advanceWeatherCycle"}, cancellable = true)
-    public void mixin_advanceWeatherCycle(CallbackInfo ci) {
+    public void ecliptic$advanceWeatherCycle(CallbackInfo ci) {
         boolean cancel = WeatherManager.agentAdvanceWeatherCycle((ServerLevel) (Object) this, serverLevelData, levelData, random);
         if (cancel)
             ci.cancel();
@@ -55,7 +55,7 @@ public abstract class MixinServerLevel extends Level {
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
-    private Biome.Precipitation mixin$tickChunk_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
+    private Biome.Precipitation ecliptic$tickChunk_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
     }
 
@@ -64,7 +64,7 @@ public abstract class MixinServerLevel extends Level {
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
     )
-    private boolean mixin$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+    private boolean ecliptic$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
         var chunkpos = levelChunk.getPos();
         int i = chunkpos.getMiddleBlockX();
         int j = chunkpos.getMiddleBlockZ();
@@ -76,7 +76,7 @@ public abstract class MixinServerLevel extends Level {
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z")
     )
-    private boolean mixin$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+    private boolean ecliptic$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
         var chunkpos = levelChunk.getPos();
         int i = chunkpos.getMiddleBlockX();
         int j = chunkpos.getMiddleBlockZ();

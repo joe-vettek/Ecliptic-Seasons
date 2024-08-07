@@ -19,7 +19,7 @@ public class MixinLightningRodBlock {
             method = "animateTick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
-    private boolean mixin$onProjectileHit_isThundering(Level instance, Operation<Boolean> original, @Local(ordinal = 0) BlockPos blockPos) {
+    private boolean ecliptic$onProjectileHit_isThundering(Level instance, Operation<Boolean> original, @Local(ordinal = 0) BlockPos blockPos) {
         return ClientWeatherChecker.isThunderAt((ClientLevel) instance, blockPos);
     }
 

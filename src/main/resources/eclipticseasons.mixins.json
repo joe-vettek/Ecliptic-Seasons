@@ -37,6 +37,7 @@
     "client.MixinLocalPlayer",
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
+    "client.sound.MixinMusicManager",
     "compat.embeddium.MixinBlockRender2"
   ],
   "injectors": {

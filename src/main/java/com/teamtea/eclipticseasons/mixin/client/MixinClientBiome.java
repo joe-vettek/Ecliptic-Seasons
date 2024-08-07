@@ -19,13 +19,13 @@ public abstract class MixinClientBiome {
 
     // TODO：这里需要走一下判断是在客户端还是服务器
     @Inject(at = {@At("HEAD")}, method = {"getPrecipitationAt"}, cancellable = true)
-    public void mixin_getPrecipitationAt(BlockPos p_198905_, CallbackInfoReturnable<Biome.Precipitation> cir) {
+    public void ecliptic$getPrecipitationAt(BlockPos p_198905_, CallbackInfoReturnable<Biome.Precipitation> cir) {
         if (FMLLoader.getDist() == Dist.CLIENT)
             cir.setReturnValue(WeatherManager.getPrecipitationAt(Minecraft.getInstance().level, (Biome) (Object) this, p_198905_));
     }
 
     @Inject(at = {@At("HEAD")}, method = {"hasPrecipitation"}, cancellable = true)
-    public void mixin_hasPrecipitation(CallbackInfoReturnable<Boolean > cir) {
+    public void ecliptic$hasPrecipitation(CallbackInfoReturnable<Boolean > cir) {
         if (FMLLoader.getDist()== Dist.CLIENT)
             cir.setReturnValue(! EclipticTagClientTool.getTag((Biome)(Object)this).equals(SeasonTypeBiomeTags.RAINLESS));
     }
