@@ -7,6 +7,7 @@ import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.level.Level;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,7 +18,7 @@ public class MixinFox_SeekShelterGoal {
 
     // @Shadow @Final private Bee this$0;
 
-
+    @Dynamic
     @Shadow
     @Final
     private Fox this$0;
