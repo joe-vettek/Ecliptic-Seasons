@@ -43,6 +43,9 @@ public class AllListener {
         return LazyOptional.of(() -> DATA_MANAGER_MAP.getOrDefault(level, new SolarDataManager(level)));
     }
 
+    public static void createSaveData(Level level,SolarDataManager solarDataManager) {
+        DATA_MANAGER_MAP.put(level, solarDataManager);
+    }
 
     // TagsUpdatedEvent invoke before ServerAboutToStartEvent
     // TODO：优化这个问题，理论上来说，更新数据的时候不能发送群系包，话说回来，既然是群系天气，实际上与level关系不大，不应该一个level一个
@@ -91,7 +94,7 @@ public class AllListener {
             WeatherManager.createLevelBiomeWeatherList(serverLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            DATA_MANAGER_MAP.put(serverLevel, SolarDataManager.get(serverLevel));
+          createSaveData(serverLevel, SolarDataManager.get(serverLevel));
         }
     }
 
@@ -134,15 +137,14 @@ public class AllListener {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer && !(event.getEntity() instanceof FakePlayer)) {
-            WeatherManager.onLoggedIn(serverPlayer);
+            WeatherManager.onLoggedIn(serverPlayer,true);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-
-        if (event.getEntity() instanceof ServerPlayer && !(event.getEntity() instanceof FakePlayer)) {
-            WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(event.getEntity().level()), List.of((ServerPlayer) event.getEntity()));
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WeatherManager.onLoggedIn(serverPlayer,false);
         }
     }
 

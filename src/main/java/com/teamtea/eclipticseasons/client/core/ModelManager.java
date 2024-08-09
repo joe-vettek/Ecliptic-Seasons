@@ -96,6 +96,14 @@ public class ModelManager {
         return false;
     }
 
+    public static void clearHeightMap() {
+        updateLock=true;
+        synchronized (ModelManager.RegionList) {
+            ModelManager.RegionList.clear();
+        }
+        updateLock=false;
+    }
+
     public static class ChunkHeightMap {
         private final int[][] matrix = new int[ChunkSize][ChunkSize];
         private final Object[][] lockArray = new Object[ChunkSize][ChunkSize];
@@ -157,6 +165,7 @@ public class ModelManager {
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new HashMap<>(1024, 0.5f);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new HashMap<>(128, 0.5f);
 
+    private static boolean updateLock;
 
     public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
         if (ClientConfig.Renderer.useVanillaCheck.get())
@@ -165,11 +174,26 @@ public class ModelManager {
         int z = blockToSectionCoord(pos.getZ());
         ChunkPos chunkPos = new ChunkPos(x, z);
         // var map = ChunkMap.getOrDefault(chunkPos, null);
-        
-        ChunkHeightMap map = RegionList.stream()
+
+        ChunkHeightMap map = null;
+        // try{
+        while (updateLock){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+            }
+        }
+        map = RegionList.stream()
                 .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
                 .findFirst()
                 .orElse(null);
+        // }
+        // catch (Exception e) {
+        //     // e.printStackTrace();
+        //     EclipticSeasons.logger(1223);
+        //     // SimpleUtil.testTime(()->{});
+        // }
+
 
         int h = 0;
         if (map != null) {
@@ -191,12 +215,14 @@ public class ModelManager {
             // return h;
         } else {
 
+            updateLock = true;
             // ChunkMap.put(chunkPos, map);
             synchronized (RegionList) {
                 boolean hasBuild = false;
                 for (ChunkHeightMap chunkHeightMap : RegionList) {
                     if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
                         hasBuild = true;
+                        map = chunkHeightMap;
                         break;
                     }
                 }
@@ -205,13 +231,17 @@ public class ModelManager {
                     RegionList.add(map);
                 }
             }
-            // h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
-            // map.updateHeight(pos, h);
-            h = getHeightOrUpdate(pos, false);
+            updateLock = false;
+
+            h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
+            map.updateHeight(pos, h);
+            // h = getHeightOrUpdate(pos, false);
             // return h;
+
         }
         return h;
     }
+
 
     public static final int FLAG_BLOCK = 1;
     public static final int FLAG_SLAB = 2;

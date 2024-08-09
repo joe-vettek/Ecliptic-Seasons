@@ -88,25 +88,18 @@ public final class ClientEventHandler {
 
 
     @SubscribeEvent
-    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        synchronized (ModelManager.RegionList) {
-            ModelManager.RegionList.clear();
-        }
-    }
-
-    @SubscribeEvent
     public static void onLevelUnloadEvent(LevelEvent.Unload event) {
-        synchronized (ModelManager.RegionList) {
-            ModelManager.RegionList.clear();
+        if (event.getLevel() instanceof ClientLevel clientLevel) {
+            ModelManager.clearHeightMap();
         }
     }
 
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
-            synchronized (ModelManager.RegionList) {
-                ModelManager.RegionList.clear();
-            }
+            // synchronized (ModelManager.RegionList) {
+            //     ModelManager.RegionList.clear();
+            // }
 
             // ModelManager.quadMap.clear();
             // ModelManager.quadMap_1.clear();
@@ -114,7 +107,7 @@ public final class ClientEventHandler {
             WeatherManager.createLevelBiomeWeatherList(clientLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            AllListener.DATA_MANAGER_MAP.put(clientLevel, ClientSolarDataManager.get(clientLevel));
+            AllListener.createSaveData(clientLevel, ClientSolarDataManager.get(clientLevel));
         }
     }
 

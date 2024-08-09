@@ -393,12 +393,14 @@ public class WeatherManager {
         SimpleNetworkHandler.send(new ArrayList<>(level.players()), new EmptyMessage());
     }
 
-    public static void onLoggedIn(ServerPlayer serverPlayer) {
+    public static void onLoggedIn(ServerPlayer serverPlayer, boolean isLogged) {
         if (ServerConfig.Season.enableInform.get()) {
             AllListener.getSaveDataLazy(serverPlayer.level()).ifPresent(t ->
             {
                 SimpleNetworkHandler.send(serverPlayer, new SolarTermsMessage(t.getSolarTermsDay()));
-                if (t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
+                if (isLogged
+
+                        && t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                     serverPlayer.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
                 }
             });
@@ -406,6 +408,7 @@ public class WeatherManager {
         }
         WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(serverPlayer.level()), List.of(serverPlayer));
     }
+
 
 
     public static class BiomeWeather implements INBTSerializable<CompoundTag> {
