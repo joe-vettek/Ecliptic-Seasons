@@ -60,8 +60,6 @@ public abstract class MixinServerLevel extends Level {
     }
 
 
-
-
     @WrapOperation(
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")

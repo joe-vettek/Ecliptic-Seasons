@@ -3,12 +3,11 @@ package com.teamtea.eclipticseasons.client.core;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
-import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.misc.LazyGet;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -18,14 +17,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraft.world.level.levelgen.Heightmap;
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
 
@@ -69,11 +66,6 @@ public class ModelManager {
     }
 
 
-    public static final int ChunkSize = 16 * 32;
-    public static final int ChunkSizeLoc = ChunkSize - 1;
-    public static final int ChunkSizeAxis = 4 * 5;
-
-
     public static boolean shouldCutoutMipped(BlockState state) {
         if (Minecraft.getInstance().level != null) {
             var onBlock = state.getBlock();
@@ -88,169 +80,9 @@ public class ModelManager {
         return false;
     }
 
-    public static void clearHeightMap() {
-        updateLock=true;
-        synchronized (ModelManager.RegionList) {
-            ModelManager.RegionList.clear();
-        }
-        updateLock=false;
-    }
-
-    public static class ChunkHeightMap {
-        private final int[][] matrix = new int[ChunkSize][ChunkSize];
-        private final Object[][] lockArray = new Object[ChunkSize][ChunkSize];
-        private final int x;
-        private final int z;
-
-        public ChunkHeightMap(int x, int z) {
-            this.x = x;
-            this.z = z;
-            EclipticSeasons.logger(String.format("Create new Height Map with [%s, %s]", x, z));
-            for (int i = 0; i < ChunkSize; i++) {
-                for (int j = 0; j < ChunkSize; j++) {
-                    matrix[i][j] = Integer.MIN_VALUE;
-                    lockArray[i][j] = new Object();
-                }
-            }
-            EclipticSeasons.logger(String.format("End create [%s, %s]", x, z));
-        }
-
-        public int getHeight(int x, int z) {
-            x = getChunkValue(x);
-            z = getChunkValue(z);
-            return matrix[x][z];
-        }
-
-        public int getHeight(BlockPos pos) {
-            return getHeight(pos.getX(), pos.getZ());
-        }
-
-        public int updateHeight(int x, int z, int y) {
-            x = getChunkValue(x);
-            z = getChunkValue(z);
-            int old;
-            synchronized (lockArray[x][z]) {
-                old = matrix[x][z];
-                matrix[x][z] = y;
-            }
-            return old;
-        }
-
-        public int updateHeight(BlockPos pos, int y) {
-            return updateHeight(pos.getX(), pos.getZ(), y);
-        }
-    }
-
-    // 获取chunk内部位置
-    public static int getChunkValue(int i) {
-        return i & (ChunkSizeLoc);
-    }
-
-    // 获取chunk位置
-    public static int blockToSectionCoord(int i) {
-        return i >> ChunkSizeAxis;
-    }
-
-    // TODO:内存更新，双链表+Hash，用LRU
-    public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new IdentityHashMap<>(1024);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new IdentityHashMap<>(1024);
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new IdentityHashMap<>(128);
-
-    private static boolean updateLock;
-
-    public static int getHeightOrUpdate(BlockPos pos, boolean shouldUpdate) {
-        if (ClientConfig.Renderer.useVanillaCheck.get())
-            return Integer.MIN_VALUE;
-        int x = blockToSectionCoord(pos.getX());
-        int z = blockToSectionCoord(pos.getZ());
-        ChunkPos chunkPos = new ChunkPos(x, z);
-        // var map = ChunkMap.getOrDefault(chunkPos, null);
-
-        ChunkHeightMap map = null;
-        // try{
-        while (updateLock){
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-            }
-        }
-        // map = RegionList.stream()
-        //         .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
-        //         .findFirst()
-        //         .orElse(null);
-        // size add is dangerous
-        for (int i = 0; i < RegionList.size(); i++) {
-            var chunkHeightMap=RegionList.get(i);
-                if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
-                    map = chunkHeightMap;
-                    break;
-                }
-        }
-        // }
-        // catch (Exception e) {
-        //     // e.printStackTrace();
-        //     EclipticSeasons.logger(1223);
-        //     // SimpleUtil.testTime(()->{});
-        // }
-
-
-        int h = 0;
-        if (map != null) {
-            h = map.getHeight(pos);
-            if (h == Integer.MIN_VALUE || shouldUpdate) {
-                var rh = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
-                if (ClientConfig.Renderer.underSnow.get()) {
-                    var rmPos = new BlockPos.MutableBlockPos(pos.getX(), rh, pos.getZ());
-                    var s = Minecraft.getInstance().level.getBlockState(rmPos);
-                    while ((!(s.getBlock() instanceof LeavesBlock) && !s.isFaceSturdy(Minecraft.getInstance().level, rmPos, Direction.DOWN))) {
-                        rh--;
-                        s = Minecraft.getInstance().level.getBlockState(new BlockPos(pos.getX(), rh, pos.getZ()));
-                        rmPos.move(Direction.DOWN, 1);
-                    }
-                }
-                map.updateHeight(pos, rh);
-                h = rh;
-            }
-            // return h;
-        } else {
-
-            updateLock = true;
-            // ChunkMap.put(chunkPos, map);
-            synchronized (RegionList) {
-                boolean hasBuild = false;
-                for (ChunkHeightMap chunkHeightMap : RegionList) {
-                    if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
-                        hasBuild = true;
-                        map = chunkHeightMap;
-                        break;
-                    }
-                }
-                if (!hasBuild) {
-                    map = new ChunkHeightMap(x, z);
-                    RegionList.add(map);
-                }
-            }
-            updateLock = false;
-
-            h = Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
-            map.updateHeight(pos, h);
-            // h = getHeightOrUpdate(pos, false);
-            // return h;
-
-        }
-        return h;
-    }
-
-    public static final int FLAG_BLOCK = 1;
-    public static final int FLAG_SLAB = 2;
-    public static final int FLAG_STAIRS = 3;
-    public static final int FLAG_LEAVES = 4;
-    public static final int FLAG_GRASS = 5;
-    public static final int FLAG_GRASS_LARGE = 501;
-    public static final int FLAG_FARMLAND = 6;
-    public static final List<Block> LowerPlant = List.of(Blocks.SHORT_GRASS, Blocks.FERN, Blocks.DANDELION);
-    public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
 
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
@@ -270,32 +102,32 @@ public class ModelManager {
             var onBlock = state.getBlock();
             int flag = 0;
             if (onBlock instanceof LeavesBlock) {
-                flag = FLAG_LEAVES;
+                flag = MapChecker.FLAG_LEAVES;
             } else if ((state.isSolidRender(blockAndTintGetter, pos)
                     // state.isSolid()
                     || onBlock instanceof LeavesBlock
                     || (onBlock instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
                     || (onBlock instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
-                flag = FLAG_BLOCK;
+                flag = MapChecker.FLAG_BLOCK;
             } else if (onBlock instanceof SlabBlock) {
-                flag = FLAG_SLAB;
+                flag = MapChecker.FLAG_SLAB;
             } else if (onBlock instanceof StairBlock) {
-                flag = FLAG_STAIRS;
-            } else if (LowerPlant.contains(onBlock)) {
-                flag = FLAG_GRASS;
-            } else if (LARGE_GRASS.contains(onBlock)) {
-                flag = FLAG_GRASS_LARGE;
+                flag = MapChecker.FLAG_STAIRS;
+            } else if (MapChecker.LowerPlant.contains(onBlock)) {
+                flag = MapChecker.FLAG_GRASS;
+            } else if (MapChecker.LARGE_GRASS.contains(onBlock)) {
+                flag = MapChecker.FLAG_GRASS_LARGE;
             } else if ((onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock) && direction == null) {
-                flag = FLAG_FARMLAND;
+                flag = MapChecker.FLAG_FARMLAND;
             } else return list;
 
             int offset = 0;
-            if (flag == FLAG_GRASS || flag == FLAG_GRASS_LARGE) {
-                if (flag == FLAG_GRASS) {
+            if (flag == MapChecker.FLAG_GRASS || flag == MapChecker.FLAG_GRASS_LARGE) {
+                if (flag == MapChecker.FLAG_GRASS) {
                     offset = 1;
                 }
                 // 这里不忽略这个警告，因为后续会有优化
-                else if (flag == FLAG_GRASS_LARGE) {
+                else if (flag == MapChecker.FLAG_GRASS_LARGE) {
                     if (state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
                         offset = 1;
                     } else {
@@ -309,18 +141,18 @@ public class ModelManager {
 
             isLight = ClientConfig.Renderer.useVanillaCheck.get() && Minecraft.getInstance().level != null ?
                     Minecraft.getInstance().level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >= 15
-                    : getHeightOrUpdate(pos, false) == pos.getY() - offset;
+                    : MapChecker.getHeightOrUpdate(  Minecraft.getInstance().level,pos, false) == pos.getY() - offset;
 
 
             // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
             if (isLight) {
                 if (onBlock != Blocks.SNOW_BLOCK
-                        && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
+                        && MapChecker.shouldSnowAt( Minecraft.getInstance().level, pos.below(offset), state, random, seed)) {
                     // DynamicLeavesBlock
 
                     boolean isFlowerAbove = false;
-                    if ((flag == FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
+                    if ((flag == MapChecker.FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
                         var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
                         isFlowerAbove = bl instanceof FlowerBlock
                                 || bl instanceof PinkPetalsBlock
@@ -340,26 +172,26 @@ public class ModelManager {
                     } else {
                         BakedModel snowModel = null;
                         BlockState snowState = null;
-                        if (flag == FLAG_BLOCK) {
+                        if (flag == MapChecker.FLAG_BLOCK) {
                             // snowModel = !isFlowerAbove ? snowOverlayBlock.get() : models.get(overlay_2);
                             // snowModel = snowOverlayBlock.get();
                             snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowyBlock.get().defaultBlockState()));
-                        } else if (flag == FLAG_LEAVES) {
+                        } else if (flag == MapChecker.FLAG_LEAVES) {
                             // snowModel = snowOverlayLeaves.get();
                             snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowyLeaves.get().defaultBlockState()));
 
-                        } else if (flag == FLAG_SLAB) {
+                        } else if (flag == MapChecker.FLAG_SLAB) {
                             // snowModel = snowySlabBottom.get();
                             snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowySlab.get().defaultBlockState()));
 
-                        } else if (flag == FLAG_STAIRS) {
+                        } else if (flag == MapChecker.FLAG_STAIRS) {
                             snowState = EclipticSeasons.ModContents.snowyStairs.get().defaultBlockState()
                                     .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
                                     .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
                                     .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
                             // 楼梯的方向是无
                             snowModel = models.get(BlockModelShaper.stateToModelLocation(snowState));
-                        } else if (flag == FLAG_GRASS) {
+                        } else if (flag == MapChecker.FLAG_GRASS) {
                             if (onBlock == Blocks.SHORT_GRASS) {
                                 snowModel = models.get(snowy_grass);
                             } else if (onBlock == Blocks.FERN) {
@@ -367,13 +199,13 @@ public class ModelManager {
                             } else if (onBlock == Blocks.DANDELION) {
                                 snowModel = models.get(snowy_dandelion);
                             } else snowModel = models.get(snowy_grass);
-                        } else if (flag == FLAG_GRASS_LARGE) {
+                        } else if (flag == MapChecker.FLAG_GRASS_LARGE) {
                             if (onBlock == Blocks.TALL_GRASS) {
                                 snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
                             } else if (onBlock == Blocks.LARGE_FERN) {
                                 snowModel = models.get(offset == 1 ? snowy_large_fern_bottom : snowy_large_fern_top);
                             } else snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
-                        } else if (flag == FLAG_FARMLAND) {
+                        } else if (flag == MapChecker.FLAG_FARMLAND) {
                             snowModel = models.get(snow_height2_top);
                             // snowModel = snowOverlayBlock.get();
                         }
@@ -383,7 +215,7 @@ public class ModelManager {
                             var snowList = snowModel.getQuads(snowState, direction, random);
                             ArrayList<BakedQuad> newList;
 
-                            if (flag == FLAG_GRASS) {
+                            if (flag == MapChecker.FLAG_GRASS) {
                                 newList = new ArrayList<>(snowList);
                             } else if (direction == Direction.UP) {
                                 if (isFlowerAbove) {
@@ -406,7 +238,7 @@ public class ModelManager {
                                 newList.addAll(models.get(dandelion_top).getQuads(null, null, null));
                             }
 
-                            if (flag == FLAG_FARMLAND) {
+                            if (flag == MapChecker.FLAG_FARMLAND) {
 
                                 for (Direction direction1 : List.of(Direction.EAST, Direction.WEST, Direction.SOUTH, Direction.NORTH, Direction.UP)) {
                                     newList.addAll(snowModel.getQuads(null, direction1, random));
@@ -456,21 +288,6 @@ public class ModelManager {
 
         }
         return list;
-    }
-
-    // TODO:感觉用随机表性能更高
-    public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
-        // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
-        // Minecraft.getInstance().level.getBiome(pos);
-        var biome = Minecraft.getInstance().level.getBiome(pos);
-        // Minecraft.getInstance().level.getNoiseBiome()
-        // SimpleUtil.testTime(()->{ Minecraft.getInstance().level.getBiome(pos);});
-        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.value()) > Math.abs(seed % 100)) {
-            return true;
-        }
-
-        return false;
-        // >= random.nextInt(100));
     }
 
 }

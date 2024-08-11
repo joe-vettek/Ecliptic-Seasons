@@ -45,40 +45,45 @@ public final class DebugInfoRenderer {
         drawInfo(matrixStack, screenWidth, screenHeight, envS, index++);
         drawInfo(matrixStack, screenWidth, screenHeight, solarTimeS, index++);
 
+        Level level1=null;
         for (Level level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
             if (level.dimension() == Level.OVERWORLD && level instanceof ServerLevel) {
-                {
-                    var standBiome = level.getBiome(player.getOnPos());
-                    for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
-                        if (biomeWeather.biomeHolder.is(standBiome)) {
-                            var solarTerm = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(level).getSolarTerm();
-                            String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
-                            String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
-                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.value(),true);
-                            drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
-                            drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
-                            drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);
-                            drawInfo(matrixStack, screenWidth, screenHeight, snowTermS, index++);
-
-                            drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
-
-                            String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
-                            String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
-                            String thunderTimeS = "Thunder Time: " + biomeWeather.thunderTime;
-                            String snowDepthS = "Snow Depth: " + biomeWeather.snowDepth;
-
-                            drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
-                            drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
-                            drawInfo(matrixStack, screenWidth, screenHeight, thunderTimeS, index++);
-                            drawInfo(matrixStack, screenWidth, screenHeight, snowDepthS, index++);
-
-                            break;
-                        }
-                    }
-
-                }
+                level1=level;
             }
         }
+        level1=level1!=null?level1:Minecraft.getInstance().level;
+
+        {
+            var standBiome = level1.getBiome(player.getOnPos());
+            for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level1)) {
+                if (biomeWeather.biomeHolder.is(standBiome)) {
+                    var solarTerm = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(level1).getSolarTerm();
+                    String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
+                    String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
+                    String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.value(),true);
+                    drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, snowTermS, index++);
+
+                    drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
+
+                    String rainTimeS = "Rain Time: " + biomeWeather.rainTime;
+                    String clearTimeS = "Clear Time: " + biomeWeather.clearTime;
+                    String thunderTimeS = "Thunder Time: " + biomeWeather.thunderTime;
+                    String snowDepthS = "Snow Depth: " + biomeWeather.snowDepth;
+
+                    drawInfo(matrixStack, screenWidth, screenHeight, rainTimeS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, clearTimeS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, thunderTimeS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, snowDepthS, index++);
+
+                    break;
+                }
+            }
+
+        }
+
 
 
         RenderSystem.enableBlend();

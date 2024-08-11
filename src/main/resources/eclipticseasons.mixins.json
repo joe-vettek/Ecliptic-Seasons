@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "eclipticseasons.refmap.json",
   "mixins": [
-    "client.render.MixinIBlockExtension",
     "common.MixinBiome",
     "common.MixinDimensionType",
     "common.MixinLevel",
@@ -23,7 +22,8 @@
     "common.entity.monster.MixinMonster",
     "common.entity.player.MixinServerPlayer",
     "common.entity.projectile.MixinThrownTrident",
-    "common.loot.MixinWeatherCheck"
+    "common.loot.MixinWeatherCheck",
+    "common.block.MixinIBlockExtension"
   ],
   "client": [
     "client.ItemBlockRenderTypes",

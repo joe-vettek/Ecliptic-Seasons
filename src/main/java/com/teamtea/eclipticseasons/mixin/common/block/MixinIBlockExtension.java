@@ -1,7 +1,7 @@
-package com.teamtea.eclipticseasons.mixin.client.render;
+package com.teamtea.eclipticseasons.mixin.common.block;
 
 
-import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
+import com.teamtea.eclipticseasons.common.misc.MapColorReplacer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,7 +20,7 @@ public interface MixinIBlockExtension {
             method = {"getMapColor"},
             cancellable = true)
     public default void ecliptic$getColor(BlockState state, BlockGetter level, BlockPos pos, MapColor defaultColor, CallbackInfoReturnable<MapColor> cir) {
-        var ii = BiomeColorsHandler.getTopSnowColor(level, state, pos);
+        var ii = MapColorReplacer.getTopSnowColor(level, state, pos);
         if (ii != null)
             cir.setReturnValue(ii);
     }

@@ -7,6 +7,7 @@ import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.client.render.ClientRenderer;
 import com.teamtea.eclipticseasons.common.core.Holder;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.core.solar.ClientSolarDataManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import com.teamtea.eclipticseasons.config.ServerConfig;
@@ -86,7 +87,7 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onLevelUnloadEvent(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
-            ModelManager.clearHeightMap();
+            MapChecker.clearHeightMap();
         }
     }
 
