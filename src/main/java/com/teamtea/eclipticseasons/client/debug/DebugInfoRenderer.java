@@ -2,17 +2,21 @@ package com.teamtea.eclipticseasons.client.debug;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.common.AllListener;
+import com.teamtea.eclipticseasons.client.core.ColorHelper;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 public final class DebugInfoRenderer {
     private final Minecraft mc;
@@ -22,7 +26,7 @@ public final class DebugInfoRenderer {
         this.mc = mc;
     }
 
-    public void renderStatusBar(GuiGraphics matrixStack, int screenWidth, int screenHeight,ClientLevel clientLevel, LocalPlayer player, SolarTerm solar, long dayTime, double env, int solarTime) {
+    public void renderStatusBar(GuiGraphics matrixStack, int screenWidth, int screenHeight, ClientLevel clientLevel, LocalPlayer player, String solar, long dayTime, double env, int solarTime) {
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // RenderSystem.enableAlphaTest();
@@ -46,11 +50,11 @@ public final class DebugInfoRenderer {
                 {
                     var standBiome = level.getBiome(player.getOnPos());
                     for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
-                        if (((Holder.Reference<Biome>) biomeWeather.biomeHolder).key().location().equals(((Holder.Reference<Biome>) standBiome).key().location())) {
-                            var solarTerm = AllListener.getSaveData(level).getSolarTerm();
+                        if (biomeWeather.biomeHolder.is(standBiome)) {
+                            var solarTerm = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(level).getSolarTerm();
                             String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
                             String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
-                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.get());
+                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.value(),true);
                             drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);
@@ -79,11 +83,17 @@ public final class DebugInfoRenderer {
 
         RenderSystem.enableBlend();
         // RenderSystem.disableAlphaTest();
-        mc.getTextureManager().bindForSetup(OverlayEventHandler.DEFAULT);
+        // mc.getTextureManager().bindForSetup(OverlayEventHandler.DEFAULT);
 
     }
 
     private void drawInfo(GuiGraphics matrixStack, int screenWidth, int screenHeight, String s, int index) {
+        if(s.isEmpty())return;
+        matrixStack.fill(screenWidth / 2 - mc.font.width(s) / 2-2,
+                index * 9 + 3,
+                screenWidth / 2 + mc.font.width(s) / 2+2,
+                index * 9 + 3+ mc.font.lineHeight,
+                Color.decode("#baccd9").getRGB());
         matrixStack.drawString(mc.font, s, screenWidth / 2 - mc.font.width(s) / 2, index * 9 + 3, 0xFFFFFF);
     }
 

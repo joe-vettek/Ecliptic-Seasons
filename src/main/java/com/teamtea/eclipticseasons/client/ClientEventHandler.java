@@ -1,12 +1,11 @@
 package com.teamtea.eclipticseasons.client;
 
 
-import com.mojang.blaze3d.shaders.Shader;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.client.render.ClientRenderer;
-import com.teamtea.eclipticseasons.common.AllListener;
+import com.teamtea.eclipticseasons.common.core.Holder;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.ClientSolarDataManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
@@ -27,26 +26,23 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import com.teamtea.eclipticseasons.EclipticSeasons;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-import java.util.List;
-import java.util.Map;
-
-@Mod.EventBusSubscriber(modid = EclipticSeasons.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = EclipticSeasons.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
 
     @SubscribeEvent
-    public static void onRenderTick(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().player != null) {
+    public static void onRenderTick(ClientTickEvent.Post event) {
+        if (Minecraft.getInstance().player != null) {
             ClientRenderer.applyEffect(Minecraft.getInstance().gameRenderer, Minecraft.getInstance().player);
         }
     }
@@ -97,9 +93,6 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
-            // synchronized (ModelManager.RegionList) {
-            //     ModelManager.RegionList.clear();
-            // }
 
             // ModelManager.quadMap.clear();
             // ModelManager.quadMap_1.clear();
@@ -107,35 +100,43 @@ public final class ClientEventHandler {
             WeatherManager.createLevelBiomeWeatherList(clientLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            AllListener.createSaveData(clientLevel, ClientSolarDataManager.get(clientLevel));
+            Holder.createSaveData(clientLevel, ClientSolarDataManager.get(clientLevel));
+
         }
     }
 
     // 强制区块渲染
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.LevelTickEvent event) {
+    public static void onWorldTick(LevelTickEvent.Post event) {
         if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
-            if (event.phase.equals(TickEvent.Phase.END)
-                    && event.level.isClientSide()
-                    && ((ClientLevel) event.level).getGameTime() >> 8 == 0) {
+            if (event.getLevel().isClientSide()
+                    && event.getLevel().getGameTime() % 16 == 0) {
                 var lr = Minecraft.getInstance().levelRenderer;
-                if (lr != null) {
+                if (lr != null && lr.viewArea != null) {
+                    // if (lr.visibleSections.size() < lr.viewArea.sections.length)
+                    //     for (int i = 0; i < lr.viewArea.sections.length; i++) {
+                    //         lr.viewArea.sections[i].setDirty(true);
+                    //         lr.visibleSections.add(lr.viewArea.sections[i]);
+                    //     }
+
                     //
                     // ((ClientChunkCache) event.level.getChunkSource()).storage.
                     if (Minecraft.getInstance().cameraEntity instanceof Player player) {
                         BlockPos pos = player.getOnPos();
                         SectionPos sectionPos = SectionPos.of(pos);
-                        // lr.setSectionDirtyWithNeighbors(sectionPos.x(),sectionPos.y(),sectionPos.z());
-                        int x = sectionPos.x();
-                        int y = sectionPos.y();
-                        int z = sectionPos.z();
-                        for (int i = x - 2; i <= x + 2; ++i) {
-                            for (int j = z - 2; j <= z + 2; ++j) {
-                                for (int k = y - 1; k <= y + 1; ++k) {
-                                    lr.setSectionDirty(j, k, i);
-                                }
-                            }
-                        }
+                        lr.setSectionDirtyWithNeighbors(sectionPos.x(),sectionPos.y(),sectionPos.z());
+
+                        // int pSectionX = sectionPos.x();
+                        // int pSectionY = sectionPos.y();
+                        // int pSectionZ = sectionPos.z();
+                        // int d= (int) lr.getLastViewDistance()/2;
+                        // for (int i = pSectionZ - d; i <= pSectionZ + d; i++) {
+                        //     for (int j = pSectionX - d; j <= pSectionX + d; j++) {
+                        //         for (int k = pSectionY - 1; k <= pSectionY + 1; k++) {
+                        //             lr.setSectionDirty(j, k, i);
+                        //         }
+                        //     }
+                        // }
                     }
                 }
             }

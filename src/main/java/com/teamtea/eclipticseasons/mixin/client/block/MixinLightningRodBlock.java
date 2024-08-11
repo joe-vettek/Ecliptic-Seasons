@@ -9,7 +9,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LightningRodBlock;
-import net.minecraftforge.common.util.LazyOptional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -20,7 +19,7 @@ public class MixinLightningRodBlock {
             method = "animateTick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
-    private boolean ecliptic$onProjectileHit_isThundering(Level instance, Operation<Boolean> original, @Local(ordinal = 0, argsOnly = true) BlockPos blockPos) {
+    private boolean ecliptic$onProjectileHit_isThundering(Level instance, Operation<Boolean> original, @Local(ordinal = 0) BlockPos blockPos) {
         return ClientWeatherChecker.isThunderAt((ClientLevel) instance, blockPos);
     }
 

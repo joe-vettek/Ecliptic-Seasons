@@ -7,6 +7,7 @@ import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -21,8 +22,6 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import net.minecraftforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ public class SolarDataManager extends SavedData {
 
     protected WeakReference<Level> levelWeakReference;
 
+
     public SolarDataManager(Level level) {
         levelWeakReference = new WeakReference<>(level);
     }
@@ -46,14 +46,17 @@ public class SolarDataManager extends SavedData {
         this(level);
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
-        var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
+        setLevelData(nbt);
+    }
+
+    protected void setLevelData(CompoundTag nbt) {
         if (levelWeakReference.get() != null) {
-            var biomeWeathers =WeatherManager.getBiomeList(levelWeakReference.get());
+            var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
+            var biomeWeathers = WeatherManager.getBiomeList(levelWeakReference.get());
             for (int i = 0; i < listTag.size(); i++) {
                 var location = listTag.getCompound(i).getString("biome");
                 for (WeatherManager.BiomeWeather biomeWeather : biomeWeathers) {
-                    if (location.equals(biomeWeather.location.toString()))
-                    {
+                    if (location.equals(biomeWeather.location.toString())) {
                         biomeWeather.deserializeNBT(listTag.getCompound(i));
                         break;
                     }
@@ -62,25 +65,21 @@ public class SolarDataManager extends SavedData {
         }
     }
 
-    @Override
-    public @NotNull CompoundTag save(CompoundTag compound) {
-        compound.putInt("SolarTermsDay", getSolarTermsDay());
-        compound.putInt("SolarTermsTicks", getSolarTermsTicks());
-        ListTag listTag = new ListTag();
-        if (levelWeakReference.get() != null) {
-            var list = WeatherManager.getBiomeList(levelWeakReference.get());
-            for (WeatherManager.BiomeWeather biomeWeather : list) {
-                listTag.add(biomeWeather.serializeNBT());
-            }
-        }
-        compound.put("biomes", listTag);
-        return compound;
-    }
-    
+
     public static SolarDataManager get(ServerLevel serverLevel) {
         DimensionDataStorage storage = serverLevel.getDataStorage();
-        return storage.computeIfAbsent((compoundTag) -> new SolarDataManager(serverLevel, compoundTag),
-                () -> new SolarDataManager(serverLevel), EclipticSeasons.MODID);
+        return storage.computeIfAbsent(
+                new Factory<>(() -> create(serverLevel),
+                        ((compoundTag, provider) -> load(serverLevel, compoundTag, provider))),
+                EclipticSeasons.MODID);
+    }
+
+    private static SolarDataManager load(ServerLevel serverLevel, CompoundTag compoundTag, HolderLookup.Provider provider) {
+        return new SolarDataManager(serverLevel, compoundTag);
+    }
+
+    private static SolarDataManager create(ServerLevel serverLevel) {
+        return new SolarDataManager(serverLevel);
     }
 
 
@@ -91,7 +90,7 @@ public class SolarDataManager extends SavedData {
             solarTermsDay++;
             solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
 
-            BiomeClimateManager.updateTemperature(world, getSolarTermIndex());
+            BiomeClimateManager.updateTemperature(world, getSolarTerm());
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;
@@ -140,7 +139,7 @@ public class SolarDataManager extends SavedData {
 
     public void sendUpdateMessage(ServerLevel world) {
         for (ServerPlayer player : world.players()) {
-            SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(this.getSolarTermsDay()));
+            SimpleNetworkHandler.send(player, new SolarTermsMessage(this.getSolarTermsDay()));
             if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                 player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
             }
@@ -151,7 +150,7 @@ public class SolarDataManager extends SavedData {
     public void resendBiomesForChunks(ServerLevel serverLevel, ChunkMap chunkMap, List<ChunkAccess> chunkAccessList) {
         Map<ServerPlayer, List<LevelChunk>> map = new HashMap<>();
 
-        for(ChunkAccess chunkaccess : chunkAccessList) {
+        for (ChunkAccess chunkaccess : chunkAccessList) {
             ChunkPos chunkpos = chunkaccess.getPos();
             LevelChunk levelchunk;
             if (chunkaccess instanceof LevelChunk levelchunk1) {
@@ -160,7 +159,7 @@ public class SolarDataManager extends SavedData {
                 levelchunk = serverLevel.getChunk(chunkpos.x, chunkpos.z);
             }
 
-            for(ServerPlayer serverplayer : chunkMap.getPlayers(chunkpos, false)) {
+            for (ServerPlayer serverplayer : chunkMap.getPlayers(chunkpos, false)) {
                 map.computeIfAbsent(serverplayer, (p_274834_) -> new ArrayList<>()).add(levelchunk);
             }
         }
@@ -170,4 +169,18 @@ public class SolarDataManager extends SavedData {
         });
     }
 
+    @Override
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider pRegistries) {
+        compound.putInt("SolarTermsDay", getSolarTermsDay());
+        compound.putInt("SolarTermsTicks", getSolarTermsTicks());
+        ListTag listTag = new ListTag();
+        if (levelWeakReference.get() != null) {
+            var list = WeatherManager.getBiomeList(levelWeakReference.get());
+            for (WeatherManager.BiomeWeather biomeWeather : list) {
+                listTag.add(biomeWeather.serializeNBT());
+            }
+        }
+        compound.put("biomes", listTag);
+        return compound;
+    }
 }

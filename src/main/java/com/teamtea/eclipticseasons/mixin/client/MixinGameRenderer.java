@@ -4,6 +4,7 @@ package com.teamtea.eclipticseasons.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.client.render.ClientRenderer;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
@@ -23,10 +24,9 @@ public abstract class MixinGameRenderer {
 
     @Shadow public abstract void loadEffect(ResourceLocation pResourceLocation);
 
-    @Shadow @Final private static ResourceLocation[] EFFECTS;
 
     @Inject(at = {@At("HEAD")}, method = {"render"})
-    private void ecliptic$init(float pPartialTicks, long pNanoTime, boolean pRenderLevel, CallbackInfo ci) {
+    private void ecliptic$init(DeltaTracker pDeltaTracker, boolean pRenderLevel, CallbackInfo ci) {
         // ClientRenderer.applyEffect((GameRenderer)(Object)this,EFFECTS,this.minecraft.player);
     }
 }

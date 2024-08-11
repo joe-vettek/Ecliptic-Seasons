@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
-import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -22,16 +21,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.TimeCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+
 import com.teamtea.eclipticseasons.EclipticSeasons;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Mod.EventBusSubscriber(modid = EclipticSeasons.MODID)
+@EventBusSubscriber(modid = EclipticSeasons.MODID)
 public class CommandHandler {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
@@ -52,7 +52,7 @@ public class CommandHandler {
                                         .executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
                         .then(Commands.literal("get")
                                 .executes(commandContext -> {
-                                    var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
+                                    var solar = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
                                     commandContext.getSource().sendSuccess(() -> Component.literal("" + solar), true);
                                     return 0;
                                 })
@@ -79,7 +79,7 @@ public class CommandHandler {
                                         })))
                         .then(Commands.literal("getTerm")
                                 .executes(commandContext -> {
-                                    var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
+                                    var solar = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
                                     commandContext.getSource().sendSuccess(solar::getTranslation, true);
                                     return 0;
                                 })
@@ -124,12 +124,12 @@ public class CommandHandler {
     }
 
     private static int getDay(ServerLevel worldIn) {
-        return AllListener.getSaveDataLazy(worldIn).map(SolarDataManager::getSolarTermsDay).orElse(0);
+        return com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(worldIn).map(SolarDataManager::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {
         for (ServerLevel ServerLevel : List.of(source.getLevel())) {
-            AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
+            com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(day);
                 data.sendUpdateMessage(ServerLevel);
@@ -142,7 +142,7 @@ public class CommandHandler {
 
     public static int addDay(CommandSourceStack source, int add) {
         for (ServerLevel ServerLevel : List.of(source.getLevel())) {
-            AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
+            com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);
                 data.sendUpdateMessage(ServerLevel);

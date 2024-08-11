@@ -13,7 +13,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ public final class CustomRandomTickHandler {
     private static final CustomRandomTick SNOW_MELT = (state, world, pos) ->
     {
         BlockPos blockpos = new BlockPos(pos.getX(), world.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
-        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).get().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
+        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).value().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
             BlockState topState = world.getBlockState(blockpos);
             if (topState.getBlock().equals(Blocks.SNOW)) {
                 world.setBlockAndUpdate(blockpos, Blocks.AIR.defaultBlockState());
@@ -37,9 +38,10 @@ public final class CustomRandomTickHandler {
         }
     };
 
-    public static void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Temperature.iceMelt.get() && !event.level.isClientSide()) {
-            ServerLevel level = (ServerLevel) event.level;
+    public static void onWorldTick(LevelTickEvent.Post event) {
+        if ( ServerConfig.Temperature.iceMelt.get()
+                && !event.getLevel().isClientSide()) {
+            ServerLevel level = (ServerLevel) event.getLevel();
             int randomTickSpeed = level.getGameRules().getInt(GameRules.RULE_RANDOMTICKING);
             if (randomTickSpeed > 0) {
                 List<ChunkHolder> list = Lists.newArrayList(((ServerLevel) level).getChunkSource().chunkMap.getChunks());
@@ -47,9 +49,9 @@ public final class CustomRandomTickHandler {
                 level.getChunkSource().chunkMap.getChunks().forEach(chunkHolder ->
                 {
 
-                    Optional<LevelChunk> optional = chunkHolder.getTickingChunkFuture().getNow(ChunkHolder.UNLOADED_LEVEL_CHUNK).left();
-                    if (optional.isPresent()) {
-                        LevelChunk chunk = optional.get();
+                    LevelChunk optional = chunkHolder.getTickingChunkFuture().getNow(ChunkHolder.UNLOADED_LEVEL_CHUNK).orElse(null);
+                    if (optional!=null) {
+                        LevelChunk chunk = optional;
                         for (var chunksection : chunk.getSections()) {
                             if (chunksection.isRandomlyTicking()) {
                                 int i = chunk.getPos().getMinBlockX();

@@ -1,13 +1,14 @@
 package com.teamtea.eclipticseasons.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ClientConfig
 {
 
-    public static final ForgeConfigSpec CLIENT_CONFIG = new ForgeConfigSpec.Builder().configure(ClientConfig::new).getRight();
+    public static final ModConfigSpec CLIENT_CONFIG = new ModConfigSpec.Builder().configure(ClientConfig::new).getRight();
 
-    protected ClientConfig(ForgeConfigSpec.Builder builder)
+    protected ClientConfig(ModConfigSpec.Builder builder)
     {
         GUI.load(builder);
         Renderer.load(builder);
@@ -16,11 +17,11 @@ public class ClientConfig
 
     public static class GUI
     {
-        public static ForgeConfigSpec.IntValue playerTemperatureX;
-        public static ForgeConfigSpec.IntValue playerTemperatureY;
-        public static ForgeConfigSpec.BooleanValue debugInfo;
+        public static ModConfigSpec.IntValue playerTemperatureX;
+        public static ModConfigSpec.IntValue playerTemperatureY;
+        public static ModConfigSpec.BooleanValue debugInfo;
 
-        private static void load(ForgeConfigSpec.Builder builder)
+        private static void load(ModConfigSpec.Builder builder)
         {
             builder.push("GUI");
             playerTemperatureX = builder.comment("The position X of Player Temperature UI")
@@ -35,14 +36,14 @@ public class ClientConfig
 
     public static class Renderer
     {
-        public static ForgeConfigSpec.BooleanValue forceChunkRenderUpdate;
-        public static ForgeConfigSpec.BooleanValue useVanillaCheck;
-        public static ForgeConfigSpec.BooleanValue snowyWinter;
-        public static ForgeConfigSpec.BooleanValue deeperSnow;
-        public static ForgeConfigSpec.BooleanValue underSnow;
-        public static ForgeConfigSpec.BooleanValue particle;
+        public static ModConfigSpec.BooleanValue forceChunkRenderUpdate;
+        public static ModConfigSpec.BooleanValue useVanillaCheck;
+        public static ModConfigSpec.BooleanValue snowyWinter;
+        public static ModConfigSpec.BooleanValue deeperSnow;
+        public static ModConfigSpec.BooleanValue underSnow;
+        public static ModConfigSpec.BooleanValue particle;
 
-        private static void load(ForgeConfigSpec.Builder builder)
+        private static void load(ModConfigSpec.Builder builder)
         {
             builder.push("Renderer");
             forceChunkRenderUpdate = builder.comment("Force to update chunk rendering.")
@@ -63,9 +64,9 @@ public class ClientConfig
 
     public static class Sound
     {
-        public static ForgeConfigSpec.BooleanValue sound;
+        public static ModConfigSpec.BooleanValue sound;
 
-        private static void load(ForgeConfigSpec.Builder builder)
+        private static void load(ModConfigSpec.Builder builder)
         {
             builder.push("Sound");
             sound = builder.comment("Ambient Sound.")

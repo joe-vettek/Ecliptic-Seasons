@@ -42,25 +42,8 @@ public class ClientSolarDataManager extends SolarDataManager {
         }
     }
 
-    @Override
-    public @NotNull CompoundTag save(CompoundTag compound) {
-        compound.putInt("SolarTermsDay", getSolarTermsDay());
-        compound.putInt("SolarTermsTicks", getSolarTermsTicks());
-        ListTag listTag = new ListTag();
-        if (levelWeakReference.get() != null) {
-            var list = WeatherManager.getBiomeList(levelWeakReference.get());
-            for (WeatherManager.BiomeWeather biomeWeather : list) {
-                listTag.add(biomeWeather.serializeNBT());
-            }
-        }
-        compound.put("biomes", listTag);
-        return compound;
-    }
 
     public static ClientSolarDataManager get(Level level) {
-        if (level instanceof ServerLevel serverLevel) {
-            return get(serverLevel);
-        }
         if (level instanceof ClientLevel clientLevel) {
             return get(clientLevel);
         }
@@ -68,42 +51,9 @@ public class ClientSolarDataManager extends SolarDataManager {
     }
 
 
-    public static ClientSolarDataManager get(ServerLevel serverLevel) {
-        DimensionDataStorage storage = serverLevel.getDataStorage();
-        return storage.computeIfAbsent((compoundTag) -> new ClientSolarDataManager(serverLevel, compoundTag),
-                () -> new ClientSolarDataManager(serverLevel), EclipticSeasons.MODID);
-    }
-
-
     public static ClientSolarDataManager get(ClientLevel clientLevel) {
         return new ClientSolarDataManager(clientLevel);
     }
 
-
-    public int getSolarTermIndex() {
-        return solarTermsDay / ServerConfig.Season.lastingDaysOfEachTerm.get();
-    }
-
-    public SolarTerm getSolarTerm() {
-        return SolarTerm.get(this.getSolarTermIndex());
-    }
-
-    public int getSolarTermsDay() {
-        return solarTermsDay;
-    }
-
-    public int getSolarTermsTicks() {
-        return solarTermsTicks;
-    }
-
-    public void setSolarTermsDay(int solarTermsDay) {
-        this.solarTermsDay = Math.max(solarTermsDay, 0) % (24 * ServerConfig.Season.lastingDaysOfEachTerm.get());
-        setDirty();
-    }
-
-    public void setSolarTermsTicks(int solarTermsTicks) {
-        this.solarTermsTicks = solarTermsTicks;
-        setDirty();
-    }
 
 }

@@ -1,14 +1,13 @@
-# Tea-the-Story
+# Ecliptic Seasons
 
 “节气”是Minecraft的一个中国风模组。
 
-"黄历" is a Chinese mod about tea and rice.
+Ecliptic Seasons is a Chinese mod about seasons and weather.
 
-### LICENSE 许可证
+### LICENSE 
 *   For code: BSD-3
-*   对于代码：BSD-3
 *   For resources: CC BY-NC-SA 4.0
-*   对于资源文件：署名-非商业性使用-相同方式共享 4.0 国际
+*   Unauthorized porting is prohibited.
 
 春天的森林 许可:CC-BY 作者:梦醒时光 来源:耳聆网 https://www.ear0.com/sound/20322
 公园风声 许可:CC-BY 作者:goodnames 来源:耳聆网 https://www.ear0.com/sound/40449
@@ -25,15 +24,9 @@ TODO：
 isRainingAt 要区分下雨和下雪
 
 月相
-
-使得能够蜂房养蜂
-
-
 动态雨量
 
-
 更高级的作物生长控制系统（https://zhuanlan.zhihu.com/p/685648430）
-
 
 未来设计控制降雨和下雨的道具
 

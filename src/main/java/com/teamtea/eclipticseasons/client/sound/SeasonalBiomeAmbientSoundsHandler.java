@@ -18,7 +18,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -64,7 +64,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             var season = SimpleUtil.getNowSolarTerm(player.level()).getSeason();
             boolean isDayNow = SimpleUtil.isDay(player.level());
             if (season != this.previousSeason || isDayNow != this.previousIsDay) {
-                this.loopSounds.values().forEach(SeasonalBiomeAmbientSoundsHandler.LoopSoundInstance::fadeOut);
+                this.loopSounds.values().forEach(LoopSoundInstance::fadeOut);
                 {
                     this.previousSeason = season;
                     this.previousIsDay = isDayNow;
@@ -87,7 +87,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                                 && !biome.is(Tags.Biomes.IS_CAVE)
                                 && !biome.is(Tags.Biomes.IS_DESERT)
                                 && !biome.is(BiomeTags.IS_BADLANDS)
-                                && !biome.is(Tags.Biomes.IS_PEAK))) {
+                                && !biome.is(Tags.Biomes.IS_MOUNTAIN_PEAK))) {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.night_river;
                         }
                     } else {
@@ -114,7 +114,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             }
             if (soundEvent != null) {
                 SoundEvent finalSoundEvent = soundEvent;
-                this.loopSounds.compute(biome.get(), (biome1, loopSoundInstance) -> {
+                this.loopSounds.compute(biome.value(), (biome1, loopSoundInstance) -> {
                     if (loopSoundInstance == null) {
                         loopSoundInstance = new LoopSoundInstance(finalSoundEvent);
                         this.soundManager.play(loopSoundInstance);
@@ -131,7 +131,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
 
                 for (Map.Entry<Biome, LoopSoundInstance> entry : this.loopSounds.entrySet()) {
                     var loopSoundInstance = entry.getValue();
-                    if (indoor||entry.getKey() != biome.get())
+                    if (indoor||entry.getKey() != biome.value())
                         loopSoundInstance.fadeOut();
                     else
                         loopSoundInstance.fadeIn();

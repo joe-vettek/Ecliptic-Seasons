@@ -1,13 +1,14 @@
 package com.teamtea.eclipticseasons.client.core;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.misc.LazyGet;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -15,7 +16,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
@@ -26,9 +26,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.loading.FMLLoader;
+
 import com.teamtea.eclipticseasons.EclipticSeasons;
 
 import java.util.*;
@@ -36,47 +34,40 @@ import java.util.*;
 // https://github.com/DoubleNegation/CompactOres/blob/1.18/src/main/java/doublenegation/mods/compactores/CompactOresResourcePack.java#L164
 // 未来可以基于RepositorySource实现动态纹理生成（看情况，因为目前不需要，对内存消耗比较大）
 public class ModelManager {
-    public static Map<ResourceLocation, BakedModel> models;
+    public static Map<ModelResourceLocation, BakedModel> models;
     public static
-    LazyOptional<BakedModel> snowOverlayLeaves =
-            LazyOptional.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowyLeaves.getId(), "")));
+    LazyGet<BakedModel> snowOverlayLeaves =
+            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowyLeaves.getId(), "")));
     public static
-    LazyOptional<BakedModel> snowySlabBottom =
-            LazyOptional.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
+    LazyGet<BakedModel> snowySlabBottom =
+            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
     public static
-    LazyOptional<BakedModel> snowOverlayBlock =
-            LazyOptional.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowyBlock.getId(), "")));
+    LazyGet<BakedModel> snowOverlayBlock =
+            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowyBlock.getId(), "")));
     public static
-    LazyOptional<BakedModel> snowModel =
-            LazyOptional.of(() -> models.get(new ModelResourceLocation(new ResourceLocation("minecraft:snow_block"), "")));
+    LazyGet<BakedModel> snowModel =
+            LazyGet.of(() -> models.get(new ModelResourceLocation(ResourceLocation.parse("minecraft:snow_block"), "")));
 
-    public static ResourceLocation snowy_fern = EclipticSeasons.rl("block/snowy_fern");
-    public static ResourceLocation snowy_grass = EclipticSeasons.rl("block/snowy_grass");
-    public static ResourceLocation snowy_large_fern_bottom = EclipticSeasons.rl("block/snowy_large_fern_bottom");
-    public static ResourceLocation snowy_large_fern_top = EclipticSeasons.rl("block/snowy_large_fern_top");
-    public static ResourceLocation snowy_tall_grass_bottom = EclipticSeasons.rl("block/snowy_tall_grass_bottom");
-    public static ResourceLocation snowy_tall_grass_top = EclipticSeasons.rl("block/snowy_tall_grass_top");
-    public static ResourceLocation snowy_dandelion = EclipticSeasons.rl("block/snowy_dandelion");
-    public static ResourceLocation dandelion_top = EclipticSeasons.rl("block/dandelion_top");
-    public static ResourceLocation overlay_2 = EclipticSeasons.rl("block/overlay_2");
-    public static ResourceLocation snow_height2 = EclipticSeasons.rl("block/snow_height2");
-    public static ResourceLocation snow_height2_top = EclipticSeasons.rl("block/snow_height2_top");
-    public static ResourceLocation grass_flower = EclipticSeasons.rl("block/grass_flower");
-    public static ResourceLocation butterfly1 = EclipticSeasons.rl("block/butterfly_blue");
-    public static ResourceLocation butterfly2 = EclipticSeasons.rl("block/butterfly_magenta");
-    public static ResourceLocation butterfly3 = EclipticSeasons.rl("block/butterfly_red");
+    public static ModelResourceLocation snowy_fern = mrl("block/snowy_fern");
+    public static ModelResourceLocation snowy_grass = mrl("block/snowy_grass");
+    public static ModelResourceLocation snowy_large_fern_bottom = mrl("block/snowy_large_fern_bottom");
+    public static ModelResourceLocation snowy_large_fern_top = mrl("block/snowy_large_fern_top");
+    public static ModelResourceLocation snowy_tall_grass_bottom = mrl("block/snowy_tall_grass_bottom");
+    public static ModelResourceLocation snowy_tall_grass_top = mrl("block/snowy_tall_grass_top");
+    public static ModelResourceLocation snowy_dandelion = mrl("block/snowy_dandelion");
+    public static ModelResourceLocation dandelion_top = mrl("block/dandelion_top");
+    public static ModelResourceLocation overlay_2 = mrl("block/overlay_2");
+    public static ModelResourceLocation snow_height2 = mrl("block/snow_height2");
+    public static ModelResourceLocation snow_height2_top = mrl("block/snow_height2_top");
+    public static ModelResourceLocation grass_flower = mrl("block/grass_flower");
+    public static ModelResourceLocation butterfly1 = mrl("block/butterfly_blue");
+    public static ModelResourceLocation butterfly2 = mrl("block/butterfly_magenta");
+    public static ModelResourceLocation butterfly3 = mrl("block/butterfly_red");
 
-    public static ResourceLocation mrl(String s) {
-        return mrl(s, "");
+    public static ModelResourceLocation mrl(String s) {
+        return ModelResourceLocation.standalone(EclipticSeasons.rl(s));
     }
 
-    public static ResourceLocation mrl(String s, String s2) {
-        return new ModelResourceLocation(EclipticSeasons.rl(s), s2);
-    }
-
-    public static ResourceLocation vrl(String s, String s2) {
-        return new ModelResourceLocation(new ResourceLocation(s), s2);
-    }
 
     public static final int ChunkSize = 16 * 32;
     public static final int ChunkSizeLoc = ChunkSize - 1;
@@ -87,10 +78,11 @@ public class ModelManager {
         if (Minecraft.getInstance().level != null) {
             var onBlock = state.getBlock();
             if (!(onBlock instanceof FenceBlock)) {
-                if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
-                        || onBlock.isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, BlockPos.ZERO)) {
-                    return true;
-                }
+                // if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
+                //         || state.isSolidRender(Minecraft.getInstance().level, BlockPos.ZERO)) {
+                //     return true;
+                // }
+                return true;
             }
         }
         return false;
@@ -161,9 +153,9 @@ public class ModelManager {
 
     // TODO:内存更新，双链表+Hash，用LRU
     public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024);
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new HashMap<>(1024, 0.5f);
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new HashMap<>(128, 0.5f);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new IdentityHashMap<>(1024);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new IdentityHashMap<>(1024);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new IdentityHashMap<>(128);
 
     private static boolean updateLock;
 
@@ -183,10 +175,18 @@ public class ModelManager {
             } catch (InterruptedException e) {
             }
         }
-        map = RegionList.stream()
-                .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
-                .findFirst()
-                .orElse(null);
+        // map = RegionList.stream()
+        //         .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
+        //         .findFirst()
+        //         .orElse(null);
+        // size add is dangerous
+        for (int i = 0; i < RegionList.size(); i++) {
+            var chunkHeightMap=RegionList.get(i);
+                if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
+                    map = chunkHeightMap;
+                    break;
+                }
+        }
         // }
         // catch (Exception e) {
         //     // e.printStackTrace();
@@ -242,7 +242,6 @@ public class ModelManager {
         return h;
     }
 
-
     public static final int FLAG_BLOCK = 1;
     public static final int FLAG_SLAB = 2;
     public static final int FLAG_STAIRS = 3;
@@ -250,7 +249,7 @@ public class ModelManager {
     public static final int FLAG_GRASS = 5;
     public static final int FLAG_GRASS_LARGE = 501;
     public static final int FLAG_FARMLAND = 6;
-    public static final List<Block> LowerPlant = List.of(Blocks.GRASS, Blocks.FERN, Blocks.DANDELION);
+    public static final List<Block> LowerPlant = List.of(Blocks.SHORT_GRASS, Blocks.FERN, Blocks.DANDELION);
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
 
 
@@ -260,7 +259,7 @@ public class ModelManager {
         // 不处理空列表，这代表着不处理这个方向
         // if (state.is(BlockTags.LEAVES) && !list.isEmpty()) {
         //     return List.of(new BakedQuadRetextured(list.get(0),
-        //             ClientSetup.snowOverlayBlock.resolve().get().getQuads(null, Direction.UP, null).get(0).getSprite()));
+        //             ClientSetup.snowOverlayBlock.get().getQuads(null, Direction.UP, null).get(0).getSprite()));
         // }
         // if (true)return list;
 
@@ -319,6 +318,7 @@ public class ModelManager {
                 if (onBlock != Blocks.SNOW_BLOCK
                         && shouldSnowAt(blockAndTintGetter, pos.below(offset), state, random, seed)) {
                     // DynamicLeavesBlock
+
                     boolean isFlowerAbove = false;
                     if ((flag == FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
                         var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
@@ -340,14 +340,19 @@ public class ModelManager {
                     } else {
                         BakedModel snowModel = null;
                         BlockState snowState = null;
-                        if (snowOverlayBlock.resolve().isPresent() && flag == FLAG_BLOCK) {
-                            // snowModel = !isFlowerAbove ? snowOverlayBlock.resolve().get() : models.get(overlay_2);
-                            snowModel = snowOverlayBlock.resolve().get();
-                        } else if (snowOverlayLeaves.resolve().isPresent() && flag == FLAG_LEAVES) {
-                            snowModel = snowOverlayLeaves.resolve().get();
-                        } else if (snowySlabBottom.resolve().isPresent() && flag == FLAG_SLAB) {
-                            snowModel = snowySlabBottom.resolve().get();
-                        } else if (models != null && flag == FLAG_STAIRS) {
+                        if (flag == FLAG_BLOCK) {
+                            // snowModel = !isFlowerAbove ? snowOverlayBlock.get() : models.get(overlay_2);
+                            // snowModel = snowOverlayBlock.get();
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowyBlock.get().defaultBlockState()));
+                        } else if (flag == FLAG_LEAVES) {
+                            // snowModel = snowOverlayLeaves.get();
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowyLeaves.get().defaultBlockState()));
+
+                        } else if (flag == FLAG_SLAB) {
+                            // snowModel = snowySlabBottom.get();
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowySlab.get().defaultBlockState()));
+
+                        } else if (flag == FLAG_STAIRS) {
                             snowState = EclipticSeasons.ModContents.snowyStairs.get().defaultBlockState()
                                     .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
                                     .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
@@ -355,7 +360,7 @@ public class ModelManager {
                             // 楼梯的方向是无
                             snowModel = models.get(BlockModelShaper.stateToModelLocation(snowState));
                         } else if (flag == FLAG_GRASS) {
-                            if (onBlock == Blocks.GRASS) {
+                            if (onBlock == Blocks.SHORT_GRASS) {
                                 snowModel = models.get(snowy_grass);
                             } else if (onBlock == Blocks.FERN) {
                                 snowModel = models.get(snowy_fern);
@@ -370,12 +375,12 @@ public class ModelManager {
                             } else snowModel = models.get(offset == 1 ? snowy_tall_grass_bottom : snowy_tall_grass_top);
                         } else if (flag == FLAG_FARMLAND) {
                             snowModel = models.get(snow_height2_top);
-                            // snowModel = snowOverlayBlock.resolve().get();
+                            // snowModel = snowOverlayBlock.get();
                         }
 
                         if (snowModel != null) {
                             int size = list.size();
-                            var snowList = snowModel.getQuads(snowState, direction, null);
+                            var snowList = snowModel.getQuads(snowState, direction, random);
                             ArrayList<BakedQuad> newList;
 
                             if (flag == FLAG_GRASS) {
@@ -420,14 +425,14 @@ public class ModelManager {
                 ) {
                     var level = Minecraft.getInstance().level;
                     var solarTerm = SolarTerm.NONE;
-                    int weight=100;
+                    int weight = 100;
                     if (level != null) {
                         solarTerm = SimpleUtil.getNowSolarTerm(level);
-                        weight=Math.abs(solarTerm.ordinal()-3)+1;
+                        weight = Math.abs(solarTerm.ordinal() - 3) + 1;
                     }
                     if (solarTerm.getSeason() == Season.SPRING
-                    &&random.nextInt(weight*4)==0
-                    &&blockAndTintGetter.getBlockState(pos.above()).isAir()) {
+                            && random.nextInt(weight * 4) == 0
+                            && blockAndTintGetter.getBlockState(pos.above()).isAir()) {
                         var cc = quadMap_GRASS.getOrDefault(list, null);
                         if (cc != null) {
                             return cc;
@@ -458,7 +463,9 @@ public class ModelManager {
         // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
         // Minecraft.getInstance().level.getBiome(pos);
         var biome = Minecraft.getInstance().level.getBiome(pos);
-        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.get()) > Math.abs(seed % 100)) {
+        // Minecraft.getInstance().level.getNoiseBiome()
+        SimpleUtil.testTime(()->{ Minecraft.getInstance().level.getBiome(pos);});
+        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.value()) > Math.abs(seed % 100)) {
             return true;
         }
 

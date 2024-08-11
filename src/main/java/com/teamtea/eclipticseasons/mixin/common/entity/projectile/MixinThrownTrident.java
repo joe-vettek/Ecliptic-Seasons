@@ -14,11 +14,11 @@ import org.spongepowered.asm.mixin.injection.At;
 public class MixinThrownTrident {
 
 
-    @WrapOperation(
-            method = "onHitEntity",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
-    )
-    private boolean ecliptic$isDarkEnoughToSpawn_isThundering(Level instance, Operation<Boolean> original) {
-        return WeatherManager.isThunderAt((ServerLevel) ((ThrownTrident)(Object)this).level(), ((ThrownTrident)(Object)this).blockPosition());
-    }
+    // @WrapOperation(
+    //         method = "onHitEntity",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
+    // )
+    // private boolean ecliptic$isDarkEnoughToSpawn_isThundering(Level instance, Operation<Boolean> original) {
+    //     return WeatherManager.isThunderAt((ServerLevel) ((ThrownTrident)(Object)this).level(), ((ThrownTrident)(Object)this).blockPosition());
+    // }
 }

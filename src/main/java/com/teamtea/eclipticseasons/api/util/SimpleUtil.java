@@ -2,9 +2,19 @@ package com.teamtea.eclipticseasons.api.util;
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.common.AllListener;
+import com.teamtea.eclipticseasons.common.core.Holder;
 import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
 import net.minecraft.world.level.Level;
+import net.neoforged.fml.loading.FMLLoader;
+
+import java.io.File;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 
 // for other mod use
@@ -18,7 +28,7 @@ public class SimpleUtil {
     }
 
     public static SolarTerm getNowSolarTerm(Level level) {
-        var sd = AllListener.getSaveData(level);
+        var sd = Holder.getSaveData(level);
         if (sd != null) return sd.getSolarTerm();
         return SolarTerm.NONE;
     }
@@ -52,4 +62,32 @@ public class SimpleUtil {
         long termTime = getNowSolarTerm(level).getDayTime();
         return 6000 + (termTime  *2 / 5) < dayTime && dayTime < 6000 + ( termTime/2 ) +(24000-termTime)*3/4;
     }
+
+
+    public static String getModUse(int offset){
+        try{
+           return Optional.of(Class.forName(Thread.currentThread().getStackTrace()[offset].getClassName()))
+                    .map(Class::getProtectionDomain)
+                    .map(ProtectionDomain::getCodeSource)
+                    .map(CodeSource::getLocation)
+                    .map(URL::getFile)
+                    .map(it->new File(it.split("%23")[0]).getAbsolutePath())
+                   .map(i->FMLLoader.getLoadingModList().getModFiles()
+                           .stream()
+                           .filter(modFileInfo ->
+                                   new File(modFileInfo.getFile().getFilePath().toString()).getAbsolutePath().equals(i)).findFirst().get())
+                   .map(modFileInfo -> modFileInfo.getFile().getModFileInfo().moduleName())
+                   .get();
+        } catch (Exception e) {
+        }
+        return "";
+    }
+    public static List<String> getModsUse(int offset){
+        ArrayList<String> strings=new ArrayList<>();
+        for (int i = 2; i <10 ; i++) {
+            strings.add(getModUse(i));
+        }
+        return new ArrayList<>(new HashSet<>(strings));
+    }
+
 }

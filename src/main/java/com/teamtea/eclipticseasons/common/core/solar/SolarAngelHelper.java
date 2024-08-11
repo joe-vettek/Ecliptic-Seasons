@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.common.core.solar;
 
 
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.common.AllListener;
+import com.teamtea.eclipticseasons.common.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelTimeAccess;
@@ -16,9 +16,9 @@ public class SolarAngelHelper {
 
     public static int getSolarAngelTime(LevelTimeAccess world,long worldTime)
     {
-        if (world instanceof Level level &&AllListener.getSaveData(level)!=null)
+        if (world instanceof Level level && Holder.getSaveData(level)!=null)
         {
-            return AllListener.getSaveDataLazy(level).map(data ->
+            return Holder.getSaveDataLazy(level).map(data ->
             {
                 int dayTime = SolarTerm.get(data.getSolarTermIndex()).getDayTime();
                 // dayTime=23900;

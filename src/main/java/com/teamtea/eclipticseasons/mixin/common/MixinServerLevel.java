@@ -52,12 +52,14 @@ public abstract class MixinServerLevel extends Level {
     }
 
     @WrapOperation(
-            method = "tickChunk",
+            method = "tickPrecipitation",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
     private Biome.Precipitation ecliptic$tickChunk_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
     }
+
+
 
 
     @WrapOperation(

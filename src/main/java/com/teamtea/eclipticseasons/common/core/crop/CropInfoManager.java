@@ -5,24 +5,25 @@ import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityInfo;
 import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityType;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonInfo;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+
 import com.teamtea.eclipticseasons.EclipticSeasons;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = EclipticSeasons.MODID)
+@EventBusSubscriber(modid = EclipticSeasons.MODID)
 public final class CropInfoManager
 {
     private final static Map<Block, CropHumidityInfo> CROP_HUMIDITY_INFO = new HashMap<>();
@@ -40,13 +41,13 @@ public final class CropInfoManager
             for (CropHumidityType cropHumidityType : CropHumidityType.values()) {
                var tagItems= items.get().getTag(ItemTags.create(cropHumidityType.getRes()));
                 tagItems.ifPresent(holders -> holders.stream().toList().forEach(action -> {
-                    registerCropHumidityInfo(action.get(), cropHumidityType);
+                    registerCropHumidityInfo(action.value(), cropHumidityType);
                 }));
             }
             for (CropSeasonType cropSeasonType : CropSeasonType.values()) {
                 var tagItems= items.get().getTag(ItemTags.create(cropSeasonType.getRes()));
                 tagItems.ifPresent(holders -> holders.stream().toList().forEach(action -> {
-                    registerCropSeasonInfo(action.get(), cropSeasonType);
+                    registerCropSeasonInfo(action.value(), cropSeasonType);
                 }));
             }
         }
@@ -54,7 +55,7 @@ public final class CropInfoManager
         // event.getRegistryAccess().registry(Registries.BLOCK).get().getTagNames().toList();
 
 
-        ForgeRegistries.BLOCKS.forEach(block ->
+        BuiltInRegistries.BLOCK.forEach(block ->
         {
             registerCropHumidityInfo(block, CropHumidityType.AVERAGE_MOIST, false);
             registerCropSeasonInfo(block, CropSeasonType.SP_SU_AU, false);

@@ -7,16 +7,16 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.material.FogType;
-import net.minecraftforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 
 public class ClientRenderer {
     public static long reMainTick = 0;
@@ -35,8 +35,9 @@ public class ClientRenderer {
     public static void applyEffect(GameRenderer gameRenderer, LocalPlayer player) {
         if (player == null) return;
 
+        var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasons.EffectRegistry.HEAT_STROKE)).get();
 
-        int blurStatus = player.hasEffect(EclipticSeasons.EffectRegistry.HEAT_STROKE) ? ON_BLUR : NONE_BLUR;
+        int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
         if (blurStatus != oldBlurStatus) {
             if (blurStatus == ON_BLUR) {
                 {

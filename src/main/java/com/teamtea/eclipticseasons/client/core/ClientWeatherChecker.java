@@ -1,5 +1,7 @@
 package com.teamtea.eclipticseasons.client.core;
 
+import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
+import com.teamtea.eclipticseasons.api.util.EclipticTagClientTool;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -145,7 +147,7 @@ public class ClientWeatherChecker {
         } else if (clientLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).getY() > blockPos.getY()) {
             return false;
         }
-        return clientLevel.getBiome(blockPos).get().getPrecipitationAt(blockPos) == Biome.Precipitation.RAIN;
+        return clientLevel.getBiome(blockPos).value().getPrecipitationAt(blockPos) == Biome.Precipitation.RAIN;
     }
 
     public static boolean isThunderAt(ClientLevel clientLevel, BlockPos blockPos) {
@@ -160,5 +162,9 @@ public class ClientWeatherChecker {
     // 0-》15
     public static int ModifySnowAmount(int constant) {
         return 15;
+    }
+
+    public static Boolean hasPrecipitation(Biome biome) {
+        return !EclipticTagClientTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
     }
 }

@@ -1,42 +1,42 @@
 package com.teamtea.eclipticseasons;
 
 
-import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
+import com.teamtea.eclipticseasons.api.BasicWeather;
 import com.teamtea.eclipticseasons.common.misc.HeatStrokeEffect;
 import com.teamtea.eclipticseasons.compat.CompatModule;
 import com.teamtea.eclipticseasons.config.ClientConfig;
-import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.data.start;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 // import xueluoanping.fluiddrawerslegacy.handler.ControllerFluidCapabilityHandler;
 
@@ -49,7 +49,46 @@ public class EclipticSeasons {
     public static final Logger LOGGER = LogManager.getLogger(EclipticSeasons.MODID);
     public static final String NETWORK_VERSION = "1.0";
 
+
+    public EclipticSeasons(IEventBus modEventBus, ModContainer modContainer) {
+        modEventBus.addListener(this::FMLCommonSetup);
+        modEventBus.addListener(this::gatherData);
+
+        // Register the Deferred Register to the mod event bus so blocks get registered
+        ModContents.ModBlocks.register(modEventBus);
+        OtherContents.weathers.register(modEventBus);
+        // Register ourselves for server and other game events we are interested in.
+        // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
+        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
+        // NeoForge.EVENT_BUS.register(this);
+
+        // Register the item to a creative tab
+        // modContainer.addListener(this::gatherData);
+        // modContainer.addListener(this::FMLCommonSetup);
+        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        modContainer.registerConfig(ModConfig.Type.COMMON, ServerConfig.SERVER_CONFIG);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
+    }
+
+
+    public static ResourceLocation rl(String id) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, id);
+    }
+
+
+    public void FMLCommonSetup(final FMLCommonSetupEvent event) {
+        // SimpleNetworkHandler.init();
+        CompatModule.register();
+    }
+
+
+    public void gatherData(final GatherDataEvent event) {
+        start.dataGen(event);
+    }
+
+
     public static void logger(String x) {
+
         // 通过它可以判断是否在哪个服务器
         // ServerLifecycleHooks.getCurrentServer()
         // if (!FMLEnvironment.production||General.bool.get())
@@ -68,8 +107,9 @@ public class EclipticSeasons {
             for (Object i : x) {
                 if (i == null) output.append(", ").append("null");
                 else if (i.getClass().isArray()) {
+                  ;
                     output.append(", [");
-                    for (Object c : (int[]) i) {
+                    for (Object c :   Arrays.stream((Object[]) i).toList()) {
                         output.append(c).append(",");
                     }
                     output.append("]");
@@ -87,47 +127,7 @@ public class EclipticSeasons {
 
     }
 
-
-    public EclipticSeasons() {
-
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
-
-        ModContents.ModBlocks.register(FMLJavaModLoadingContext.get().getModEventBus());
-
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::gatherData);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::FMLCommonSetup);
-
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ServerConfig.SERVER_CONFIG);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
-
-
-    }
-
-
-    public static ResourceLocation rl(String id) {
-        return new ResourceLocation(MODID, id);
-    }
-
-    public void FMLCommonSetup(final FMLCommonSetupEvent event) {
-        SimpleNetworkHandler.init();
-        CompatModule.register();
-    }
-
-    public void gatherData(final GatherDataEvent event) {
-        start.dataGen(event);
-    }
-
-
-    public static class ModContents {
-        public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-        public static RegistryObject<Block> snowySlab = ModBlocks.register("snowy_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
-        public static RegistryObject<Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS::defaultBlockState, BlockBehaviour.Properties.copy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
-        public static RegistryObject<Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
-        public static RegistryObject<Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
-    }
-
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     public static class SoundEventsRegistry {
         public final static SoundEvent spring_forest = SoundEvent.createVariableRangeEvent(rl("ambient.spring_forest"));
         public final static SoundEvent garden_wind = SoundEvent.createVariableRangeEvent(rl("ambient.garden_wind"));
@@ -150,7 +150,23 @@ public class EclipticSeasons {
         }
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+    public static final class ParticleRegistry {
+        public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
+        public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
+
+        @SubscribeEvent
+        public static void blockRegister(RegisterEvent event) {
+            event.register(Registries.PARTICLE_TYPE, particleTypeRegisterHelper -> {
+                particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
+                particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
+            });
+        }
+
+
+    }
+
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     public static final class EffectRegistry {
         public static final MobEffect HEAT_STROKE = new HeatStrokeEffect(MobEffectCategory.NEUTRAL, 0xf9d27d);
 
@@ -166,20 +182,62 @@ public class EclipticSeasons {
 
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static final class ParticleRegistry {
-        public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
-        public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
+    public static class ModContents {
+        public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(Registries.BLOCK, MODID);
+        public static DeferredHolder<Block, Block> snowySlab = ModBlocks.register("snowy_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
+        public static DeferredHolder<Block, Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
+        public static DeferredHolder<Block, Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+        public static DeferredHolder<Block, Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+    }
 
-        @SubscribeEvent
-        public static void blockRegister(RegisterEvent event) {
-            event.register(Registries.PARTICLE_TYPE, particleTypeRegisterHelper -> {
-                particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
-                particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
-            });
+
+    private static <T> ResourceKey<Registry<T>> createRegistryKey(String pName) {
+        return ResourceKey.createRegistryKey(rl(pName));
+    }
+
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+    public static class OtherContents {
+        public static final ResourceKey<Registry<BasicWeather>> WEATHER = createRegistryKey("weather");
+        public static final Registry<BasicWeather> BASIC_WEATHERS = new RegistryBuilder<>(WEATHER).sync(true).create();
+        public static final DeferredRegister<BasicWeather> weathers = DeferredRegister.create(WEATHER, MODID);
+
+        static {
+            // ByteBufCodecs.registry(Registries.ENTITY_TYPE).encode(p_320192_, this.type);
+            if (FMLLoader.getDist() == Dist.CLIENT) {
+                weathers.register("test", () -> new BasicWeather() {
+                    @Override
+                    protected Object clone() {
+                        return this;
+                    }
+                });
+                weathers.register("ss", () -> new BasicWeather() {
+                    @Override
+                    protected Object clone() {
+                        return this;
+                    }
+                });
+            } else {
+                weathers.register("ss", () -> new BasicWeather() {
+                    @Override
+                    protected Object clone() {
+                        return this;
+                    }
+                });
+                weathers.register("test", () -> new BasicWeather() {
+                    @Override
+                    protected Object clone() {
+                        return this;
+                    }
+                });
+            }
+
+
         }
 
-
+        @SubscribeEvent
+        public static void newRegistryEvent(NewRegistryEvent event) {
+            event.register(BASIC_WEATHERS);
+        }
 
     }
 }

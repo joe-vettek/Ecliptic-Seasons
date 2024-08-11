@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class WeatherUtil {
 
     public static boolean isEntityInRain(LivingEntity entity) {
         // return WeatherManager.isRainingAt((ServerLevel) entity.level(), entity.blockPosition());
+       FMLLoader.getDist();
         BlockPos blockpos = entity.blockPosition();
         return entity.level().isRainingAt(blockpos)
                 || entity.level().isRainingAt(BlockPos.containing(blockpos.getX(), entity.getBoundingBox().maxY, blockpos.getZ()));

@@ -1,7 +1,7 @@
 {
   "values": [
     "#minecraft:is_badlands",
-    "#forge:is_peak",
-    "#forge:is_cold/overworld"
+    "#c:is_mountain/peak",
+    "#c:is_cold/overworld"
   ]
 }

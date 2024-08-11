@@ -13,19 +13,20 @@ public class HeatStrokeEffect extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         // return duration % 60 == 0;
         return false;
     }
 
 
     @Override
-    public void applyEffectTick(LivingEntity entityLivingBaseIn, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entityLivingBaseIn, int amplifier) {
         // if (entityLivingBaseIn.getHealth() > 0.1F)
         {
             // need a damage tag is bypasses_armor
             // entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().generic(), Math.min(entityLivingBaseIn.getHealth() * 0.025f,0.1f) + 0.001f);
         }
+        return true;
     }
 
 

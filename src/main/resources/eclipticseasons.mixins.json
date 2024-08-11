@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "eclipticseasons.refmap.json",
   "mixins": [
+    "client.render.MixinIBlockExtension",
     "common.MixinBiome",
     "common.MixinDimensionType",
     "common.MixinLevel",

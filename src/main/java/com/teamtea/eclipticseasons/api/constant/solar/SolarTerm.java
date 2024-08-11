@@ -125,29 +125,30 @@ public enum SolarTerm {
         }
     }
 
-    public static SnowTerm getSnowTerm(Biome biome) {
+    public static SnowTerm getSnowTerm(Biome biome, boolean isServer) {
         if (biome == null) return SnowTerm.T05;
-        else if (BiomeClimateManager.getDefaultTemperature(biome) > 1 + 0.001f) {
+        float t = BiomeClimateManager.getDefaultTemperature(biome, isServer);
+        if (t > 1 + 0.001f) {
             return SnowTerm.T1;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.8 + 0.001f) {
+        } else if (t > 0.8 + 0.001f) {
             return SnowTerm.T08;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.6 + 0.001f) {
+        } else if (t > 0.6 + 0.001f) {
             return SnowTerm.T06;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.5 + 0.001f) {
+        } else if (t > 0.5 + 0.001f) {
             return SnowTerm.T05;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.4 + 0.001f) {
+        } else if (t > 0.4 + 0.001f) {
             return SnowTerm.T04;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.3 + 0.001f) {
+        } else if (t > 0.3 + 0.001f) {
             return SnowTerm.T03;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.2 + 0.001f) {
+        } else if (t > 0.2 + 0.001f) {
             return SnowTerm.T02;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.15 + 0.001f) {
+        } else if (t > 0.15 + 0.001f) {
             return SnowTerm.T015;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.1 + 0.001f) {
+        } else if (t > 0.1 + 0.001f) {
             return SnowTerm.T01;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.05 + 0.001f) {
+        } else if (t > 0.05 + 0.001f) {
             return SnowTerm.T05;
-        } else if (BiomeClimateManager.getDefaultTemperature(biome) > 0.01 + 0.001f) {
+        } else if (t > 0.01 + 0.001f) {
             return SnowTerm.T001;
         }
         return SnowTerm.T0;
