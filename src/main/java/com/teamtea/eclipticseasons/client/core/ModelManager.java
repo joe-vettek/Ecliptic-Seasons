@@ -464,7 +464,7 @@ public class ModelManager {
         // Minecraft.getInstance().level.getBiome(pos);
         var biome = Minecraft.getInstance().level.getBiome(pos);
         // Minecraft.getInstance().level.getNoiseBiome()
-        SimpleUtil.testTime(()->{ Minecraft.getInstance().level.getBiome(pos);});
+        // SimpleUtil.testTime(()->{ Minecraft.getInstance().level.getBiome(pos);});
         if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.value()) > Math.abs(seed % 100)) {
             return true;
         }
