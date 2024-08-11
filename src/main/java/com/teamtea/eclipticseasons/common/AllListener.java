@@ -102,8 +102,9 @@ public class AllListener {
     public static void onLevelUnloadEvent(LevelEvent.Unload event) {
         if (event.getLevel() instanceof Level level) {
             WeatherManager.BIOME_WEATHER_LIST.remove(level);
-            if (level instanceof ServerLevel serverLevel) {
-                DATA_MANAGER_MAP.remove(serverLevel);
+            // if (level instanceof ServerLevel serverLevel)
+            {
+                DATA_MANAGER_MAP.remove(level);
             }
         }
 

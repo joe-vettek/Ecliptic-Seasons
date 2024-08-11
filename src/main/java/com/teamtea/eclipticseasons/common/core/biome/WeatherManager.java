@@ -35,6 +35,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
@@ -213,8 +214,9 @@ public class WeatherManager {
             var snowTerm = SolarTerm.getSnowTerm(biome);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             var biomes = level.registryAccess().registry(Registries.BIOME).get();
+            var loc=biomes.getKey(biome);
             for (BiomeWeather biomeWeather : weathers) {
-                if (biomeWeather.location.equals(biomes.getKey(biome))) {
+                if (biomeWeather.location.equals(loc)) {
                     if (biomeWeather.shouldClear())
                         return Biome.Precipitation.NONE;
 
@@ -394,6 +396,7 @@ public class WeatherManager {
     }
 
     public static void onLoggedIn(ServerPlayer serverPlayer, boolean isLogged) {
+        if ((serverPlayer instanceof FakePlayer)) return;
         if (ServerConfig.Season.enableInform.get()) {
             AllListener.getSaveDataLazy(serverPlayer.level()).ifPresent(t ->
             {
