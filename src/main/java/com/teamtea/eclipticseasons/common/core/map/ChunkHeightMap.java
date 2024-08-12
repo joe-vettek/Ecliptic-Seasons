@@ -4,23 +4,25 @@ import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import net.minecraft.core.BlockPos;
 
 public class ChunkHeightMap {
-    public static final int TYPE_BIOME=1;
-    public static final int TYPE_HEIGHT=0;
+    public static final int TYPE_BIOME = 1;
+    public static final int TYPE_HEIGHT = 0;
 
     private final short[][] matrix = new short[MapChecker.ChunkSize][MapChecker.ChunkSize];
     private final short[][] biomes = new short[MapChecker.ChunkSize][MapChecker.ChunkSize];
     private final Object[][] lockArray = new Object[MapChecker.ChunkSize][MapChecker.ChunkSize];
     final int x;
     final int z;
+    final short minY;
 
-    public ChunkHeightMap(int x, int z) {
+    public ChunkHeightMap(int x, int z, int minY) {
+        this.minY = (short) minY;
         this.x = x;
         this.z = z;
         EclipticSeasonsMod.logger(String.format("Create new Height Map with [%s, %s]", x, z));
         for (int i = 0; i < MapChecker.ChunkSize; i++) {
             for (int j = 0; j < MapChecker.ChunkSize; j++) {
                 biomes[i][j] = -1;
-                matrix[i][j] = Short.MIN_VALUE;
+                matrix[i][j] = this.minY;
                 lockArray[i][j] = new Object();
             }
         }

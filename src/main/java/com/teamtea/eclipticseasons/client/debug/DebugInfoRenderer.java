@@ -67,7 +67,7 @@ public final class DebugInfoRenderer {
 
             for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level1)) {
                 if (biomeWeather.biomeHolder.is(standBiome)) {
-                    var solarTerm = Holder.getSaveData(level1).getSolarTerm();
+                    var solarTerm = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(level1).getSolarTerm();
                     String biomesS = "Biome: " + Component.translatable(Util.makeDescriptionId("biome", ResourceLocation.parse(standBiome.getRegisteredName()))).getString();
                     String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
                     String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);

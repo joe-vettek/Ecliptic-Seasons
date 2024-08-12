@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
+import org.apache.logging.log4j.util.InternalApi;
 
 public enum SolarTerm {
     // Spring Solar Terms
@@ -125,6 +126,36 @@ public enum SolarTerm {
         }
     }
 
+    public static SnowTerm getSnowTerm(Biome biome) {
+        if (biome == null) return SnowTerm.T05;
+        float t = BiomeClimateManager.agent$GetBaseTemperature(biome);
+        if (t > 1 + 0.001f) {
+            return SnowTerm.T1;
+        } else if (t > 0.8 + 0.001f) {
+            return SnowTerm.T08;
+        } else if (t > 0.6 + 0.001f) {
+            return SnowTerm.T06;
+        } else if (t > 0.5 + 0.001f) {
+            return SnowTerm.T05;
+        } else if (t > 0.4 + 0.001f) {
+            return SnowTerm.T04;
+        } else if (t > 0.3 + 0.001f) {
+            return SnowTerm.T03;
+        } else if (t > 0.2 + 0.001f) {
+            return SnowTerm.T02;
+        } else if (t > 0.15 + 0.001f) {
+            return SnowTerm.T015;
+        } else if (t > 0.1 + 0.001f) {
+            return SnowTerm.T01;
+        } else if (t > 0.05 + 0.001f) {
+            return SnowTerm.T05;
+        } else if (t > 0.01 + 0.001f) {
+            return SnowTerm.T001;
+        }
+        return SnowTerm.T0;
+    }
+
+    @Deprecated
     public static SnowTerm getSnowTerm(Biome biome, boolean isServer) {
         if (biome == null) return SnowTerm.T05;
         float t = BiomeClimateManager.getDefaultTemperature(biome, isServer);

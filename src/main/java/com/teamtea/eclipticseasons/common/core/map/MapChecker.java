@@ -1,5 +1,6 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,7 +22,7 @@ import java.util.List;
 public class MapChecker {
     public static final int ChunkSize = 16 * 32;
     public static final int ChunkSizeLoc = ChunkSize - 1;
-    public static final int ChunkSizeAxis = 4 * 5;
+    public static final int ChunkSizeAxis = 4 + 5;
     // TODO:内存更新，双链表+Hash，用LRU
     public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
     public static final int FLAG_BLOCK = 1;
@@ -48,13 +49,17 @@ public class MapChecker {
         return i >> ChunkSizeAxis;
     }
 
-    public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean shouldUpdate) {
-        return getHeightOrUpdate(levelNull, pos, shouldUpdate, ChunkHeightMap.TYPE_HEIGHT);
+    public static int getHeightOrUpdate(Level levelNull, BlockPos pos) {
+        return getHeightOrUpdate(levelNull, pos, false);
+    }
+    public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate) {
+        return getHeightOrUpdate(levelNull, pos, forceUpdate, ChunkHeightMap.TYPE_HEIGHT);
     }
 
-    public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean shouldUpdate, int type) {
+    public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate, int type) {
         // if (ClientConfig.Renderer.useVanillaCheck.get())
         //     return Integer.MIN_VALUE;
+        // EclipticSeasonsMod.logger(levelNull);
         int x = blockToSectionCoord(pos.getX());
         int z = blockToSectionCoord(pos.getZ());
         // ChunkPos chunkPos = new ChunkPos(x, z);
@@ -85,7 +90,7 @@ public class MapChecker {
         if (map != null) {
             if (type == ChunkHeightMap.TYPE_HEIGHT) {
                 value = map.getHeight(pos);
-                if (value == Integer.MIN_VALUE || shouldUpdate) {
+                if (value <=map.minY || forceUpdate) {
                     var rh = levelNull.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
                     // if (ClientConfig.Renderer.underSnow.get()) {
                     //     var rmPos = new BlockPos.MutableBlockPos(pos.getX(), rh, pos.getZ());
@@ -101,7 +106,7 @@ public class MapChecker {
                 }
             } else if (type == ChunkHeightMap.TYPE_BIOME) {
                 value = map.getBiome(pos);
-                if (value == -1 || shouldUpdate) {
+                if (value == -1 || forceUpdate) {
                     var rh = levelNull.registryAccess().registryOrThrow(Registries.BIOME).getId(levelNull.getBiome(pos).value());
                     map.updateBiome(pos, rh);
                     value = rh;
@@ -121,7 +126,7 @@ public class MapChecker {
                     }
                 }
                 if (!hasBuild) {
-                    map = new ChunkHeightMap(x, z);
+                    map = new ChunkHeightMap(x, z,levelNull.getMinBuildHeight()-1);
                     RegionList.add(map);
                 }
             }

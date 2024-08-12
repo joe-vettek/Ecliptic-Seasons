@@ -3,7 +3,10 @@ package com.teamtea.eclipticseasons.api.util;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 public class EclipticUtil {
@@ -46,6 +49,7 @@ public class EclipticUtil {
 
 
     public static EclipticSeasonsApi INSTANCE;
+
     static {
         INSTANCE = new EclipticSeasonsApi() {
             @Override
@@ -76,6 +80,12 @@ public class EclipticUtil {
             @Override
             public boolean isEvening(Level level) {
                 return EclipticUtil.isEvening(level);
+            }
+
+            @Override
+            public boolean isSnowySurfaceAt(Level level, BlockPos pos) {
+                long seed = (long) Mth.abs(pos.hashCode());
+                return MapChecker.shouldSnowAt(level, pos, level.getBlockState(pos), level.getRandom(), seed);
             }
         };
     }
