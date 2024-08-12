@@ -3,8 +3,9 @@ package com.teamtea.eclipticseasons.common.command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.api.util.SimpleUtil;
+import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -22,7 +23,6 @@ import net.minecraft.server.commands.TimeCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = EclipticSeasons.MODID)
+@EventBusSubscriber(modid = EclipticSeasonsApi.MODID)
 public class CommandHandler {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
@@ -41,10 +41,10 @@ public class CommandHandler {
         dispatcher.register(Commands.literal("time").requires((sourceStack) -> sourceStack.hasPermission(2))
                 .then(Commands.literal("set")
                 .then(Commands.literal("night")
-                        .executes((source) -> TimeCommand.setTime(source.getSource(),  SimpleUtil.getNightTime(source.getSource().getLevel()))))));
+                        .executes((source) -> TimeCommand.setTime(source.getSource(),  EclipticUtil.getNightTime(source.getSource().getLevel()))))));
 
 
-        dispatcher.register(Commands.literal(EclipticSeasons.SMODID).
+        dispatcher.register(Commands.literal(EclipticSeasonsApi.SMODID).
                 then(Commands.literal("solar")
                         .requires((source) -> source.hasPermission(2))
                         .then(Commands.literal("set")

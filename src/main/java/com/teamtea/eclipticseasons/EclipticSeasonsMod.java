@@ -1,7 +1,8 @@
 package com.teamtea.eclipticseasons;
 
 
-import com.teamtea.eclipticseasons.api.BasicWeather;
+import com.teamtea.eclipticseasons.api.misc.BasicWeather;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.common.misc.HeatStrokeEffect;
 import com.teamtea.eclipticseasons.compat.CompatModule;
 import com.teamtea.eclipticseasons.config.ClientConfig;
@@ -10,7 +11,6 @@ import com.teamtea.eclipticseasons.data.start;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -41,16 +41,13 @@ import java.util.List;
 // import xueluoanping.fluiddrawerslegacy.handler.ControllerFluidCapabilityHandler;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(EclipticSeasons.MODID)
-public class EclipticSeasons {
-    public static final String MODID = "eclipticseasons";
-    public static final String SMODID = "ecliptic";
+@Mod(EclipticSeasonsApi.MODID)
+public class EclipticSeasonsMod {
     // Directly reference a log4j logger.
-    public static final Logger LOGGER = LogManager.getLogger(EclipticSeasons.MODID);
+    public static final Logger LOGGER = LogManager.getLogger(EclipticSeasonsApi.MODID);
     public static final String NETWORK_VERSION = "1.0";
 
-
-    public EclipticSeasons(IEventBus modEventBus, ModContainer modContainer) {
+    public EclipticSeasonsMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::FMLCommonSetup);
         modEventBus.addListener(this::gatherData);
 
@@ -72,7 +69,7 @@ public class EclipticSeasons {
 
 
     public static ResourceLocation rl(String id) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, id);
+        return ResourceLocation.fromNamespaceAndPath(EclipticSeasonsApi.MODID, id);
     }
 
 
@@ -183,7 +180,7 @@ public class EclipticSeasons {
     }
 
     public static class ModContents {
-        public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(Registries.BLOCK, MODID);
+        public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(Registries.BLOCK, EclipticSeasonsApi.MODID);
         public static DeferredHolder<Block, Block> snowySlab = ModBlocks.register("snowy_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
         public static DeferredHolder<Block, Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
         public static DeferredHolder<Block, Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
@@ -199,7 +196,7 @@ public class EclipticSeasons {
     public static class OtherContents {
         public static final ResourceKey<Registry<BasicWeather>> WEATHER = createRegistryKey("weather");
         public static final Registry<BasicWeather> BASIC_WEATHERS = new RegistryBuilder<>(WEATHER).sync(true).create();
-        public static final DeferredRegister<BasicWeather> weathers = DeferredRegister.create(WEATHER, MODID);
+        public static final DeferredRegister<BasicWeather> weathers = DeferredRegister.create(WEATHER, EclipticSeasonsApi.MODID);
 
         static {
             // ByteBufCodecs.registry(Registries.ENTITY_TYPE).encode(p_320192_, this.type);

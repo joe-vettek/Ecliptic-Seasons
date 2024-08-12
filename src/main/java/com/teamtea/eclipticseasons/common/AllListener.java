@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.common;
 
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.util.EclipticTagTool;
 import com.teamtea.eclipticseasons.common.core.Holder;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
@@ -23,7 +23,7 @@ import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-@EventBusSubscriber(modid = EclipticSeasons.MODID)
+@EventBusSubscriber(modid = EclipticSeasonsApi.MODID)
 public class AllListener {
     // public static LazyOptional<SolarProvider> provider = LazyOptional.empty();
 

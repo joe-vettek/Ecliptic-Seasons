@@ -1,26 +1,25 @@
 package com.teamtea.eclipticseasons.common.network;
 
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = EclipticSeasons.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = EclipticSeasonsApi.MODID, bus = EventBusSubscriber.Bus.MOD)
 public final class SimpleNetworkHandler {
 
     @SubscribeEvent
     public static void register(final RegisterPayloadHandlersEvent event) {
         // Sets the current network version
-        final PayloadRegistrar registrar = event.registrar(EclipticSeasons.NETWORK_VERSION);
+        final PayloadRegistrar registrar = event.registrar(EclipticSeasonsMod.NETWORK_VERSION);
 
         registrar.playToClient(
                 SolarTermsMessage.TYPE,

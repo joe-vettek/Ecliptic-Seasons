@@ -1,8 +1,9 @@
 package com.teamtea.eclipticseasons.client.core;
 
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.api.util.SimpleUtil;
+import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.misc.LazyGet;
 import com.teamtea.eclipticseasons.config.ClientConfig;
@@ -20,11 +21,6 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.block.state.properties.Half;
-import net.minecraft.world.level.block.state.properties.SlabType;
-
-import com.teamtea.eclipticseasons.EclipticSeasons;
 
 import java.util.*;
 
@@ -34,13 +30,13 @@ public class ModelManager {
     public static Map<ModelResourceLocation, BakedModel> models;
     public static
     LazyGet<BakedModel> snowOverlayLeaves =
-            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowyLeaves.getId(), "")));
+            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasonsMod.ModContents.snowyLeaves.getId(), "")));
     public static
     LazyGet<BakedModel> snowySlabBottom =
-            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
+            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasonsMod.ModContents.snowySlab.getId(), "type=bottom,waterlogged=false")));
     public static
     LazyGet<BakedModel> snowOverlayBlock =
-            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasons.ModContents.snowyBlock.getId(), "")));
+            LazyGet.of(() -> models.get(new ModelResourceLocation(EclipticSeasonsMod.ModContents.snowyBlock.getId(), "")));
     public static
     LazyGet<BakedModel> snowModel =
             LazyGet.of(() -> models.get(new ModelResourceLocation(ResourceLocation.parse("minecraft:snow_block"), "")));
@@ -62,7 +58,7 @@ public class ModelManager {
     public static ModelResourceLocation butterfly3 = mrl("block/butterfly_red");
 
     public static ModelResourceLocation mrl(String s) {
-        return ModelResourceLocation.standalone(EclipticSeasons.rl(s));
+        return ModelResourceLocation.standalone(EclipticSeasonsMod.rl(s));
     }
 
 
@@ -146,17 +142,17 @@ public class ModelManager {
                         if (flag == MapChecker.FLAG_BLOCK) {
                             // snowModel = !isFlowerAbove ? snowOverlayBlock.get() : models.get(overlay_2);
                             // snowModel = snowOverlayBlock.get();
-                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowyBlock.get().defaultBlockState()));
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasonsMod.ModContents.snowyBlock.get().defaultBlockState()));
                         } else if (flag == MapChecker.FLAG_LEAVES) {
                             // snowModel = snowOverlayLeaves.get();
-                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowyLeaves.get().defaultBlockState()));
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasonsMod.ModContents.snowyLeaves.get().defaultBlockState()));
 
                         } else if (flag == MapChecker.FLAG_SLAB) {
                             // snowModel = snowySlabBottom.get();
-                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasons.ModContents.snowySlab.get().defaultBlockState()));
+                            snowModel = models.get(BlockModelShaper.stateToModelLocation(EclipticSeasonsMod.ModContents.snowySlab.get().defaultBlockState()));
 
                         } else if (flag == MapChecker.FLAG_STAIRS) {
-                            snowState = EclipticSeasons.ModContents.snowyStairs.get().defaultBlockState()
+                            snowState = EclipticSeasonsMod.ModContents.snowyStairs.get().defaultBlockState()
                                     .setValue(StairBlock.FACING, state.getValue(StairBlock.FACING))
                                     .setValue(StairBlock.HALF, state.getValue(StairBlock.HALF))
                                     .setValue(StairBlock.SHAPE, state.getValue(StairBlock.SHAPE));
@@ -230,7 +226,7 @@ public class ModelManager {
                     var solarTerm = SolarTerm.NONE;
                     int weight = 100;
                     if (level != null) {
-                        solarTerm = SimpleUtil.getNowSolarTerm(level);
+                        solarTerm = EclipticUtil.getNowSolarTerm(level);
                         weight = Math.abs(solarTerm.ordinal() - 3) + 1;
                     }
                     if (solarTerm.getSeason() == Season.SPRING

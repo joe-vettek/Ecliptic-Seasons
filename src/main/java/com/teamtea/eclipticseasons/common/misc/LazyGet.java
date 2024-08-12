@@ -1,7 +1,6 @@
 package com.teamtea.eclipticseasons.common.misc;
 
-import com.teamtea.eclipticseasons.api.Mapc;
-import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
+import com.teamtea.eclipticseasons.api.misc.Mapc;
 
 import java.util.Objects;
 import java.util.Optional;

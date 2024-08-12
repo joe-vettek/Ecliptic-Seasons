@@ -1,6 +1,6 @@
 package com.teamtea.eclipticseasons.common.core.solar;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
@@ -71,7 +71,7 @@ public class SolarDataManager extends SavedData {
         return storage.computeIfAbsent(
                 new Factory<>(() -> create(serverLevel),
                         ((compoundTag, provider) -> load(serverLevel, compoundTag, provider))),
-                EclipticSeasons.MODID);
+                EclipticSeasonsApi.MODID);
     }
 
     private static SolarDataManager load(ServerLevel serverLevel, CompoundTag compoundTag, HolderLookup.Provider provider) {

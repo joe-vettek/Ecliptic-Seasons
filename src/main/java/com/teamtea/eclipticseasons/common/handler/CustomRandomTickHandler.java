@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.common.handler;
 
 
-import com.teamtea.eclipticseasons.api.CustomRandomTick;
+import com.teamtea.eclipticseasons.api.misc.CustomRandomTick;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.google.common.collect.Lists;
@@ -18,7 +18,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 
 public final class CustomRandomTickHandler {

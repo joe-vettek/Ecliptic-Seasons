@@ -1,12 +1,12 @@
 package com.teamtea.eclipticseasons.client.model;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.FaceBakery;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import com.teamtea.eclipticseasons.EclipticSeasons;
 
 import java.util.Arrays;
 
@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class BakedQuadRetextured extends BakedQuad {
     private final TextureAtlasSprite texture;
     // ModelBakery
-    public static final Material FIRE_0 = new Material(TextureAtlas.LOCATION_BLOCKS, EclipticSeasons.rl("block/snow_overlay"));
+    public static final Material FIRE_0 = new Material(TextureAtlas.LOCATION_BLOCKS, EclipticSeasonsMod.rl("block/snow_overlay"));
 
     public BakedQuadRetextured(BakedQuad quad, TextureAtlasSprite textureIn) {
         super(Arrays.copyOf(quad.getVertices(), quad.getVertices().length), quad.getTintIndex(), FaceBakery.calculateFacing(quad.getVertices()), quad.getSprite(), quad.isShade());

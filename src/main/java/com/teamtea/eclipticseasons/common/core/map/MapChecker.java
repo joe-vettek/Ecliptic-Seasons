@@ -1,14 +1,11 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.*;
@@ -152,9 +149,9 @@ public class MapChecker {
         //         level.getBiome(pos) :
         //         level.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2);
 
-        var biome=WeatherManager
+        var biome = WeatherManager
                 .getBiomeList(level)
-                .get(getHeightOrUpdate(level,pos,false,ChunkHeightMap.TYPE_BIOME))
+                .get(getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME))
                 .biomeHolder;
         if (WeatherManager.getSnowDepthAtBiome(level, biome.value()) > Math.abs(seed % 100)) {
             return true;
@@ -163,7 +160,12 @@ public class MapChecker {
         return false;
         // >= random.nextInt(100));
     }
-
+    public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
+        return WeatherManager
+                .getBiomeList(level)
+                .get(getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME))
+                .biomeHolder;
+    }
     // 获取chunk内部位置
     public static int getChunkValue(int i) {
         return i & (ChunkSizeLoc);
@@ -211,5 +213,19 @@ public class MapChecker {
             }
         }
         return offset;
+    }
+
+    public static List<Holder<Biome>> getBiomes(Level level, BlockPos pos) {
+        var mPos = new BlockPos.MutableBlockPos(pos.getX(),
+                level.getMaxBuildHeight(),
+                // level.getHeight(Heightmap.Types.MOTION_BLOCKING,pos.getX(),pos.getZ()),
+                pos.getZ());
+
+        var list = new ArrayList<Holder<Biome>>();
+        while (mPos.getY() >= level.getMinBuildHeight()) {
+            list.add(level.getBiome(mPos));
+            mPos = mPos.move(Direction.DOWN);
+        }
+        return list;
     }
 }

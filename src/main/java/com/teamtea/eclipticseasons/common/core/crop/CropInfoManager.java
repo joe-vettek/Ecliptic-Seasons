@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.common.core.crop;
 
 
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityInfo;
 import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityType;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonInfo;
@@ -13,7 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@EventBusSubscriber(modid = EclipticSeasons.MODID)
+@EventBusSubscriber(modid = EclipticSeasonsApi.MODID)
 public final class CropInfoManager
 {
     private final static Map<Block, CropHumidityInfo> CROP_HUMIDITY_INFO = new HashMap<>();

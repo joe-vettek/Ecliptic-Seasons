@@ -32,7 +32,7 @@ public class WeatherUtil {
     public static float getTempAt(Level level, BlockPos pos) {
         var biome = level.getBiome(pos);
         float bt = biome.value().getModifiedClimateSettings().temperature();
-        bt += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
+        bt += EclipticUtil.getNowSolarTerm(level).getTemperatureChange();
         return bt;
     }
 
@@ -46,7 +46,7 @@ public class WeatherUtil {
         var biome = level.getBiome(pos);
         float bt = biome.value().getModifiedClimateSettings().downfall();
         float bt2 = biome.value().getModifiedClimateSettings().temperature();
-        bt2 += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
+        bt2 += EclipticUtil.getNowSolarTerm(level).getTemperatureChange();
         return Mth.clamp(bt, 0.0F, 1.0F) * Mth.clamp(bt2, 0.0F, 1.0F);
     }
 }

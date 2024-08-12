@@ -1,16 +1,14 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import net.minecraft.core.BlockPos;
-
-import java.util.logging.Level;
 
 public class ChunkHeightMap {
     public static final int TYPE_BIOME=1;
     public static final int TYPE_HEIGHT=0;
 
-    private final int[][] matrix = new int[MapChecker.ChunkSize][MapChecker.ChunkSize];
-    private final int[][] biomes = new int[MapChecker.ChunkSize][MapChecker.ChunkSize];
+    private final short[][] matrix = new short[MapChecker.ChunkSize][MapChecker.ChunkSize];
+    private final short[][] biomes = new short[MapChecker.ChunkSize][MapChecker.ChunkSize];
     private final Object[][] lockArray = new Object[MapChecker.ChunkSize][MapChecker.ChunkSize];
     final int x;
     final int z;
@@ -18,15 +16,15 @@ public class ChunkHeightMap {
     public ChunkHeightMap(int x, int z) {
         this.x = x;
         this.z = z;
-        EclipticSeasons.logger(String.format("Create new Height Map with [%s, %s]", x, z));
+        EclipticSeasonsMod.logger(String.format("Create new Height Map with [%s, %s]", x, z));
         for (int i = 0; i < MapChecker.ChunkSize; i++) {
             for (int j = 0; j < MapChecker.ChunkSize; j++) {
                 biomes[i][j] = -1;
-                matrix[i][j] = Integer.MIN_VALUE;
+                matrix[i][j] = Short.MIN_VALUE;
                 lockArray[i][j] = new Object();
             }
         }
-        EclipticSeasons.logger(String.format("End create [%s, %s]", x, z));
+        EclipticSeasonsMod.logger(String.format("End create [%s, %s]", x, z));
     }
 
     public int getHeight(int x, int z) {
@@ -55,7 +53,7 @@ public class ChunkHeightMap {
         int old;
         synchronized (lockArray[x][z]) {
             old = matrix[x][z];
-            matrix[x][z] = y;
+            matrix[x][z] = (short) y;
         }
         return old;
     }
@@ -66,7 +64,7 @@ public class ChunkHeightMap {
         int old;
         synchronized (lockArray[x][z]) {
             old = biomes[x][z];
-            biomes[x][z] = id;
+            biomes[x][z] = (short) id;
         }
         return old;
     }

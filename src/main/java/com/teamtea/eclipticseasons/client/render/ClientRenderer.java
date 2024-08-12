@@ -1,6 +1,6 @@
 package com.teamtea.eclipticseasons.client.render;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.ClientEventHandler;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
@@ -35,13 +35,13 @@ public class ClientRenderer {
     public static void applyEffect(GameRenderer gameRenderer, LocalPlayer player) {
         if (player == null) return;
 
-        var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasons.EffectRegistry.HEAT_STROKE)).get();
+        var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasonsMod.EffectRegistry.HEAT_STROKE)).get();
 
         int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
         if (blurStatus != oldBlurStatus) {
             if (blurStatus == ON_BLUR) {
                 {
-                    gameRenderer.loadEffect(EclipticSeasons.rl("shaders/post/fade_in_blur.json"));
+                    gameRenderer.loadEffect(EclipticSeasonsMod.rl("shaders/post/fade_in_blur.json"));
                 }
             }
 

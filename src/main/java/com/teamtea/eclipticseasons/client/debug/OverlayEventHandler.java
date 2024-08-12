@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.client.debug;
 
 
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.common.core.Holder;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
@@ -9,15 +10,13 @@ import net.minecraft.client.Minecraft;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import com.teamtea.eclipticseasons.EclipticSeasons;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = EclipticSeasons.MODID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = EclipticSeasonsApi.MODID)
 public final class OverlayEventHandler {
     public final static ResourceLocation DEFAULT = ResourceLocation.withDefaultNamespace( "textures/gui/icons.png");
     private final static DebugInfoRenderer BAR_4 = new DebugInfoRenderer(Minecraft.getInstance());

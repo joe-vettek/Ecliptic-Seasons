@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.data;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.data.tag.TagsDataProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -13,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 
 public class start {
-    public final static String MODID = EclipticSeasons.MODID;
+    public final static String MODID = EclipticSeasonsApi.MODID;
 
     public static void dataGen(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
@@ -21,7 +22,7 @@ public class start {
         PackOutput packOutput = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
         if (event.includeServer()) {
-            EclipticSeasons.logger("Generate We Data!!!");
+            EclipticSeasonsMod.logger("Generate We Data!!!");
 
             generator.addProvider(event.includeServer(),new TagsDataProvider(packOutput,lookupProvider,MODID,helper));
 

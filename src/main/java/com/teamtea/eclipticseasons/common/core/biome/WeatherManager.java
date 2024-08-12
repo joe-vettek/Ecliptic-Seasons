@@ -1,11 +1,12 @@
 package com.teamtea.eclipticseasons.common.core.biome;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.constant.climate.BiomeRain;
 import com.teamtea.eclipticseasons.api.constant.climate.FlatRain;
 import com.teamtea.eclipticseasons.api.constant.climate.SnowTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.api.util.SimpleUtil;
+import com.teamtea.eclipticseasons.api.util.EclipticUtil;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.handler.SolarUtil;
 import com.teamtea.eclipticseasons.common.network.BiomeWeatherMessage;
 import com.teamtea.eclipticseasons.common.network.EmptyMessage;
@@ -146,7 +147,8 @@ public class WeatherManager {
         } else if (serverLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
             return false;
         }
-        var biome = serverLevel.getBiome(pos);
+        // var biome = serverLevel.getBiome(pos);
+        var biome=MapChecker.getSurfaceBiome(serverLevel,pos);
         return isThunderAtBiome(serverLevel, biome);
     }
 
@@ -163,7 +165,8 @@ public class WeatherManager {
             return false;
         }
         // Thread.currentThread().getStackTrace()
-        var biome = serverLevel.getBiome(pos);
+        // var biome = serverLevel.getBiome(pos);
+        var biome=MapChecker.getSurfaceBiome(serverLevel,pos);
         return isRainingAtBiome(serverLevel, biome);
     }
 
@@ -298,15 +301,15 @@ public class WeatherManager {
 
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
         var level = player.level();
-        if (level.getRandom().nextInt(1) == 0)
+        if (level.getRandom().nextInt(60) == 0)
             com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(level).ifPresent(solarDataManager -> {
-                if (SimpleUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
+                if (EclipticUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = level.getBiome(player.blockPosition()).value();
                     if (b.getTemperature(player.blockPosition()) > 0.5f) {
 
 
                         if (!player.isInWaterOrRain()
-                                && ((SimpleUtil.isNoon(level) && (level.canSeeSky(player.blockPosition()))))
+                                && ((EclipticUtil.isNoon(level) && (level.canSeeSky(player.blockPosition()))))
                         ) {
                             boolean isColdHe = false;
                             for (ItemStack itemstack : player.getArmorSlots()) {
@@ -319,7 +322,7 @@ public class WeatherManager {
                                     }
                                 }
                             }
-                            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasons.EffectRegistry.HEAT_STROKE)).get();
+                            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasonsMod.EffectRegistry.HEAT_STROKE)).get();
                             // !player.hasEffect(holder) &&
                             if (!isColdHe) {
                                 player.addEffect(new MobEffectInstance(holder, 600));

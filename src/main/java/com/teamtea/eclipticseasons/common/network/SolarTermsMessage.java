@@ -1,13 +1,12 @@
 package com.teamtea.eclipticseasons.common.network;
 
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 
 public class SolarTermsMessage implements CustomPacketPayload {
     public int solarDay;
@@ -26,7 +25,7 @@ public class SolarTermsMessage implements CustomPacketPayload {
     }
 
 
-    public static final CustomPacketPayload.Type<SolarTermsMessage> TYPE = new CustomPacketPayload.Type<>(EclipticSeasons.rl("solar_terms"));
+    public static final Type<SolarTermsMessage> TYPE = new Type<>(EclipticSeasonsMod.rl("solar_terms"));
 
     // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
     // 'name' will be encoded and decoded as a string
@@ -39,7 +38,7 @@ public class SolarTermsMessage implements CustomPacketPayload {
     );
 
     @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

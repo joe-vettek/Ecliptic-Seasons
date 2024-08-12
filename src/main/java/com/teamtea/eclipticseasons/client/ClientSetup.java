@@ -1,5 +1,6 @@
 package com.teamtea.eclipticseasons.client;
 
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
 import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.client.particle.WildGooseParticle;
@@ -8,11 +9,9 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.*;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,10 +34,10 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void blockRegister(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(EclipticSeasons.ParticleRegistry.FIREFLY, (p_277215_) ->
+        event.registerSpriteSet(EclipticSeasonsMod.ParticleRegistry.FIREFLY, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new FireflyParticle(level, x, y, z, p_277215_));
-        event.registerSpriteSet(EclipticSeasons.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
+        event.registerSpriteSet(EclipticSeasonsMod.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new WildGooseParticle(level, x, y, z,0.01,0.01,0.01, p_277215_));
     }
@@ -65,7 +64,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void onClientEvent(FMLClientSetupEvent event) {
-        EclipticSeasons.logger("Register Client");
+        EclipticSeasonsMod.logger("Register Client");
         event.enqueueWork(() -> {
             // ItemBlockRenderTypes.setRenderLayer(ModContents.fluiddrawer.get(), ClientSetup::isGlassLanternValidLayer);
             // MenuScreens.register(ModContents.containerType.get(), Screen.Slot1::new);

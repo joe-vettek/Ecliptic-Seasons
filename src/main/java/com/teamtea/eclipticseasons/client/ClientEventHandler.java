@@ -1,8 +1,9 @@
 package com.teamtea.eclipticseasons.client;
 
 
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
-import com.teamtea.eclipticseasons.api.util.SimpleUtil;
+import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.client.render.ClientRenderer;
 import com.teamtea.eclipticseasons.common.core.Holder;
@@ -27,7 +28,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import com.teamtea.eclipticseasons.EclipticSeasons;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -38,7 +38,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-@EventBusSubscriber(modid = EclipticSeasons.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = EclipticSeasonsApi.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
 
     @SubscribeEvent
@@ -150,8 +150,8 @@ public final class ClientEventHandler {
         var level = Minecraft.getInstance().level;
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS
                 && level != null
-                && SimpleUtil.getNowSolarTerm(level).getSeason() == Season.SPRING
-                && SimpleUtil.isDay(level)) {
+                && EclipticUtil.getNowSolarTerm(level).getSeason() == Season.SPRING
+                && EclipticUtil.isDay(level)) {
             var multiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             // var itr = Minecraft.getInstance().getItemRenderer();
             // var mds = itr.getItemModelShaper();

@@ -1,8 +1,8 @@
 package com.teamtea.eclipticseasons.client.particle;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
-import com.teamtea.eclipticseasons.api.util.SimpleUtil;
+import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -31,7 +31,7 @@ public class ParticleUtil {
         // if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN)
         {
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-            var sd = SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
+            var sd = EclipticUtil.getNowSolarTerm(clientLevel).getSeason();
             int chanceW = 19;
             switch (sd) {
                 case SPRING -> chanceW = 17;
@@ -60,23 +60,23 @@ public class ParticleUtil {
             fallenLeaves(clientLevel, blockpos$mutableblockpos, blockstate);
         } else if (blockstate.is(BlockTags.FLOWERS)) {
             // CampfireBlock.
-            if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
-                    && SimpleUtil.isEvening(clientLevel)
+            if (EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
+                    && EclipticUtil.isEvening(clientLevel)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                     && clientLevel.canSeeSky(blockpos$mutableblockpos)
                     && random.nextInt(3) == 0
             )
-                clientLevel.addParticle(EclipticSeasons.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
+                clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 
         }
 
-        if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN
-                && SimpleUtil.isNoon(clientLevel)
+        if (EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN
+                && EclipticUtil.isNoon(clientLevel)
                 && clientLevel.canSeeSky(blockpos$mutableblockpos)
                 && clientLevel.isEmptyBlock(blockpos$mutableblockpos)
                 && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                 && random.nextInt(255) == 0) {
-            clientLevel.addParticle(EclipticSeasons.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
+            clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
         }
     }
 
