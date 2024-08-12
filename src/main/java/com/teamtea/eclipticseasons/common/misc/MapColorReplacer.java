@@ -19,43 +19,8 @@ public class MapColorReplacer {
 
         boolean isLight = false;
 
-        int flag = 0;
-        var onBlock = state.getBlock();
-        if (onBlock instanceof LeavesBlock) {
-            flag = MapChecker.FLAG_LEAVES;
-        } else if ((state.isSolidRender(level, pos)
-                // state.isSolid()
-                || onBlock instanceof LeavesBlock
-                || (onBlock instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
-                || (onBlock instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
-            flag = MapChecker.FLAG_BLOCK;
-        } else if (onBlock instanceof SlabBlock) {
-            flag = MapChecker.FLAG_SLAB;
-        } else if (onBlock instanceof StairBlock) {
-            flag = MapChecker.FLAG_STAIRS;
-        } else if (MapChecker.LowerPlant.contains(onBlock)) {
-            flag = MapChecker.FLAG_GRASS;
-        } else if (MapChecker.LARGE_GRASS.contains(onBlock)) {
-            flag = MapChecker.FLAG_GRASS_LARGE;
-        } else if ((onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock)) {
-            flag = MapChecker.FLAG_FARMLAND;
-        }
-
-
-        int offset = 0;
-        if (flag == MapChecker.FLAG_GRASS || flag == MapChecker.FLAG_GRASS_LARGE) {
-            if (flag == MapChecker.FLAG_GRASS) {
-                offset = 1;
-            }
-            // 这里不忽略这个警告，因为后续会有优化
-            else if (flag == MapChecker.FLAG_GRASS_LARGE) {
-                if (state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-                    offset = 1;
-                } else {
-                    offset = 2;
-                }
-            }
-        }
+        int flag = MapChecker.getBlockType(state, level, pos);
+        int offset = MapChecker.getSnowOffset(state,flag);
 
         // isLight = ClientConfig.Renderer.useVanillaCheck.get() ?
         //         level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >= 15

@@ -100,55 +100,26 @@ public class ModelManager {
                 && !list.isEmpty()) {
 
             var onBlock = state.getBlock();
-            int flag = 0;
-            if (onBlock instanceof LeavesBlock) {
-                flag = MapChecker.FLAG_LEAVES;
-            } else if ((state.isSolidRender(blockAndTintGetter, pos)
-                    // state.isSolid()
-                    || onBlock instanceof LeavesBlock
-                    || (onBlock instanceof SlabBlock && state.getValue(SlabBlock.TYPE) == SlabType.TOP)
-                    || (onBlock instanceof StairBlock && state.getValue(StairBlock.HALF) == Half.TOP))) {
-                flag = MapChecker.FLAG_BLOCK;
-            } else if (onBlock instanceof SlabBlock) {
-                flag = MapChecker.FLAG_SLAB;
-            } else if (onBlock instanceof StairBlock) {
-                flag = MapChecker.FLAG_STAIRS;
-            } else if (MapChecker.LowerPlant.contains(onBlock)) {
-                flag = MapChecker.FLAG_GRASS;
-            } else if (MapChecker.LARGE_GRASS.contains(onBlock)) {
-                flag = MapChecker.FLAG_GRASS_LARGE;
-            } else if ((onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock) && direction == null) {
-                flag = MapChecker.FLAG_FARMLAND;
-            } else return list;
 
-            int offset = 0;
-            if (flag == MapChecker.FLAG_GRASS || flag == MapChecker.FLAG_GRASS_LARGE) {
-                if (flag == MapChecker.FLAG_GRASS) {
-                    offset = 1;
-                }
-                // 这里不忽略这个警告，因为后续会有优化
-                else if (flag == MapChecker.FLAG_GRASS_LARGE) {
-                    if (state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-                        offset = 1;
-                    } else {
-                        offset = 2;
-                    }
-                }
-            }
+            int flag = MapChecker.getBlockType(state,Minecraft.getInstance().level,pos);
+            if (flag == 0)
+                return list;
+
+            int offset = MapChecker.getSnowOffset(state,flag);
 
 
             boolean isLight = false;
 
             isLight = ClientConfig.Renderer.useVanillaCheck.get() && Minecraft.getInstance().level != null ?
                     Minecraft.getInstance().level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >= 15
-                    : MapChecker.getHeightOrUpdate(  Minecraft.getInstance().level,pos, false) == pos.getY() - offset;
+                    : MapChecker.getHeightOrUpdate(Minecraft.getInstance().level, pos, false) == pos.getY() - offset;
 
 
             // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
             if (isLight) {
                 if (onBlock != Blocks.SNOW_BLOCK
-                        && MapChecker.shouldSnowAt( Minecraft.getInstance().level, pos.below(offset), state, random, seed)) {
+                        && MapChecker.shouldSnowAt(Minecraft.getInstance().level, pos.below(offset), state, random, seed)) {
                     // DynamicLeavesBlock
 
                     boolean isFlowerAbove = false;

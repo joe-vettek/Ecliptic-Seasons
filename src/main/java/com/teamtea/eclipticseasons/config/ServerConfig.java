@@ -40,6 +40,7 @@ public class ServerConfig {
         public static ModConfigSpec.IntValue lastingDaysOfEachTerm;
         public static ModConfigSpec.IntValue initialSolarTermIndex;
         public static ModConfigSpec.IntValue rainChanceMultiplier;
+        public static ModConfigSpec.BooleanValue biomeDetectNoise;
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Season");
@@ -56,6 +57,10 @@ public class ServerConfig {
 
             rainChanceMultiplier = builder.comment("Set the percentage multiplier of the probability of rain, the range should be between 0 and 1000.")
                     .defineInRange("RainChancePercentMultiplier", 60, 0, 1000);
+
+            biomeDetectNoise = builder.comment("Enable to detect biomes with precision..")
+                    .define("BiomeDetectNoise", true);
+
             builder.pop();
         }
     }
