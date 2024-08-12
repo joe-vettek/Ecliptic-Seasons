@@ -80,7 +80,7 @@ public class ModelManager {
 
     public static final int ChunkSize = 16 * 32;
     public static final int ChunkSizeLoc = ChunkSize - 1;
-    public static final int ChunkSizeAxis = 4 * 5;
+    public static final int ChunkSizeAxis = 4 + 5;
 
 
     public static boolean shouldCutoutMipped(BlockState state) {
