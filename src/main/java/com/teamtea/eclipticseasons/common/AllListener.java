@@ -3,7 +3,7 @@ package com.teamtea.eclipticseasons.common;
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.util.EclipticTagTool;
-import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.crop.CropGrowthHandler;
@@ -75,7 +75,7 @@ public class AllListener {
             WeatherManager.createLevelBiomeWeatherList(serverLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            Holder.createSaveData(serverLevel, SolarDataManager.get(serverLevel));
+            SolarHolders.createSaveData(serverLevel, SolarDataManager.get(serverLevel));
         }
     }
 
@@ -85,7 +85,7 @@ public class AllListener {
             WeatherManager.BIOME_WEATHER_LIST.remove(level);
             // if (level instanceof ServerLevel serverLevel)
             {
-                Holder.DATA_MANAGER_MAP.remove(level);
+                SolarHolders.DATA_MANAGER_MAP.remove(level);
             }
         }
 
@@ -97,7 +97,7 @@ public class AllListener {
         if ( ServerConfig.Season.enableInform.get()
                 && !event.getLevel().isClientSide()
                 && event.getLevel().dimensionType().natural()) {
-            Holder.getSaveDataLazy(event.getLevel()).ifPresent(data ->
+            SolarHolders.getSaveDataLazy(event.getLevel()).ifPresent(data ->
             {
                 if (!event.getLevel().players().isEmpty()) {
                     data.updateTicks((ServerLevel) event.getLevel());

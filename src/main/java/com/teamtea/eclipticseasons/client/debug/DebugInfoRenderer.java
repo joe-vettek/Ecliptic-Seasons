@@ -2,21 +2,18 @@ package com.teamtea.eclipticseasons.client.debug;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.client.core.ColorHelper;
-import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -67,7 +64,7 @@ public final class DebugInfoRenderer {
 
             for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level1)) {
                 if (biomeWeather.biomeHolder.is(standBiome)) {
-                    var solarTerm = Holder.getSaveData(level1).getSolarTerm();
+                    var solarTerm = SolarHolders.getSaveData(level1).getSolarTerm();
                     String biomesS = "Biome: " + Component.translatable(Util.makeDescriptionId("biome", ResourceLocation.parse(standBiome.getRegisteredName()))).getString();
                     String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
                     String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);

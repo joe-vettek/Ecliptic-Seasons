@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Either;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -52,7 +53,7 @@ public class CommandHandler {
                                         .executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
                         .then(Commands.literal("get")
                                 .executes(commandContext -> {
-                                    var solar = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
+                                    var solar = SolarHolders.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
                                     commandContext.getSource().sendSuccess(() -> Component.literal("" + solar), true);
                                     return 0;
                                 })
@@ -79,7 +80,7 @@ public class CommandHandler {
                                         })))
                         .then(Commands.literal("getTerm")
                                 .executes(commandContext -> {
-                                    var solar = com.teamtea.eclipticseasons.common.core.Holder.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
+                                    var solar = SolarHolders.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
                                     commandContext.getSource().sendSuccess(solar::getTranslation, true);
                                     return 0;
                                 })
@@ -124,12 +125,12 @@ public class CommandHandler {
     }
 
     private static int getDay(ServerLevel worldIn) {
-        return com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(worldIn).map(SolarDataManager::getSolarTermsDay).orElse(0);
+        return SolarHolders.getSaveDataLazy(worldIn).map(SolarDataManager::getSolarTermsDay).orElse(0);
     }
 
     public static int setDay(CommandSourceStack source, int day) {
         for (ServerLevel ServerLevel : List.of(source.getLevel())) {
-            com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(ServerLevel).ifPresent(data ->
+            SolarHolders.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(day);
                 data.sendUpdateMessage(ServerLevel);
@@ -142,7 +143,7 @@ public class CommandHandler {
 
     public static int addDay(CommandSourceStack source, int add) {
         for (ServerLevel ServerLevel : List.of(source.getLevel())) {
-            com.teamtea.eclipticseasons.common.core.Holder.getSaveDataLazy(ServerLevel).ifPresent(data ->
+            SolarHolders.getSaveDataLazy(ServerLevel).ifPresent(data ->
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);
                 data.sendUpdateMessage(ServerLevel);

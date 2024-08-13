@@ -6,7 +6,7 @@ import com.teamtea.eclipticseasons.api.constant.solar.color.SolarTermColor;
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.client.core.ColorHelper;
-import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -34,7 +34,7 @@ public class BiomeColorsHandler {
         var clientLevel = Minecraft.getInstance().level;
         if (clientLevel != null) {
             int originColor = biome.getGrassColor(posX, posZ);
-            return Holder.getSaveDataLazy(clientLevel).map(data ->
+            return SolarHolders.getSaveDataLazy(clientLevel).map(data ->
             {
                 if (needRefresh) {
                     reloadColors();
@@ -59,7 +59,7 @@ public class BiomeColorsHandler {
 
         if (clientLevel != null) {
             int originColor = biome.getFoliageColor();
-            return Holder.getSaveDataLazy(clientLevel).map(data ->
+            return SolarHolders.getSaveDataLazy(clientLevel).map(data ->
             {
                 if (needRefresh) {
                     reloadColors();
@@ -81,7 +81,7 @@ public class BiomeColorsHandler {
         {
             var clientLevel = Minecraft.getInstance().level;
             if (clientLevel != null) {
-                Holder.getSaveDataLazy(clientLevel).ifPresent(data ->
+                SolarHolders.getSaveDataLazy(clientLevel).ifPresent(data ->
                 {
                     for (TagKey<Biome> biomeTagKey : SeasonTypeBiomeTags.BIOMES) {
                         int[] newFoliageBuffer = new int[65536];

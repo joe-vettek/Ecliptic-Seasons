@@ -1,15 +1,13 @@
 package com.teamtea.eclipticseasons.common.core;
 
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
-import cpw.mods.util.Lazy;
 import net.minecraft.world.level.Level;
 
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class Holder {
+public class SolarHolders {
     public static final Map<Level, SolarDataManager> DATA_MANAGER_MAP = new IdentityHashMap<>();
 
     public static void createSaveData(Level level, SolarDataManager solarDataManager) {

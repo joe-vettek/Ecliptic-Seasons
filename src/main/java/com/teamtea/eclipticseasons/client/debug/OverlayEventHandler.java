@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.client.debug;
 
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
-import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
 import com.teamtea.eclipticseasons.api.constant.biome.Humidity;
@@ -35,7 +35,7 @@ public final class OverlayEventHandler {
                         &&!Minecraft.getInstance().options.hideGui
                 )
                 {
-                    var solar = Holder.getSaveDataLazy(clientPlayer.level()).get().getSolarTermsDay();
+                    var solar = SolarHolders.getSaveDataLazy(clientPlayer.level()).get().getSolarTermsDay();
                     long dayTime = clientPlayer.level().getDayTime();
                     float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).value().getTemperature(clientPlayer.getOnPos());
                     Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).value().getModifiedClimateSettings().downfall(), temp);

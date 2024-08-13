@@ -1,17 +1,19 @@
 package com.teamtea.eclipticseasons.common.core.biome;
 
+import com.mojang.serialization.MapCodec;
 import com.teamtea.eclipticseasons.api.util.EclipticTagTool;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -51,12 +53,13 @@ public class BiomeClimateManager {
                     Math.max(SNOW_LEVEL + 0.001F, BiomeClimateManager.getDefaultTemperature(biome, isServer) + solarTermIndex.getTemperatureChange()) :
                     Math.min(SNOW_LEVEL, BiomeClimateManager.getDefaultTemperature(biome, isServer) + solarTermIndex.getTemperatureChange());
 
-            var oldClimateSettings = biome.climateSettings;
-            biome.climateSettings = new Biome.ClimateSettings(
-                    oldClimateSettings.hasPrecipitation(),
-                    temperature,
-                    oldClimateSettings.temperatureModifier(),
-                    oldClimateSettings.downfall());
+            // clean temperature change
+            // var oldClimateSettings = biome.climateSettings;
+            // biome.climateSettings = new Biome.ClimateSettings(
+            //         oldClimateSettings.hasPrecipitation(),
+            //         temperature,
+            //         oldClimateSettings.temperatureModifier(),
+            //         oldClimateSettings.downfall());
         }));
     }
 
@@ -72,5 +75,14 @@ public class BiomeClimateManager {
 
     public static Boolean agent$hasPrecipitation(Biome biome) {
         return !EclipticTagTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
+    }
+
+
+    public static Holder<Biome> getHolder(RegistryAccess registryAccess, Biome biome) {
+        return registryAccess.registry(Registries.BIOME)
+                .get()
+                .holders()
+                .filter(biomeReference -> biomeReference.value() == biome)
+                .findFirst().get();
     }
 }

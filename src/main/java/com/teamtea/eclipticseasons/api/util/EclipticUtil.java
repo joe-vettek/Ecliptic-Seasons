@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.api.util;
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
 import net.minecraft.core.BlockPos;
@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 public class EclipticUtil {
     public static SolarTerm getNowSolarTerm(Level level) {
-        var sd = Holder.getSaveData(level);
+        var sd = SolarHolders.getSaveData(level);
         if (sd != null) return sd.getSolarTerm();
         return SolarTerm.NONE;
     }

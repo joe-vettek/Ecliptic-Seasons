@@ -6,7 +6,7 @@ import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.client.render.ClientRenderer;
-import com.teamtea.eclipticseasons.common.core.Holder;
+import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.core.solar.ClientSolarDataManager;
@@ -101,7 +101,7 @@ public final class ClientEventHandler {
             WeatherManager.createLevelBiomeWeatherList(clientLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
-            Holder.createSaveData(clientLevel, ClientSolarDataManager.get(clientLevel));
+            SolarHolders.createSaveData(clientLevel, ClientSolarDataManager.get(clientLevel));
 
         }
     }
