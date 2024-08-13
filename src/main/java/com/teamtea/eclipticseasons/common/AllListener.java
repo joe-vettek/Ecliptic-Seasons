@@ -2,7 +2,6 @@ package com.teamtea.eclipticseasons.common;
 
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
-import com.teamtea.eclipticseasons.api.util.EclipticTagTool;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
@@ -35,7 +34,6 @@ public class AllListener {
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
         BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess(),tagsUpdatedEvent.getUpdateCause()== TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
         WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess(),tagsUpdatedEvent.getUpdateCause()== TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
-        EclipticTagTool.BIOME_TAG_KEY_MAP.clear();
     }
 
 

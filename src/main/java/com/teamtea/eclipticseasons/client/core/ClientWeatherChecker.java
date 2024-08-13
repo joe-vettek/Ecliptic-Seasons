@@ -1,7 +1,5 @@
 package com.teamtea.eclipticseasons.client.core;
 
-import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
-import com.teamtea.eclipticseasons.api.util.EclipticTagClientTool;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -164,7 +162,7 @@ public class ClientWeatherChecker {
         return 15;
     }
 
-    public static Boolean hasPrecipitation(Biome biome) {
-        return !EclipticTagClientTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
-    }
+    // public static Boolean hasPrecipitation(Biome biome) {
+    //     return !EclipticTagClientTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
+    // }
 }

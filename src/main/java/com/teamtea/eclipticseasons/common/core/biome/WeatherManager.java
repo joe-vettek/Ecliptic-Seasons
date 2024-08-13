@@ -129,7 +129,7 @@ public class WeatherManager {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {
-                if (biome.value()==biomeWeather.biomeHolder.value()) {
+                if (biome.value() == biomeWeather.biomeHolder.value()) {
                     return biomeWeather.shouldThunder();
                 }
             }
@@ -149,7 +149,7 @@ public class WeatherManager {
             return false;
         }
         // var biome = serverLevel.getBiome(pos);
-        var biome=MapChecker.getSurfaceBiome(serverLevel,pos);
+        var biome = MapChecker.getSurfaceBiome(serverLevel, pos);
         return isThunderAtBiome(serverLevel, biome);
     }
 
@@ -167,7 +167,7 @@ public class WeatherManager {
         }
         // Thread.currentThread().getStackTrace()
         // var biome = serverLevel.getBiome(pos);
-        var biome=MapChecker.getSurfaceBiome(serverLevel,pos);
+        var biome = MapChecker.getSurfaceBiome(serverLevel, pos);
         return isRainingAtBiome(serverLevel, biome);
     }
 
@@ -175,7 +175,7 @@ public class WeatherManager {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {
-                if (biome.value()==biomeWeather.biomeHolder.value()) {
+                if (biome.value() == biomeWeather.biomeHolder.value()) {
                     // biome.value()==(biomeWeather.biomeHolder.value()
                     return biomeWeather.shouldRain();
                 }
@@ -214,19 +214,20 @@ public class WeatherManager {
         var level = levelNull != null ? levelNull : getMainServerLevel();
         var provider = SolarUtil.getProvider(level);
         var weathers = getBiomeList(level);
-        if (provider != null && weathers != null) {
+        if (biome.hasPrecipitation() && provider != null && weathers != null) {
             var solarTerm = provider.getSolarTerm();
-            var snowTerm = SolarTerm.getSnowTerm(biome,levelNull instanceof ServerLevel);
+            var snowTerm = SolarTerm.getSnowTerm(biome, levelNull instanceof ServerLevel);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             var biomes = level.registryAccess().registry(Registries.BIOME).get();
-            var loc=biomes.getKey(biome);
+            var loc = biomes.getKey(biome);
+
             for (BiomeWeather biomeWeather : weathers) {
                 if (biomeWeather.location.equals(loc)) {
                     if (biomeWeather.shouldClear())
                         return Biome.Precipitation.NONE;
 
                     return flag_cold
-                            || BiomeClimateManager.getDefaultTemperature(biome,levelNull instanceof ServerLevel) <= BiomeClimateManager.SNOW_LEVEL ?
+                            || BiomeClimateManager.getDefaultTemperature(biome, levelNull instanceof ServerLevel) <= BiomeClimateManager.SNOW_LEVEL ?
                             Biome.Precipitation.SNOW : Biome.Precipitation.RAIN;
                 }
             }
@@ -335,7 +336,8 @@ public class WeatherManager {
     }
 
     public static void runWeather(ServerLevel level, BiomeWeather biomeWeather, RandomSource random, int size) {
-
+        if (!biomeWeather.biomeHolder.value().hasPrecipitation())
+            return;
         if (biomeWeather.shouldClear()) {
             biomeWeather.clearTime--;
         } else {
@@ -377,7 +379,7 @@ public class WeatherManager {
         // }
 
 
-        if (biomeWeather.shouldRain() || level.getRandom().nextInt(5) > 1) {
+        if ((biomeWeather.shouldRain() || level.getRandom().nextInt(5) > 1)) {
             var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder, null);
             if (snow == SnowRenderStatus.SNOW) {
                 biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
@@ -551,9 +553,9 @@ public class WeatherManager {
     public static SnowRenderStatus getSnowStatus(ServerLevel level, Holder<Biome> biome, BlockPos pos) {
         var provider = SolarUtil.getProvider(level);
         var status = SnowRenderStatus.NONE;
-        if (provider != null) {
+        if (biome.value().hasPrecipitation() && provider != null) {
             var solarTerm = provider.getSolarTerm();
-            var snowTerm = SolarTerm.getSnowTerm(biome.value(),level instanceof ServerLevel);
+            var snowTerm = SolarTerm.getSnowTerm(biome.value(), level instanceof ServerLevel);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             if (flag_cold) {
                 if (isRainingAtBiome(level, biome)) {

@@ -1,28 +1,27 @@
 package com.teamtea.eclipticseasons.common.core.biome;
 
-import com.mojang.serialization.MapCodec;
-import com.teamtea.eclipticseasons.api.util.EclipticTagTool;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.neoforge.common.world.BiomeModifier;
-import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
 
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 public class BiomeClimateManager {
     public final static Map<Biome, Float> BIOME_DEFAULT_TEMPERATURE_MAP = new IdentityHashMap<>();
     public final static Map<Biome, Float> CLIENT_BIOME_DEFAULT_TEMPERATURE_MAP = new IdentityHashMap<>();
+    public static final Map<Biome, TagKey<Biome>> BIOME_TAG_KEY_MAP = new IdentityHashMap<>(128);
+    public static final Map<Biome, TagKey<Biome>> CLIENT_BIOME_TAG_KEY_MAP = new IdentityHashMap<>(128);
 
     public static void resetBiomeTemps(RegistryAccess registryAccess, boolean isServer) {
         resetBiomeTempsMap(registryAccess, isServer ? BIOME_DEFAULT_TEMPERATURE_MAP : CLIENT_BIOME_DEFAULT_TEMPERATURE_MAP);
+        putTag(registryAccess,isServer);
     }
 
     public static void resetBiomeTempsMap(RegistryAccess registryAccess, Map<Biome, Float> useMap) {
@@ -74,7 +73,7 @@ public class BiomeClimateManager {
     }
 
     public static Boolean agent$hasPrecipitation(Biome biome) {
-        return !EclipticTagTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
+        return !getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
     }
 
 
@@ -84,5 +83,30 @@ public class BiomeClimateManager {
                 .holders()
                 .filter(biomeReference -> biomeReference.value() == biome)
                 .findFirst().get();
+    }
+
+    public static TagKey<Biome> getTag(Biome biome) {
+        // return getTag(WeatherManager.getMainServerLevel(), biome);
+        return BIOME_TAG_KEY_MAP.getOrDefault(biome, CLIENT_BIOME_TAG_KEY_MAP.getOrDefault(biome, SeasonTypeBiomeTags.RAINLESS));
+    }
+
+    // Clear it on client exit a level
+    public static void putTag(RegistryAccess registryAccess, boolean isServer) {
+        var useMap = isServer ? BIOME_TAG_KEY_MAP : CLIENT_BIOME_TAG_KEY_MAP;
+        useMap.clear();
+        var biomes = registryAccess.registry(Registries.BIOME);
+        if (biomes.isPresent()) {
+
+            for (var resourceKeyBiomeEntry : biomes.get().entrySet()) {
+
+                var holder = biomes.get().getHolder(resourceKeyBiomeEntry.getKey());
+                if (holder.isPresent()) {
+                    var tag = holder.get().tags().filter(SeasonTypeBiomeTags.BIOMES::contains).findFirst();
+                    if (tag.isPresent()) {
+                        useMap.put(holder.get().value(), tag.get());
+                    } else useMap.put(holder.get().value(), SeasonTypeBiomeTags.RAINLESS);
+                }
+            }
+        }
     }
 }
