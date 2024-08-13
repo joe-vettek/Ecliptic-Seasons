@@ -52,6 +52,7 @@ public class MapChecker {
     public static int getHeightOrUpdate(Level levelNull, BlockPos pos) {
         return getHeightOrUpdate(levelNull, pos, false);
     }
+
     public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate) {
         return getHeightOrUpdate(levelNull, pos, forceUpdate, ChunkHeightMap.TYPE_HEIGHT);
     }
@@ -90,7 +91,7 @@ public class MapChecker {
         if (map != null) {
             if (type == ChunkHeightMap.TYPE_HEIGHT) {
                 value = map.getHeight(pos);
-                if (value <=map.minY || forceUpdate) {
+                if (value <= map.minY || forceUpdate) {
                     var rh = levelNull.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
                     // if (ClientConfig.Renderer.underSnow.get()) {
                     //     var rmPos = new BlockPos.MutableBlockPos(pos.getX(), rh, pos.getZ());
@@ -126,7 +127,7 @@ public class MapChecker {
                     }
                 }
                 if (!hasBuild) {
-                    map = new ChunkHeightMap(x, z,levelNull.getMinBuildHeight()-1);
+                    map = new ChunkHeightMap(x, z, levelNull.getMinBuildHeight() - 1);
                     RegionList.add(map);
                 }
             }
@@ -154,23 +155,30 @@ public class MapChecker {
         //         level.getBiome(pos) :
         //         level.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2);
 
-        var biome = WeatherManager
-                .getBiomeList(level)
-                .get(getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME))
-                .biomeHolder;
-        if (WeatherManager.getSnowDepthAtBiome(level, biome.value()) > Math.abs(seed % 100)) {
-            return true;
+        var biomeList = WeatherManager
+                .getBiomeList(level);
+
+        if (biomeList != null) {
+            int id = getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME);
+            if (id < biomeList.size()) {
+                var biomeHolder = biomeList.get(id).biomeHolder;
+                if (WeatherManager.getSnowDepthAtBiome(level, biomeHolder.value()) > Math.abs(seed % 100)) {
+                    return true;
+                }
+            }
         }
 
         return false;
         // >= random.nextInt(100));
     }
+
     public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
         return WeatherManager
                 .getBiomeList(level)
                 .get(getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME))
                 .biomeHolder;
     }
+
     // 获取chunk内部位置
     public static int getChunkValue(int i) {
         return i & (ChunkSizeLoc);

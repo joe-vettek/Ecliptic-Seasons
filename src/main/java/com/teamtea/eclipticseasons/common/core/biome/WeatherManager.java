@@ -46,8 +46,12 @@ public class WeatherManager {
     public static Map<Level, Integer> NEXT_CHECK_BIOME_MAP = new IdentityHashMap<>();
 
     public static ArrayList<BiomeWeather> getBiomeList(Level level) {
-        if (level == null) return BIOME_WEATHER_LIST.entrySet().stream().findFirst().get().getValue();
-        return BIOME_WEATHER_LIST.get(level);
+        if (level == null) {
+            var listEntry = BIOME_WEATHER_LIST.entrySet().stream().findFirst();
+
+            return listEntry.map(Map.Entry::getValue).orElse(null);
+        }
+        return BIOME_WEATHER_LIST.getOrDefault(level, null);
     }
 
     public static Float getMinRainLevel(Level level, float p46723) {
