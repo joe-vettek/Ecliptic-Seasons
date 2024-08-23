@@ -18,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -66,10 +67,10 @@ public class ModelManager {
         if (Minecraft.getInstance().level != null) {
             var onBlock = state.getBlock();
             if (!(onBlock instanceof FenceBlock)) {
-                // if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
-                //         || state.isSolidRender(Minecraft.getInstance().level, BlockPos.ZERO)) {
-                //     return true;
-                // }
+                if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
+                        || state.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)) {
+                    return true;
+                }
                 return true;
             }
         }
