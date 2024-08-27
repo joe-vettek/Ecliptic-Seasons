@@ -66,7 +66,7 @@ public class ModelManager {
     public static boolean shouldCutoutMipped(BlockState state) {
         if (Minecraft.getInstance().level != null) {
             var onBlock = state.getBlock();
-            if (!(onBlock instanceof FenceBlock)&&!(onBlock instanceof HalfTransparentBlock))  {
+            if (!(onBlock instanceof FenceBlock)&&!(onBlock instanceof HalfTransparentBlock)&&!(onBlock instanceof IronBarsBlock))  {
                 if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
                         || state.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)) {
                     return true;
