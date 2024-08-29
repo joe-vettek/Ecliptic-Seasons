@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.client.core;
 
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -56,7 +57,9 @@ public class ClientWeatherChecker {
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
             var pos = player.getOnPos();
             for (BlockPos blockPos : List.of(pos.east(4), pos.north(4), pos.south(4), pos.west(4))) {
-                var standBiome = clientLevel.getBiome(blockPos);
+                // var standBiome = clientLevel.getBiome(blockPos);
+                var standBiome = MapChecker.getSurfaceBiome(clientLevel,blockPos);
+
                 float orainLevel = getStandardRainLevel(p46723, clientLevel, standBiome);
                 if (orainLevel > rainLevel) {
                     rainLevel = orainLevel;

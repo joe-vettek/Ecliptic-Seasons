@@ -38,6 +38,8 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
+import java.util.logging.Level;
+
 @EventBusSubscriber(modid = EclipticSeasonsApi.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
 
@@ -88,12 +90,15 @@ public final class ClientEventHandler {
     public static void onLevelUnloadEvent(LevelEvent.Unload event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
             MapChecker.clearHeightMap();
+            ClientCon.useLevel = null;
         }
     }
 
     @SubscribeEvent
     public static void onLevelEventLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
+
+            ClientCon.useLevel = clientLevel;
 
             // ModelManager.quadMap.clear();
             // ModelManager.quadMap_1.clear();
@@ -125,7 +130,7 @@ public final class ClientEventHandler {
                     if (Minecraft.getInstance().cameraEntity instanceof Player player) {
                         BlockPos pos = player.getOnPos();
                         SectionPos sectionPos = SectionPos.of(pos);
-                        lr.setSectionDirtyWithNeighbors(sectionPos.x(),sectionPos.y(),sectionPos.z());
+                        lr.setSectionDirtyWithNeighbors(sectionPos.x(), sectionPos.y(), sectionPos.z());
 
                         // int pSectionX = sectionPos.x();
                         // int pSectionY = sectionPos.y();

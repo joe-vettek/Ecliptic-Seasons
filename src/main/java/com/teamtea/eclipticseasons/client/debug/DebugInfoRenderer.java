@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -66,11 +67,15 @@ public final class DebugInfoRenderer {
                 if (biomeWeather.biomeHolder.is(standBiome)) {
                     var solarTerm = SolarHolders.getSaveData(level1).getSolarTerm();
                     String biomesS = "Biome: " + Component.translatable(Util.makeDescriptionId("biome", ResourceLocation.parse(standBiome.getRegisteredName()))).getString();
+                    String biomesSS = "E-Biome: " + Component.translatable(Util.makeDescriptionId("biome", ResourceLocation.parse(MapChecker.getSurfaceBiome(level1,player.blockPosition()).getRegisteredName()))).getString();
+
                     String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
                     String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
                     String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.value(), true);
                     drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
                     drawInfo(matrixStack, screenWidth, screenHeight, biomesS, index++);
+                    drawInfo(matrixStack, screenWidth, screenHeight, biomesSS, index++);
+
                     drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
                     drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);
                     drawInfo(matrixStack, screenWidth, screenHeight, snowTermS, index++);

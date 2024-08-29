@@ -6,6 +6,7 @@ import com.teamtea.eclipticseasons.api.constant.climate.FlatRain;
 import com.teamtea.eclipticseasons.api.constant.climate.SnowTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
+import com.teamtea.eclipticseasons.client.ClientCon;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.handler.SolarUtil;
@@ -33,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -213,11 +215,20 @@ public class WeatherManager {
         return getPrecipitationAt(null, biome, pos);
     }
 
-    public static Biome.Precipitation getPrecipitationAt(Level levelNull, Biome biome, BlockPos p198905) {
+    public static Biome.Precipitation getPrecipitationAt(Level levelNull, Biome biome, BlockPos pos) {
 
         var level = levelNull != null ? levelNull : getMainServerLevel();
+        if (level == null) {
+            level = ClientCon.useLevel;
+        }
+        if (level != null) {
+            var oldBiome=biome;
+            biome = MapChecker.getSurfaceBiome(level, pos).value();
+        }
+
         var provider = SolarUtil.getProvider(level);
         var weathers = getBiomeList(level);
+
         if (biome.hasPrecipitation() && provider != null && weathers != null) {
             var solarTerm = provider.getSolarTerm();
             var snowTerm = SolarTerm.getSnowTerm(biome, levelNull instanceof ServerLevel);

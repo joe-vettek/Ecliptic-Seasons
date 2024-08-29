@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -155,28 +156,47 @@ public class MapChecker {
         //         level.getBiome(pos) :
         //         level.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2);
 
-        var biomeList = WeatherManager
-                .getBiomeList(level);
-
-        if (biomeList != null) {
-            int id = getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME);
-            if (id < biomeList.size()) {
-                var biomeHolder = biomeList.get(id).biomeHolder;
-                if (WeatherManager.getSnowDepthAtBiome(level, biomeHolder.value()) > Math.abs(seed % 100)) {
-                    return true;
-                }
-            }
+        // var biomeList = WeatherManager
+        //         .getBiomeList(level);
+        //
+        // if (biomeList != null) {
+        //     int id = getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME);
+        //     if (id < biomeList.size()) {
+        //
+        //     }
+        // }
+        var biomeHolder = getSurfaceBiome(level, pos);
+        if (WeatherManager.getSnowDepthAtBiome(level, biomeHolder.value()) > Math.abs(seed % 100)) {
+            return true;
         }
 
         return false;
         // >= random.nextInt(100));
     }
 
+    public static boolean isSmallBiome(Holder<Biome> biomeHolder) {
+        return biomeHolder.is(Tags.Biomes.IS_RIVER) || biomeHolder.is(Tags.Biomes.IS_BEACH);
+    }
+
     public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
-        return WeatherManager
+        var holde = WeatherManager
                 .getBiomeList(level)
                 .get(getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME))
                 .biomeHolder;
+        int i = 0;
+        while (isSmallBiome(holde)) {
+            i += 2;
+            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                holde = WeatherManager
+                        .getBiomeList(level)
+                        .get(getHeightOrUpdate(level, pos.relative(direction, i), false, ChunkHeightMap.TYPE_BIOME))
+                        .biomeHolder;
+                if (!isSmallBiome(holde)) {
+                    break;
+                }
+            }
+        }
+        return holde;
     }
 
     // 获取chunk内部位置

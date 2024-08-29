@@ -31,6 +31,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.LogManager;
@@ -65,6 +67,8 @@ public class EclipticSeasonsMod {
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, ServerConfig.SERVER_CONFIG);
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
+        if (FMLLoader.getDist() == Dist.CLIENT)
+            modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
 
@@ -104,9 +108,9 @@ public class EclipticSeasonsMod {
             for (Object i : x) {
                 if (i == null) output.append(", ").append("null");
                 else if (i.getClass().isArray()) {
-                  ;
+                    ;
                     output.append(", [");
-                    for (Object c :   Arrays.stream((Object[]) i).toList()) {
+                    for (Object c : Arrays.stream((Object[]) i).toList()) {
                         output.append(c).append(",");
                     }
                     output.append("]");

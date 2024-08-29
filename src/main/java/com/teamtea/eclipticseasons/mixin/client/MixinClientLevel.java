@@ -42,10 +42,11 @@ public class MixinClientLevel {
         }
     }
 
+
     @Inject(at = {@At("HEAD")}, method = {"getThunderLevel"}, cancellable = true)
     private void ecliptic$getThunderLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
         if ((Object) this instanceof ClientLevel clientLevel) {
-            cir.setReturnValue(ClientWeatherChecker.getThunderLevel( clientLevel,p_46723_));
+            cir.setReturnValue(ClientWeatherChecker.getThunderLevel(clientLevel, p_46723_));
         }
     }
 }

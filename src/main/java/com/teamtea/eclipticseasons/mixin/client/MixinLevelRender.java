@@ -116,7 +116,7 @@ public abstract class MixinLevelRender {
         // return packedLight;
     }
 
-
+    // @Local LocalRef<Minecraft> clientRef use to fix
     @ModifyConstant(method = "renderSnowAndRain", constant = {@Constant(intValue = 5), @Constant(intValue = 10)})
     private int ecliptic$ModifySnowAmount(int constant)
     {

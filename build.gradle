@@ -31,6 +31,18 @@ repositories {
     maven {
         url "https://harleyoconnor.com/maven"
     }
+    flatDir {
+        dirs("libs")
+    }
+
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+
 }
 
 base {
@@ -125,15 +137,22 @@ dependencies {
 //    implementation ("com.ferreusveritas.dynamictrees:DynamicTrees-1.20.1:1.3.0-BETA10")
 
     compileOnly ("curse.maven:embeddium-908741:5556146")
+    compileOnly ("maven.modrinth:sodium:mc1.21-0.6.0-beta.1-neoforge")
+
+//    compileOnly ("libs:sodium:neoforge-0.6.0-beta.1+mc1.21")
+//    onlyMainRuntimeOnly ("libs:sodium:neoforge-0.6.0-beta.1+mc1.21")
 //    compileOnly ("curse.maven:oculus-581495:4952626")
 
-    onlyMainRuntimeOnly ("curse.maven:embeddium-908741:5556146")
+//    onlyMainRuntimeOnly ("curse.maven:embeddium-908741:5556146")
 //    onlyMainRuntimeOnly ("curse.maven:oculus-581495:4952626")
+    onlyMainRuntimeOnly ("curse.maven:irisshaders-455508:5654735")
+//    onlyMainRuntimeOnly ("curse.maven:sodium-394468:5651873")
+    onlyMainRuntimeOnly "maven.modrinth:sodium:mc1.21-0.6.0-beta.1-neoforge"
 
     onlyMainRuntimeOnly ("curse.maven:journeymap-32274:5541925")
 
     runtimeOnly ("curse.maven:spark-361579:5434153")
-    
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

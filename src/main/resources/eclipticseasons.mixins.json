@@ -12,6 +12,7 @@
     "common.block.MixinBeehiveBlockEntity",
     "common.block.MixinFireBlock",
     "common.block.MixinGrassBlock",
+    "common.block.MixinIBlockExtension",
     "common.block.MixinLightningRodBlock",
     "common.command.MixinWeatherCommand",
     "common.entity.animal.bee.MixinBee",
@@ -22,8 +23,7 @@
     "common.entity.monster.MixinMonster",
     "common.entity.player.MixinServerPlayer",
     "common.entity.projectile.MixinThrownTrident",
-    "common.loot.MixinWeatherCheck",
-    "common.block.MixinIBlockExtension"
+    "common.loot.MixinWeatherCheck"
   ],
   "client": [
     "client.ItemBlockRenderTypes",
@@ -39,7 +39,9 @@
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
-    "compat.embeddium.MixinBlockRender2"
+    "compat.embeddium.MixinBlockRender2",
+    "compat.sodium.MixinAbstractBlockRenderContext",
+    "compat.sodium.MixinNeoForgeModelAccess"
   ],
   "injectors": {
     "defaultRequire": 1

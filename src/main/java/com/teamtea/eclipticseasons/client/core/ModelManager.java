@@ -11,6 +11,7 @@ import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
@@ -66,7 +67,8 @@ public class ModelManager {
     public static boolean shouldCutoutMipped(BlockState state) {
         if (Minecraft.getInstance().level != null) {
             var onBlock = state.getBlock();
-            if (!(onBlock instanceof FenceBlock)&&!(onBlock instanceof HalfTransparentBlock)&&!(onBlock instanceof IronBarsBlock))  {
+            if (!(onBlock instanceof FenceBlock)&&!(onBlock instanceof HalfTransparentBlock)&&!(onBlock instanceof IronBarsBlock)) {
+                // use EmptyBlockGetter.INSTANCE instead of null level
                 if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
                         || state.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)) {
                     return true;
@@ -92,13 +94,18 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        if (ClientConfig.Renderer.snowyWinter.get()
+        var level=Minecraft.getInstance().level;
+        if (level==null){
+            EclipticSeasonsMod.logger("NULLLLLLLL");
+        }
+        if (level!=null
+                && ClientConfig.Renderer.snowyWinter.get()
                 && direction != Direction.DOWN
                 && !list.isEmpty()) {
 
             var onBlock = state.getBlock();
 
-            int flag = MapChecker.getBlockType(state,Minecraft.getInstance().level,pos);
+            int flag = MapChecker.getBlockType(state,level,pos);
             if (flag == 0)
                 return list;
 
@@ -107,16 +114,16 @@ public class ModelManager {
 
             boolean isLight = false;
 
-            isLight = ClientConfig.Renderer.useVanillaCheck.get() && Minecraft.getInstance().level != null ?
-                    Minecraft.getInstance().level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >= 15
-                    : MapChecker.getHeightOrUpdate(Minecraft.getInstance().level, pos, false) == pos.getY() - offset;
+            isLight = ClientConfig.Renderer.useVanillaCheck.get() && level != null ?
+                    level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(pos.above()) >= 15
+                    : MapChecker.getHeightOrUpdate(level, pos, false) == pos.getY() - offset;
 
 
             // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
             if (isLight) {
                 if (onBlock != Blocks.SNOW_BLOCK
-                        && MapChecker.shouldSnowAt(Minecraft.getInstance().level, pos.below(offset), state, random, seed)) {
+                        && MapChecker.shouldSnowAt(level, pos.below(offset), state, random, seed)) {
                     // DynamicLeavesBlock
 
                     boolean isFlowerAbove = false;
@@ -223,7 +230,7 @@ public class ModelManager {
                         && state.getBlock() instanceof GrassBlock
                         && random.nextInt(15) == 0
                 ) {
-                    var level = Minecraft.getInstance().level;
+                    // var level = Minecraft.getInstance().level;
                     var solarTerm = SolarTerm.NONE;
                     int weight = 100;
                     if (level != null) {

@@ -29,11 +29,11 @@ public class MapColorReplacer {
 
         // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
-        long seed = (long) Mth.abs(pos.hashCode());
+        // long seed = (long) Mth.abs(pos.hashCode());
 
         isLight = flag != 0 && isLight
                 && state.getBlock() != Blocks.SNOW_BLOCK
-                && MapChecker.shouldSnowAt(level, pos.below(offset), state, level.getRandom(), seed);
+                && MapChecker.shouldSnowAt(level, pos.below(offset), state, level.getRandom(), state.getSeed(pos));
 
 
         return isLight ? MapColor.SNOW : null;

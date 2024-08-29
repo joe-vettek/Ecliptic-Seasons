@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class LeavesTerrainParticle extends TerrainParticle {
