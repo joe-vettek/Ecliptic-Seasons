@@ -28,12 +28,7 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-    maven {
-        url "https://harleyoconnor.com/maven"
-    }
-    flatDir {
-        dirs("libs")
-    }
+
 
     maven {
         name = "Modrinth"
@@ -42,6 +37,15 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+
+    maven {
+        url "https://harleyoconnor.com/maven"
+    }
+
+    flatDir {
+        dirs("libs")
+    }
+
 
 }
 
