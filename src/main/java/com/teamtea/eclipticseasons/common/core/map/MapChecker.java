@@ -1,6 +1,5 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
-import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,6 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -178,19 +178,22 @@ public class MapChecker {
         return biomeHolder.is(Tags.Biomes.IS_RIVER) || biomeHolder.is(Tags.Biomes.IS_BEACH);
     }
 
+    public static Holder<Biome> idToBiome(Level level, int id) {
+        var list = WeatherManager
+                .getBiomeList(level);
+        return
+                list != null ?
+                        list.get(id).biomeHolder :
+                        level.registryAccess().registry(Registries.BIOME).get().getHolder(Biomes.THE_VOID).get();
+    }
+
     public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
-        var holde = WeatherManager
-                .getBiomeList(level)
-                .get(getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME))
-                .biomeHolder;
+        var holde = idToBiome(level,getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME));
         int i = 0;
         while (isSmallBiome(holde)) {
             i += 2;
             for (Direction direction : Direction.Plane.HORIZONTAL) {
-                holde = WeatherManager
-                        .getBiomeList(level)
-                        .get(getHeightOrUpdate(level, pos.relative(direction, i), false, ChunkHeightMap.TYPE_BIOME))
-                        .biomeHolder;
+                holde = idToBiome(level,getHeightOrUpdate(level, pos.relative(direction, i), false, ChunkHeightMap.TYPE_BIOME));
                 if (!isSmallBiome(holde)) {
                     break;
                 }
