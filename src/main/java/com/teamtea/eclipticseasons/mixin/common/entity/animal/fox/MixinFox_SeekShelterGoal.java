@@ -4,6 +4,7 @@ package com.teamtea.eclipticseasons.mixin.common.entity.animal.fox;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.level.Level;
@@ -26,8 +27,10 @@ public class MixinFox_SeekShelterGoal {
             method = "canUse",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
-    private boolean ecliptic$canUse_Thunder(Level instance, Operation<Boolean> original) {
-        return WeatherManager.isThunderAt((ServerLevel) (this$0).level(), this$0.blockPosition());
+    private boolean ecliptic$canUse_Thunder(Level level, Operation<Boolean> original) {
+        if (ServerConfig.Debug.useSolarWeather.get() && level instanceof ServerLevel serverLevel)
+            return WeatherManager.isThunderAt(serverLevel, this$0.blockPosition());
+        else return original.call(level);
     }
 
 }

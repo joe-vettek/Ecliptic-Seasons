@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -40,13 +41,14 @@ public abstract class MixinServerLevel extends Level {
     // 早晨有可能继续下雨
     @Inject(at = {@At("HEAD")}, method = {"resetWeatherCycle"}, cancellable = true)
     public void ecliptic$resetWeatherCycle(CallbackInfo ci) {
-        ci.cancel();
+        if (ServerConfig.Debug.useSolarWeather.get())
+            ci.cancel();
     }
 
     @Inject(at = {@At("HEAD")}, method = {"advanceWeatherCycle"}, cancellable = true)
     public void ecliptic$advanceWeatherCycle(CallbackInfo ci) {
         boolean cancel = WeatherManager.agentAdvanceWeatherCycle((ServerLevel) (Object) this, serverLevelData, levelData, random);
-        if (cancel)
+        if (cancel && ServerConfig.Debug.useSolarWeather.get())
             ci.cancel();
     }
 
@@ -55,7 +57,9 @@ public abstract class MixinServerLevel extends Level {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
     )
     private boolean ecliptic$tickPrecipitation_isRaining(ServerLevel instance, Operation<Boolean> original, @Local(ordinal = 0, argsOnly = true) BlockPos pos) {
-        return WeatherManager.isRainingAt((ServerLevel) (Object) this, pos);
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return WeatherManager.isRainingAt((ServerLevel) (Object) this, pos);
+        else return original.call(instance);
     }
 
     @WrapOperation(
@@ -63,19 +67,23 @@ public abstract class MixinServerLevel extends Level {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
     private Biome.Precipitation ecliptic$tickPrecipitation_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
+        else return original.call(biome, pos);
     }
 
 
     /*
-    * Due to Current code, we don't need to check if there is rain or thunder first
-    * */
+     * Due to Current code, we don't need to check if there is rain or thunder first
+     * */
     @WrapOperation(
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
     )
     private boolean ecliptic$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        return true;
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return true;
+        else return original.call(serverLevel);
     }
 
     @WrapOperation(
@@ -87,14 +95,18 @@ public abstract class MixinServerLevel extends Level {
         // int i = chunkpos.getMiddleBlockX();
         // int j = chunkpos.getMiddleBlockZ();
         // BlockPos blockpos1 = ((ServerLevel) (Object) this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
-        return true;
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return true;
+        else return original.call(serverLevel);
     }
 
     @WrapOperation(
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRainingAt(Lnet/minecraft/core/BlockPos;)Z")
     )
-    private boolean ecliptic$tickChunk_isRainingAt(ServerLevel instance, BlockPos pos, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        return WeatherManager.isThunderAt(instance, pos) && WeatherManager.isRainingAt(instance, pos);
+    private boolean ecliptic$tickChunk_isRainingAt(ServerLevel serverLevel, BlockPos pos, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return WeatherManager.isThunderAt(serverLevel, pos) && WeatherManager.isRainingAt(serverLevel, pos);
+        else return original.call(serverLevel, pos);
     }
 }

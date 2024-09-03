@@ -15,6 +15,7 @@ import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.List;
 
@@ -127,9 +128,27 @@ public class FireflyParticle extends TextureSheetParticle {
             this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, 1.0F, f, f1, f3, i, 0.5f);
             this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -1.0F, -1.0F, f, f1, f4, i, 0.5f);
         }
+
+        // float ff=System.currentTimeMillis()%4000;
+        //
+        // ff= (ff-2000)/2000f;
+        //
+        // pQuaternion = pQuaternion.rotateAxis(ff*45*Mth.DEG_TO_RAD,1,0,0);
+        // pQuaternion = pQuaternion.add( new Quaternionf(0, 0.2f, 0, 0));
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, -0.35f, f, f2, f4, i, 1f);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, .65f, f, f2, f3, i, 1f);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -.35f, .65f, f, f1, f3, i, 1f);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -0.35f, -0.35f, f, f1, f4, i, 1f);
+        //
+        // pQuaternion = pQuaternion.rotateAxis(ff*-90*Mth.DEG_TO_RAD,1,0,0);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, -0.35f, f, f2, f4, i, 1f);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, .65f, f, f2, f3, i, 1f);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -.35f, .65f, f, f1, f3, i, 1f);
+        // this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -0.35f, -0.35f, f, f1, f4, i, 1f);
+
     }
 
-    private void renderVertex(
+    protected void renderVertex(
             VertexConsumer pBuffer,
             Quaternionf pQuaternion,
             float pX,
@@ -194,7 +213,6 @@ public class FireflyParticle extends TextureSheetParticle {
             }
 
             this.move(xd, yd, zd);
-
         }
     }
 

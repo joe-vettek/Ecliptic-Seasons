@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.mixin.client;
 
 
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -16,37 +17,42 @@ public class MixinClientLevel {
 
     @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true)
     private void ecliptic$isRaining(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ClientLevel clientLevel) {
-            cir.setReturnValue(ClientWeatherChecker.isRain(clientLevel));
-        }
+        if (ServerConfig.Debug.useSolarWeather.get())
+            if ((Object) this instanceof ClientLevel clientLevel) {
+                cir.setReturnValue(ClientWeatherChecker.isRain(clientLevel));
+            }
     }
 
     @Inject(at = {@At("HEAD")}, method = {"getRainLevel"}, cancellable = true)
     private void ecliptic$getRainLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
-        if ((Object) this instanceof ClientLevel clientLevel) {
-            cir.setReturnValue(ClientWeatherChecker.getRainLevel(clientLevel, p_46723_));
-        }
+        if (ServerConfig.Debug.useSolarWeather.get())
+            if ((Object) this instanceof ClientLevel clientLevel) {
+                cir.setReturnValue(ClientWeatherChecker.getRainLevel(clientLevel, p_46723_));
+            }
     }
 
     @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)
     private void ecliptic$isRainingAt(BlockPos p_46759_, CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ClientLevel clientLevel) {
-            cir.setReturnValue(ClientWeatherChecker.isRainingAt(clientLevel, p_46759_));
-        }
+        if (ServerConfig.Debug.useSolarWeather.get())
+            if ((Object) this instanceof ClientLevel clientLevel) {
+                cir.setReturnValue(ClientWeatherChecker.isRainingAt(clientLevel, p_46759_));
+            }
     }
 
     @Inject(at = {@At("HEAD")}, method = {"isThundering"}, cancellable = true)
     private void ecliptic$isThundering(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ClientLevel clientLevel) {
-            cir.setReturnValue(ClientWeatherChecker.isThundering(clientLevel));
-        }
+        if (ServerConfig.Debug.useSolarWeather.get())
+            if ((Object) this instanceof ClientLevel clientLevel) {
+                cir.setReturnValue(ClientWeatherChecker.isThundering(clientLevel));
+            }
     }
 
 
     @Inject(at = {@At("HEAD")}, method = {"getThunderLevel"}, cancellable = true)
     private void ecliptic$getThunderLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
-        if ((Object) this instanceof ClientLevel clientLevel) {
-            cir.setReturnValue(ClientWeatherChecker.getThunderLevel(clientLevel, p_46723_));
-        }
+        if (ServerConfig.Debug.useSolarWeather.get())
+            if ((Object) this instanceof ClientLevel clientLevel) {
+                cir.setReturnValue(ClientWeatherChecker.getThunderLevel(clientLevel, p_46723_));
+            }
     }
 }

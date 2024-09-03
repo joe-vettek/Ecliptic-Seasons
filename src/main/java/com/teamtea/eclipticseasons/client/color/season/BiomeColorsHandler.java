@@ -41,7 +41,7 @@ public class BiomeColorsHandler {
                 // 由于基本温度被更改
                 // double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature() + EclipticUtil.getNowSolarTerm(clientLevel).getTemperatureChange(), 0.0F, 1.0F);
 
-                double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature() , 0.0F, 1.0F);
+                double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature(), 0.0F, 1.0F);
                 double humidity = Mth.clamp(biome.getModifiedClimateSettings().downfall(), 0.0F, 1.0F);
                 humidity = humidity * temperature;
                 int i = (int) ((1.0D - temperature) * 255.0D);
@@ -65,7 +65,8 @@ public class BiomeColorsHandler {
                 if (needRefresh) {
                     reloadColors();
                 }
-                double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature() , 0.0F, 1.0F);                double humidity = Mth.clamp(biome.getModifiedClimateSettings().downfall(), 0.0F, 1.0F);
+                double temperature = Mth.clamp(biome.getModifiedClimateSettings().temperature(), 0.0F, 1.0F);
+                double humidity = Mth.clamp(biome.getModifiedClimateSettings().downfall(), 0.0F, 1.0F);
                 humidity = humidity * temperature;
                 int i = (int) ((1.0D - temperature) * 255.0D);
                 int j = (int) ((1.0D - humidity) * 255.0D);

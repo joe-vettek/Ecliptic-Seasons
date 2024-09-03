@@ -4,6 +4,8 @@ package com.teamtea.eclipticseasons.mixin.common.entity.animal.bee;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamtea.eclipticseasons.api.util.WeatherUtil;
+import com.teamtea.eclipticseasons.config.ServerConfig;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
@@ -17,14 +19,19 @@ public class MixinBee_BeePollinateGoal {
     // @Shadow @Final private Bee this$0;
 
 
-    @Shadow @Final private Bee this$0;
+    @Shadow
+    @Final
+    private Bee this$0;
 
     @WrapOperation(
             method = "canBeeUse",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isRaining()Z")
     )
-    private boolean ecliptic$canBeeUseCheckRain(Level instance, Operation<Boolean> original) {
-        return WeatherUtil.isEntityInRain(this$0);
+    private boolean ecliptic$canBeeUseCheckRain(Level level, Operation<Boolean> original) {
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return WeatherUtil.isEntityInRain(this$0);
+        else return original.call(level);
+
     }
 
 
@@ -32,8 +39,10 @@ public class MixinBee_BeePollinateGoal {
             method = "canBeeContinueToUse",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isRaining()Z")
     )
-    private boolean ecliptic$canBeeContinueToUseCheckRain(Level instance, Operation<Boolean> original) {
-        return WeatherUtil.isEntityInRain(this$0);
+    private boolean ecliptic$canBeeContinueToUseCheckRain(Level level, Operation<Boolean> original) {
+        if (ServerConfig.Debug.useSolarWeather.get())
+            return WeatherUtil.isEntityInRain(this$0);
+        else return original.call(level);
     }
 
 }

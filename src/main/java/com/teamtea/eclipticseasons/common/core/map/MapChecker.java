@@ -188,6 +188,8 @@ public class MapChecker {
     }
 
     public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
+
+
         var holde = idToBiome(level,getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME));
         int i = 0;
         while (isSmallBiome(holde)) {

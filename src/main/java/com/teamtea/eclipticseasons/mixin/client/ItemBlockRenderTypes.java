@@ -18,17 +18,20 @@ import java.util.Map;
 @Mixin({net.minecraft.client.renderer.ItemBlockRenderTypes.class})
 public abstract class ItemBlockRenderTypes {
 
-    @Shadow private static boolean renderCutout;
+    @Shadow
+    private static boolean renderCutout;
 
-    @Shadow @Final private static Map<Block, ChunkRenderTypeSet> BLOCK_RENDER_TYPES;
+    @Shadow
+    @Final
+    private static Map<Block, ChunkRenderTypeSet> BLOCK_RENDER_TYPES;
 
     // ctx.world().world.getBlockState(ctx.pos)
     @Inject(at = {@At("HEAD")}, method = {"getRenderLayers"}, cancellable = true, remap = false)
     private static void ecliptic$getRenderLayers(BlockState state, CallbackInfoReturnable<ChunkRenderTypeSet> cir) {
-      if(renderCutout&&BLOCK_RENDER_TYPES.get(state.getBlock()).contains(RenderType.SOLID))
-        if (ModelManager.shouldCutoutMipped(state)) {
-            cir.setReturnValue(ChunkRenderTypeSet.of(RenderType.cutoutMipped()));
-        }
+        if (renderCutout && BLOCK_RENDER_TYPES.get(state.getBlock()).contains(RenderType.SOLID))
+            if (ModelManager.shouldCutoutMipped(state)) {
+                cir.setReturnValue(ChunkRenderTypeSet.of(RenderType.cutoutMipped()));
+            }
     }
 
     // @ModifyExpressionValue(

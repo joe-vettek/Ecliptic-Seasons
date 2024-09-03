@@ -14,11 +14,14 @@ public class ServerConfig {
 
     public static class Debug {
         public static ModConfigSpec.BooleanValue debugMode;
+        public static ModConfigSpec.BooleanValue useSolarWeather;
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Debug");
             debugMode = builder.comment("Enable debug option to detect illegal use of functions.")
                     .define("Debug", false);
+            useSolarWeather = builder.comment("Enable solar term weather system.")
+                    .define("UseSolarWeather", true);
             builder.pop();
         }
     }
@@ -45,7 +48,7 @@ public class ServerConfig {
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Season");
             lastingDaysOfEachTerm = builder.comment("The lasting days of each term (24 in total).")
-                    .defineInRange("LastingDaysOfEachTerm", 7, 1, 30);
+                    .defineInRange("LastingDaysOfEachTerm", 7, 1, 1000);
             initialSolarTermIndex = builder.comment("The index of the initial solar term.")
                     .defineInRange("InitialSolarTermIndex", 1, 1, 24);
 

@@ -87,32 +87,21 @@ public class SolarDataManager extends SavedData {
         solarTermsTicks++;
         int dayTime = Math.toIntExact(world.getDayTime() % 24000);
         if (solarTermsTicks > dayTime + 100) {
-            solarTermsDay++;
-            solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
+            // solarTermsDay++;
+            // solarTermsDay %= 24 * ServerConfig.Season.lastingDaysOfEachTerm.get();
+            setSolarTermsDay((getSolarTermsDay() + 1));
+            setSolarTermsDay((getSolarTermsDay() % (24 * ServerConfig.Season.lastingDaysOfEachTerm.get())));
 
             BiomeClimateManager.updateTemperature(world, getSolarTerm());
             sendUpdateMessage(world);
         }
         solarTermsTicks = dayTime;
 
-        // 强制刷新，由于服务器区块是悲观锁，所以不能强刷
-        // if (world.getRandom().nextBoolean() && world.getDayTime() % 1000 == 0) {
-        //     // player.connection.send();
-        //     var a = new ArrayList<ChunkAccess>();
-        //     for (ChunkHolder chunk : (world).getChunkSource().chunkMap.getChunks()) {
-        //         var cs = chunk.getLastAvailable();
-        //         if (cs != null)
-        //             a.add(chunk.getLastAvailable());
-        //     }
-        //
-        //     world.getChunkSource().chunkMap.resendBiomesForChunks(a);
-        // }
-
         setDirty();
     }
 
     public int getSolarTermIndex() {
-        return solarTermsDay / ServerConfig.Season.lastingDaysOfEachTerm.get();
+        return  getSolarTermsDay()  / ServerConfig.Season.lastingDaysOfEachTerm.get();
     }
 
     public SolarTerm getSolarTerm() {
@@ -146,28 +135,6 @@ public class SolarDataManager extends SavedData {
         }
     }
 
-
-    public void resendBiomesForChunks(ServerLevel serverLevel, ChunkMap chunkMap, List<ChunkAccess> chunkAccessList) {
-        Map<ServerPlayer, List<LevelChunk>> map = new HashMap<>();
-
-        for (ChunkAccess chunkaccess : chunkAccessList) {
-            ChunkPos chunkpos = chunkaccess.getPos();
-            LevelChunk levelchunk;
-            if (chunkaccess instanceof LevelChunk levelchunk1) {
-                levelchunk = levelchunk1;
-            } else {
-                levelchunk = serverLevel.getChunk(chunkpos.x, chunkpos.z);
-            }
-
-            for (ServerPlayer serverplayer : chunkMap.getPlayers(chunkpos, false)) {
-                map.computeIfAbsent(serverplayer, (p_274834_) -> new ArrayList<>()).add(levelchunk);
-            }
-        }
-
-        map.forEach((player, levelChunks) -> {
-            player.connection.send(ClientboundChunksBiomesPacket.forChunks(levelChunks));
-        });
-    }
 
     @Override
     public CompoundTag save(CompoundTag compound, HolderLookup.Provider pRegistries) {

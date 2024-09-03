@@ -21,7 +21,7 @@ public class BiomeClimateManager {
 
     public static void resetBiomeTemps(RegistryAccess registryAccess, boolean isServer) {
         resetBiomeTempsMap(registryAccess, isServer ? BIOME_DEFAULT_TEMPERATURE_MAP : CLIENT_BIOME_DEFAULT_TEMPERATURE_MAP);
-        putTag(registryAccess,isServer);
+        putTag(registryAccess, isServer);
     }
 
     public static void resetBiomeTempsMap(RegistryAccess registryAccess, Map<Biome, Float> useMap) {
@@ -51,6 +51,11 @@ public class BiomeClimateManager {
             var temperature = BiomeClimateManager.getDefaultTemperature(biome, isServer) > SNOW_LEVEL ?
                     Math.max(SNOW_LEVEL + 0.001F, BiomeClimateManager.getDefaultTemperature(biome, isServer) + solarTermIndex.getTemperatureChange()) :
                     Math.min(SNOW_LEVEL, BiomeClimateManager.getDefaultTemperature(biome, isServer) + solarTermIndex.getTemperatureChange());
+            if (isServer) {
+                BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, temperature);
+            } else {
+                CLIENT_BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, temperature);
+            }
 
             // clean temperature change
             // var oldClimateSettings = biome.climateSettings;

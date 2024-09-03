@@ -17,49 +17,59 @@ public class MixinLevel {
 
     @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true)
     private void ecliptic$isRaining(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            if (ServerConfig.Debug.debugMode.get()){
-                throw new IllegalCallerException("Use isRainAt to check if rain");
+        if (ServerConfig.Debug.useSolarWeather.get()) {
+            if ((Object) this instanceof ServerLevel serverLevel) {
+                if (ServerConfig.Debug.debugMode.get()) {
+                    throw new IllegalCallerException("Use isRainAt to check if rain");
+                }
+                cir.setReturnValue(WeatherManager.isRainingEverywhere(serverLevel));
             }
-            cir.setReturnValue(WeatherManager.isRainingEverywhere(serverLevel));
         }
     }
 
     @Inject(at = {@At("HEAD")}, method = {"getRainLevel"}, cancellable = true)
     private void ecliptic$getRainLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            if (ServerConfig.Debug.debugMode.get()){
-                throw new IllegalCallerException("Shouldn't call getRainLevel now");
+        if (ServerConfig.Debug.useSolarWeather.get()) {
+            if ((Object) this instanceof ServerLevel serverLevel) {
+                if (ServerConfig.Debug.debugMode.get()) {
+                    throw new IllegalCallerException("Shouldn't call getRainLevel now");
+                }
+                cir.setReturnValue(WeatherManager.getMinRainLevel(serverLevel, p_46723_));
             }
-            cir.setReturnValue(WeatherManager.getMinRainLevel( serverLevel,p_46723_));
         }
     }
 
     @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)
     private void ecliptic$isRainingAt(BlockPos p_46759_, CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            cir.setReturnValue(WeatherManager.isRainingAt(serverLevel, p_46759_));
+        if (ServerConfig.Debug.useSolarWeather.get()) {
+            if ((Object) this instanceof ServerLevel serverLevel) {
+                cir.setReturnValue(WeatherManager.isRainingAt(serverLevel, p_46759_));
+            }
         }
     }
 
 
     @Inject(at = {@At("HEAD")}, method = {"isThundering"}, cancellable = true)
     private void ecliptic$isThundering(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            if (ServerConfig.Debug.debugMode.get()){
-                throw new IllegalCallerException("Use isThunderingAt to check if rain");
+        if (ServerConfig.Debug.useSolarWeather.get()) {
+            if ((Object) this instanceof ServerLevel serverLevel) {
+                if (ServerConfig.Debug.debugMode.get()) {
+                    throw new IllegalCallerException("Use isThunderingAt to check if rain");
+                }
+                cir.setReturnValue(WeatherManager.isThunderEverywhere(serverLevel));
             }
-            cir.setReturnValue(WeatherManager.isThunderEverywhere(serverLevel));
         }
     }
 
     @Inject(at = {@At("HEAD")}, method = {"getThunderLevel"}, cancellable = true)
     private void ecliptic$getThunderLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            if (ServerConfig.Debug.debugMode.get()){
-                throw new IllegalCallerException("Shouldn't call getThunderLevel now");
+        if (ServerConfig.Debug.useSolarWeather.get()) {
+            if ((Object) this instanceof ServerLevel serverLevel) {
+                if (ServerConfig.Debug.debugMode.get()) {
+                    throw new IllegalCallerException("Shouldn't call getThunderLevel now");
+                }
+                cir.setReturnValue(WeatherManager.getMinThunderLevel(serverLevel, p_46723_));
             }
-            cir.setReturnValue(WeatherManager.getMinThunderLevel( serverLevel,p_46723_));
         }
     }
 }

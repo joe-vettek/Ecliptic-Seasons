@@ -23,7 +23,12 @@
     "common.entity.monster.MixinMonster",
     "common.entity.player.MixinServerPlayer",
     "common.entity.projectile.MixinThrownTrident",
-    "common.loot.MixinWeatherCheck"
+    "common.loot.MixinWeatherCheck",
+    "compat.eclipticseasons.common.MixinTeaconLevel",
+    "compat.eclipticseasons.common.MixinTeaconServerLevel",
+    "compat.eclipticseasons.inner.MixinTeaconMapChecker",
+    "compat.eclipticseasons.inner.MixinTeaconSolarDataManager",
+    "compat.eclipticseasons.inner.MixinTeaconWeatherManager"
   ],
   "client": [
     "client.ItemBlockRenderTypes",
@@ -39,6 +44,8 @@
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
+    "compat.eclipticseasons.client.MixinTeaconClientLevel",
+    "compat.eclipticseasons.client.MixinTeaconLevelRender",
     "compat.embeddium.MixinBlockRender2",
     "compat.sodium.MixinAbstractBlockRenderContext",
     "compat.sodium.MixinNeoForgeModelAccess"
