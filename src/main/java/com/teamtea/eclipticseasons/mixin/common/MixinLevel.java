@@ -1,11 +1,15 @@
 package com.teamtea.eclipticseasons.mixin.common;
 
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import com.teamtea.eclipticseasons.misc.vanilla.VanillaWeather;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -48,6 +52,16 @@ public class MixinLevel {
         }
     }
 
+    /**
+     * 当使用原版天气时需要判断
+     * **/
+    @WrapOperation(
+            method = "isRainingAt",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
+    )
+    private Biome.Precipitation ecliptic$isRainingAt_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
+        return VanillaWeather.replacePrecipitationIfNeed((Level) (Object) this, biome, original.call(biome, pos));
+    }
 
     @Inject(at = {@At("HEAD")}, method = {"isThundering"}, cancellable = true)
     private void ecliptic$isThundering(CallbackInfoReturnable<Boolean> cir) {

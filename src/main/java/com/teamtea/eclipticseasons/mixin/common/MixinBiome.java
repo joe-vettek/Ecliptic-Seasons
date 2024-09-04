@@ -4,11 +4,10 @@ package com.teamtea.eclipticseasons.mixin.common;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import com.teamtea.eclipticseasons.misc.vanilla.VanillaWeather;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,12 +17,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin({Biome.class})
 public abstract class MixinBiome {
 
+    /**
+     * 由于我们已经处理了可能的情况，因此不需要具体修改预测，
+     **/
     // TODO：这里需要走一下判断是在客户端还是服务器
     @Inject(at = {@At("HEAD")}, method = {"getPrecipitationAt"}, cancellable = true)
-    public void ecliptic$getPrecipitationAt(BlockPos p_198905_, CallbackInfoReturnable<Biome.Precipitation> cir) {
+    public void ecliptic$getPrecipitationAt(BlockPos pos, CallbackInfoReturnable<Biome.Precipitation> cir) {
         // if (FMLLoader.getDist() == Dist.DEDICATED_SERVER)
         if (ServerConfig.Debug.useSolarWeather.get())
-            cir.setReturnValue(WeatherManager.getPrecipitationAt((Biome) (Object) this, p_198905_));
+            cir.setReturnValue(WeatherManager.getPrecipitationAt((Biome) (Object) this, pos));
+        else {
+            cir.setReturnValue(VanillaWeather.handlePrecipitationat((Biome) (Object) this, pos));
+        }
+
+
     }
 
     @Inject(at = {@At("HEAD")}, method = {"getBaseTemperature"}, cancellable = true)
@@ -36,6 +43,12 @@ public abstract class MixinBiome {
     @Deprecated
     public abstract float getTemperature(BlockPos p_47506_);
 
+
+    @Shadow
+    public abstract boolean hasPrecipitation();
+
+    @Shadow
+    public abstract boolean coldEnoughToSnow(BlockPos pPos);
 
     @Inject(at = {@At("HEAD")}, method = {"warmEnoughToRain"}, cancellable = true)
     public void ecliptic$warmEnoughToRain(BlockPos p_198905_, CallbackInfoReturnable<Boolean> cir) {

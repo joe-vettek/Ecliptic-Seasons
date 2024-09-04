@@ -4,7 +4,7 @@ import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 
 import java.time.LocalDate;
 
-public class SolarTermCalculator {
+public class TeaconSolarTermCalculator {
 
     public static SolarTerm getNowTerm() {
         LocalDate currentDate = LocalDate.now();

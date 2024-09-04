@@ -28,6 +28,7 @@
     "compat.eclipticseasons.common.MixinTeaconServerLevel",
     "compat.eclipticseasons.inner.MixinTeaconMapChecker",
     "compat.eclipticseasons.inner.MixinTeaconSolarDataManager",
+    "compat.eclipticseasons.inner.MixinTeaconVanillaWeather",
     "compat.eclipticseasons.inner.MixinTeaconWeatherManager"
   ],
   "client": [

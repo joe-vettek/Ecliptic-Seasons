@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.inner;
 
 
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
-import com.teamtea.eclipticseasons.misc.teacon.CheckTool;
+import com.teamtea.eclipticseasons.misc.teacon.TeaconCheckTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.Level;
@@ -18,9 +18,9 @@ public class MixinTeaconMapChecker {
 
     @Inject(at = {@At("HEAD")}, method = {"getSurfaceBiome"}, cancellable = true)
     private static void teacon$getSnowDepthAtBiome(Level level, BlockPos pos, CallbackInfoReturnable<Holder<Biome>> cir) {
-        if (CheckTool.isValidPos(level, pos)) {
+        if (TeaconCheckTool.isValidPos(level, pos)) {
             level.registryAccess().holder(Biomes.PLAINS).ifPresent(cir::setReturnValue);
-        } else if (CheckTool.isValidLevel(level)) {
+        } else if (TeaconCheckTool.isValidLevel(level)) {
             level.registryAccess().holder(Biomes.THE_VOID).ifPresent(cir::setReturnValue);
         }
     }

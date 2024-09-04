@@ -4,15 +4,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLLoader;
+
+import java.io.File;
 
 
-public class CheckTool {
+public class TeaconCheckTool {
+
+    public static boolean teacon = System.getenv("TEACON_DEDICATED_SERVER") != null;
+
+    static {
+        if (!teacon)
+            teacon = new File("config/eclipticseasons-teacon.toml").exists();
+    }
+
     public static boolean isOnTeaconServer() {
-        if (FMLLoader.getDist() == Dist.DEDICATED_SERVER)
-            return System.getenv("TEACON_DEDICATED_SERVER") != null;
-        return true;
+        // Minecraft.getInstance().getCurrentServer().motd
+        // if (FMLLoader.getDist() == Dist.DEDICATED_SERVER)
+        //     return System.getenv("TEACON_DEDICATED_SERVER") != null;
+        // return teacon;
+        return teacon;
     }
 
     public static boolean isValidLevel(Level level) {

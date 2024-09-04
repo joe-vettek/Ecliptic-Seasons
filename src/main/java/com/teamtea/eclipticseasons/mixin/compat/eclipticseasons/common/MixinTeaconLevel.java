@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.common;
 
 
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import com.teamtea.eclipticseasons.misc.teacon.CheckTool;
+import com.teamtea.eclipticseasons.misc.teacon.TeaconCheckTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -17,7 +17,7 @@ public class MixinTeaconLevel {
     @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)
     private void teacon$isRainingAt(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof ServerLevel serverLevel) {
-            if (CheckTool.isValidPos((Level) (Object) this, blockPos))
+            if (TeaconCheckTool.isValidPos((Level) (Object) this, blockPos))
                 cir.setReturnValue(WeatherManager.isRainingAt(serverLevel, blockPos));
         }
     }

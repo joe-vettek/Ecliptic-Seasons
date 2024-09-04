@@ -21,13 +21,16 @@ public abstract class MixinClientLevelChunk {
     @Final
     private Level level;
 
-    // 目前还不能发现动态树叶的更新
+    /**
+     * TODO:是否应该迁移到服务器上呢，目前还是未知的
+     * **/
     @Inject(
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/Heightmap;update(IIILnet/minecraft/world/level/block/state/BlockState;)Z", ordinal = 1),
             method = "setBlockState", locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
-    public void ecliptic$setBlockState(BlockPos pos, BlockState state, boolean p_62867_, CallbackInfoReturnable<BlockState> cir) {
-        if (level instanceof ClientLevel clientLevel) {
+    public void ecliptic$Client_setBlockState(BlockPos pos, BlockState state, boolean p_62867_, CallbackInfoReturnable<BlockState> cir) {
+        if (level instanceof ClientLevel clientLevel)
+        {
             MapChecker.getHeightOrUpdate(clientLevel, pos, true);
         }
     }

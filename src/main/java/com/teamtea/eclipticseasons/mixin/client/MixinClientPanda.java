@@ -18,7 +18,7 @@ public class MixinClientPanda {
             method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
-    private boolean ecliptic$tick(Level instance, Operation<Boolean> original) {
+    private boolean ecliptic$Client_tick(Level instance, Operation<Boolean> original) {
         if (ServerConfig.Debug.useSolarWeather.get())
             if (instance instanceof ClientLevel clientLevel)
                 return ClientWeatherChecker.isThunderAt(clientLevel, ((Panda) (Object) this).blockPosition());
@@ -29,7 +29,7 @@ public class MixinClientPanda {
             method = "isScared",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
-    private boolean ecliptic$isScared(Level instance, Operation<Boolean> original) {
+    private boolean ecliptic$Client_isScared(Level instance, Operation<Boolean> original) {
         if (ServerConfig.Debug.useSolarWeather.get())
             if (instance instanceof ClientLevel clientLevel)
                 return ClientWeatherChecker.isThunderAt(clientLevel, ((Panda) (Object) this).blockPosition());

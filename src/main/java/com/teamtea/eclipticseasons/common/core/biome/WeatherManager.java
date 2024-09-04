@@ -15,6 +15,7 @@ import com.teamtea.eclipticseasons.common.network.EmptyMessage;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import com.teamtea.eclipticseasons.misc.vanilla.VanillaWeather;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -34,7 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
@@ -211,6 +211,7 @@ public class WeatherManager {
         return null;
     }
 
+
     public static Biome.Precipitation getPrecipitationAt(Biome biome, BlockPos pos) {
         return getPrecipitationAt(null, biome, pos);
     }
@@ -222,7 +223,7 @@ public class WeatherManager {
             level = ClientCon.useLevel;
         }
         if (level != null) {
-            var oldBiome=biome;
+            var oldBiome = biome;
             biome = MapChecker.getSurfaceBiome(level, pos).value();
         }
 
@@ -353,56 +354,60 @@ public class WeatherManager {
     public static void runWeather(ServerLevel level, BiomeWeather biomeWeather, RandomSource random, int size) {
         if (!biomeWeather.biomeHolder.value().hasPrecipitation())
             return;
-        if (biomeWeather.shouldClear()) {
-            biomeWeather.clearTime--;
-        } else {
-            if (biomeWeather.shouldRain()) {
-                biomeWeather.rainTime--;
-                if (!biomeWeather.shouldThunder()) {
+        boolean isEcliptic = VanillaWeather.canRunSpecialWeather();
+        if (isEcliptic) {
+            if (biomeWeather.shouldClear()) {
+                biomeWeather.clearTime--;
+            } else {
+                if (biomeWeather.shouldRain()) {
+                    biomeWeather.rainTime--;
+                    if (!biomeWeather.shouldThunder()) {
+                        BiomeRain biomeRain = SolarHolders.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+                        float weight = biomeRain.getThunderChance();
+                        if (level.getRandom().nextInt(1000) / 1000.f < weight) {
+                            biomeWeather.thunderTime = ServerLevel.THUNDER_DURATION.sample(random) / size;
+                        }
+                    }
+                } else {
                     BiomeRain biomeRain = SolarHolders.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                    float weight = biomeRain.getThunderChance();
+                    float downfall = biomeWeather.biomeHolder.value().getModifiedClimateSettings().downfall();
+                    if (biomeWeather.biomeHolder.is(BiomeTags.IS_SAVANNA)) {
+                        downfall += 0.2f;
+                    }
+                    float weight = biomeRain.getRainChane()
+                            * Math.max(0.01f, downfall)
+                            * ((ServerConfig.Season.rainChanceMultiplier.get() * 1f) / 100f);
                     if (level.getRandom().nextInt(1000) / 1000.f < weight) {
-                        biomeWeather.thunderTime = ServerLevel.THUNDER_DURATION.sample(random) / size;
+                        biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
+                    } else {
+                        // biomeWeather.clearTime = 10 / (size / 30);
+                        biomeWeather.clearTime = ServerLevel.RAIN_DURATION.sample(random) / size;
                     }
                 }
-            } else {
-                BiomeRain biomeRain = SolarHolders.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                float downfall = biomeWeather.biomeHolder.value().getModifiedClimateSettings().downfall();
-                if (biomeWeather.biomeHolder.is(BiomeTags.IS_SAVANNA)) {
-                    downfall += 0.2f;
-                }
-                float weight = biomeRain.getRainChane()
-                        * Math.max(0.01f, downfall)
-                        * ((ServerConfig.Season.rainChanceMultiplier.get() * 1f) / 100f);
-                if (level.getRandom().nextInt(1000) / 1000.f < weight) {
-                    biomeWeather.rainTime = ServerLevel.RAIN_DURATION.sample(random) / size;
-                } else {
-                    // biomeWeather.clearTime = 10 / (size / 30);
-                    biomeWeather.clearTime = ServerLevel.RAIN_DURATION.sample(random) / size;
+            }
+
+            if (biomeWeather.shouldThunder()) {
+                biomeWeather.thunderTime--;
+            }
+            // if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
+            //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
+            //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
+            //     //
+            //     // Ecliptic.logger(biomeWeather,weight) ;
+            // }
+
+
+            if ((biomeWeather.shouldRain() || level.getRandom().nextInt(5) > 1)) {
+                var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder, null);
+                if (snow == SnowRenderStatus.SNOW) {
+                    biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
+                } else if (snow == SnowRenderStatus.SNOW_MELT) {
+                    biomeWeather.snowDepth = (byte) Math.max(0, biomeWeather.snowDepth - 1);
                 }
             }
+        } else {
+            VanillaWeather.runvanillaSnowyWeather(level, biomeWeather, random, size);
         }
-
-        if (biomeWeather.shouldThunder()) {
-            biomeWeather.thunderTime--;
-        }
-        // if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
-        //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-        //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
-        //     //
-        //     // Ecliptic.logger(biomeWeather,weight) ;
-        // }
-
-
-        if ((biomeWeather.shouldRain() || level.getRandom().nextInt(5) > 1)) {
-            var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder, null);
-            if (snow == SnowRenderStatus.SNOW) {
-                biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
-            } else if (snow == SnowRenderStatus.SNOW_MELT) {
-                biomeWeather.snowDepth = (byte) Math.max(0, biomeWeather.snowDepth - 1);
-            }
-        }
-
     }
 
     public static void updateAfterSleep(ServerLevel level, long newTime, long oldDayTime) {

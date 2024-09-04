@@ -16,7 +16,7 @@ public class MixinClientLevel {
 
 
     @Inject(at = {@At("HEAD")}, method = {"isRaining"}, cancellable = true)
-    private void ecliptic$isRaining(CallbackInfoReturnable<Boolean> cir) {
+    private void ecliptic$Client_isRaining(CallbackInfoReturnable<Boolean> cir) {
         if (ServerConfig.Debug.useSolarWeather.get())
             if ((Object) this instanceof ClientLevel clientLevel) {
                 cir.setReturnValue(ClientWeatherChecker.isRain(clientLevel));
@@ -24,7 +24,7 @@ public class MixinClientLevel {
     }
 
     @Inject(at = {@At("HEAD")}, method = {"getRainLevel"}, cancellable = true)
-    private void ecliptic$getRainLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
+    private void ecliptic$Client_getRainLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
         if (ServerConfig.Debug.useSolarWeather.get())
             if ((Object) this instanceof ClientLevel clientLevel) {
                 cir.setReturnValue(ClientWeatherChecker.getRainLevel(clientLevel, p_46723_));
@@ -32,7 +32,7 @@ public class MixinClientLevel {
     }
 
     @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)
-    private void ecliptic$isRainingAt(BlockPos p_46759_, CallbackInfoReturnable<Boolean> cir) {
+    private void ecliptic$Client_isRainingAt(BlockPos p_46759_, CallbackInfoReturnable<Boolean> cir) {
         if (ServerConfig.Debug.useSolarWeather.get())
             if ((Object) this instanceof ClientLevel clientLevel) {
                 cir.setReturnValue(ClientWeatherChecker.isRainingAt(clientLevel, p_46759_));
@@ -49,7 +49,7 @@ public class MixinClientLevel {
 
 
     @Inject(at = {@At("HEAD")}, method = {"getThunderLevel"}, cancellable = true)
-    private void ecliptic$getThunderLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
+    private void ecliptic$Client_getThunderLevel(float p_46723_, CallbackInfoReturnable<Float> cir) {
         if (ServerConfig.Debug.useSolarWeather.get())
             if ((Object) this instanceof ClientLevel clientLevel) {
                 cir.setReturnValue(ClientWeatherChecker.getThunderLevel(clientLevel, p_46723_));

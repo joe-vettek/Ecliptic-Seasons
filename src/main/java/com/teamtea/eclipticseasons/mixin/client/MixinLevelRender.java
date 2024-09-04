@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import com.teamtea.eclipticseasons.misc.vanilla.VanillaWeather;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -94,7 +95,7 @@ public abstract class MixinLevelRender {
     private Biome.Precipitation ecliptic$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         if (ServerConfig.Debug.useSolarWeather.get())
             return WeatherManager.getPrecipitationAt(level, biome, pos);
-        else return original.call(biome, pos);
+        else return VanillaWeather.replacePrecipitationIfNeed(level,biome,original.call(biome, pos));
     }
 
     @WrapOperation(
@@ -104,7 +105,7 @@ public abstract class MixinLevelRender {
     private Biome.Precipitation ecliptic$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         if (ServerConfig.Debug.useSolarWeather.get())
             return WeatherManager.getPrecipitationAt(level, biome, pos);
-        else return original.call(biome, pos);
+        else return VanillaWeather.replacePrecipitationIfNeed(level,biome,original.call(biome, pos));
     }
 
 

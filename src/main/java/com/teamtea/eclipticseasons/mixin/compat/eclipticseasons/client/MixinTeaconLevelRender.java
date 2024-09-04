@@ -7,7 +7,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import com.teamtea.eclipticseasons.misc.teacon.CheckTool;
+import com.teamtea.eclipticseasons.misc.teacon.TeaconCheckTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -44,7 +44,7 @@ public abstract class MixinTeaconLevelRender {
     )
     private float teacon$renderSnowAndRainCheckRain(ClientLevel clientLevel, float pDelta, Operation<Float> original) {
         if (Minecraft.getInstance().player != null) {
-            if (CheckTool.isValidPos(level, minecraft.player.blockPosition()))
+            if (TeaconCheckTool.isValidPos(level, minecraft.player.blockPosition()))
                 return ClientWeatherChecker.getRainLevel(level, 1.0f);
         }
         return original.call(clientLevel, pDelta);
@@ -58,7 +58,7 @@ public abstract class MixinTeaconLevelRender {
     )
     private Biome.Precipitation teacon$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         if (Minecraft.getInstance().player != null) {
-            if (CheckTool.isValidPos(level, minecraft.player.blockPosition()))
+            if (TeaconCheckTool.isValidPos(level, minecraft.player.blockPosition()))
                 return WeatherManager.getPrecipitationAt(level, biome, pos);
         }
         return original.call(biome, pos);
@@ -69,7 +69,7 @@ public abstract class MixinTeaconLevelRender {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
     )
     private Biome.Precipitation teacon$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        if (CheckTool.isValidPos(level, pos))
+        if (TeaconCheckTool.isValidPos(level, pos))
             return WeatherManager.getPrecipitationAt(level, biome, pos);
         else return original.call(biome, pos);
     }
@@ -80,7 +80,7 @@ public abstract class MixinTeaconLevelRender {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;getLightColor(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;)I")
     )
     private int teacon$getAdjustedLightColorForSnow(BlockAndTintGetter pLevel, BlockPos pos, Operation<Integer> original) {
-        if (CheckTool.isValidPos(level, pos)) {
+        if (TeaconCheckTool.isValidPos(level, pos)) {
             final int packedLight = LevelRenderer.getLightColor(pLevel, pos);
             // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
             {
@@ -103,7 +103,7 @@ public abstract class MixinTeaconLevelRender {
     )
     private void teacon$renderSnowAndRain_ModifySnowAmount(LightTexture pLightTexture, float pPartialTick, double pCamX, double pCamY, double pCamZ, CallbackInfo ci, @Local(ordinal = 3) LocalIntRef integerLocalRef) {
         if (Minecraft.getInstance().player != null)
-            if (CheckTool.isValidPos(level, minecraft.player.blockPosition()))
+            if (TeaconCheckTool.isValidPos(level, minecraft.player.blockPosition()))
                 integerLocalRef.set(ClientWeatherChecker.ModifySnowAmount(integerLocalRef.get()));
     }
 }
