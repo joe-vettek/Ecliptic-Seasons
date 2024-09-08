@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.inner;
+package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.teacon.inner;
 
 
 import com.teamtea.eclipticseasons.misc.teacon.TeaconCheckTool;

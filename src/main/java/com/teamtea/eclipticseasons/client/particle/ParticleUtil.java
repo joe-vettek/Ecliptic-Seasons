@@ -17,18 +17,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class ParticleUtil {
     public static void createParticle(ClientLevel clientLevel, int x, int y, int z) {
         if (!ClientConfig.Renderer.particle.get()) return;
-
-        var pos = new BlockPos(x, y, z);
-        // clientLevel.addParticle(ParticleTypes.CHERRY_LEAVES, (double) pos.getX(), (double) pos.getY() - 0.5f, (double) pos.getZ(), 0.0D, 0.0D, 0.0D);
-        // if (clientLevel.getGameTime() % 10 == 0) {
-        //     if (Minecraft.getInstance().cameraEntity instanceof AbstractClientPlayer player) {
-        //         // Ecliptic.logger(player.move(0.0f));
-        //         // clientLevel.addDestroyBlockEffect(pos, clientLevel.getBlockState(pos.below()));
-        //         destroy(clientLevel, pos.above(), clientLevel.getBlockState(pos.below()));
-        //
-        //     }
-        // }
-        // if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN)
         {
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
             var sd = EclipticUtil.getNowSolarTerm(clientLevel).getSeason();
@@ -54,6 +42,7 @@ public class ParticleUtil {
         int i = x + random.nextInt(b) - random.nextInt(b);
         int j = y + random.nextInt(b) - random.nextInt(b);
         int k = z + random.nextInt(b) - random.nextInt(b);
+
         blockpos$mutableblockpos.set(i, j, k);
         BlockState blockstate = clientLevel.getBlockState(blockpos$mutableblockpos);
         if (blockstate.getBlock() instanceof LeavesBlock) {
@@ -68,6 +57,13 @@ public class ParticleUtil {
             )
                 clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
 
+            if (EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SPRING
+                    && EclipticUtil.isDay(clientLevel)
+                    && !clientLevel.isRainingAt(blockpos$mutableblockpos)
+                    && clientLevel.canSeeSky(blockpos$mutableblockpos)
+                    && random.nextInt(5) == 0
+            )
+                clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.BUTTERFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
         }
 
         if (EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN

@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.client;
+package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.teacon.client;
 
 
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;

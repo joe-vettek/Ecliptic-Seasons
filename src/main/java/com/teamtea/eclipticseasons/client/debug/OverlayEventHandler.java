@@ -31,7 +31,7 @@ public final class OverlayEventHandler {
             // if(event.getOverlay().id().getPath().equals("all"))
             {
                 if ((ClientConfig.GUI.debugInfo.get()
-                        || !FMLEnvironment.production
+                        // || !FMLEnvironment.production
                 )
                         &&!Minecraft.getInstance().options.hideGui
                 )

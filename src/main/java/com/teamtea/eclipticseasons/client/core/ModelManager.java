@@ -55,9 +55,7 @@ public class ModelManager {
     public static ModelResourceLocation snow_height2 = mrl("block/snow_height2");
     public static ModelResourceLocation snow_height2_top = mrl("block/snow_height2_top");
     public static ModelResourceLocation grass_flower = mrl("block/grass_flower");
-    public static ModelResourceLocation butterfly1 = mrl("block/butterfly_blue");
-    public static ModelResourceLocation butterfly2 = mrl("block/butterfly_magenta");
-    public static ModelResourceLocation butterfly3 = mrl("block/butterfly_red");
+
 
     public static ModelResourceLocation mrl(String s) {
         return ModelResourceLocation.standalone(EclipticSeasonsMod.rl(s));

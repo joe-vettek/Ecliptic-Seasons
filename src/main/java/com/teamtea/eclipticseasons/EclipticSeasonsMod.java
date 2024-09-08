@@ -3,11 +3,19 @@ package com.teamtea.eclipticseasons;
 
 import com.teamtea.eclipticseasons.api.misc.BasicWeather;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
+import com.teamtea.eclipticseasons.common.advancement.SolarTermsCriterion;
+import com.teamtea.eclipticseasons.common.block.CalendarBlock;
+import com.teamtea.eclipticseasons.common.block.PaperWindmillBlock;
+import com.teamtea.eclipticseasons.common.block.WindChimesBlock;
+import com.teamtea.eclipticseasons.common.block.blockentity.CalendarBlockEntity;
+import com.teamtea.eclipticseasons.common.block.blockentity.PaperWindmillBlockEntity;
+import com.teamtea.eclipticseasons.common.block.blockentity.WindChimesBlockEntity;
 import com.teamtea.eclipticseasons.common.misc.HeatStrokeEffect;
 import com.teamtea.eclipticseasons.compat.CompatModule;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.data.start;
+import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
@@ -17,11 +25,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,6 +49,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 // import xueluoanping.fluiddrawerslegacy.handler.ControllerFluidCapabilityHandler;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -51,20 +61,15 @@ public class EclipticSeasonsMod {
 
     public EclipticSeasonsMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::FMLCommonSetup);
+        modEventBus.addListener(this::FMLCommonSetup);
         modEventBus.addListener(this::gatherData);
 
-        // Register the Deferred Register to the mod event bus so blocks get registered
-        ModContents.ModBlocks.register(modEventBus);
+        ModContents.BLOCK_DEFERRED_REGISTER.register(modEventBus);
+        ModContents.ITEM_DEFERRED_REGISTER.register(modEventBus);
+        ModContents.BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register(modEventBus);
+        ModContents.TRIGGER_DEFERRED_REGISTER.register(modEventBus);
         OtherContents.weathers.register(modEventBus);
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        // NeoForge.EVENT_BUS.register(this);
 
-        // Register the item to a creative tab
-        // modContainer.addListener(this::gatherData);
-        // modContainer.addListener(this::FMLCommonSetup);
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, ServerConfig.SERVER_CONFIG);
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
         if (FMLLoader.getDist() == Dist.CLIENT)
@@ -155,12 +160,14 @@ public class EclipticSeasonsMod {
     public static final class ParticleRegistry {
         public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
         public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
+        public static final SimpleParticleType BUTTERFLY = new SimpleParticleType(false);
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
             event.register(Registries.PARTICLE_TYPE, particleTypeRegisterHelper -> {
                 particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
                 particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
+                particleTypeRegisterHelper.register(rl("butterfly"), BUTTERFLY);
             });
         }
 
@@ -169,26 +176,52 @@ public class EclipticSeasonsMod {
 
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     public static final class EffectRegistry {
+        public static class Effects {
+            public static final ResourceKey<MobEffect> HEAT_STROKE = ResourceKey.create(Registries.MOB_EFFECT, rl("heat_stroke"));
+        }
+
         public static final MobEffect HEAT_STROKE = new HeatStrokeEffect(MobEffectCategory.NEUTRAL, 0xf9d27d);
+
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
-            event.register(Registries.MOB_EFFECT, soundEventRegisterHelper -> {
-                soundEventRegisterHelper.register(rl("heat_stroke"), HEAT_STROKE);
+            event.register(Registries.MOB_EFFECT, helper -> {
+                helper.register(Effects.HEAT_STROKE, HEAT_STROKE);
             });
-
-
         }
-
 
     }
 
     public static class ModContents {
-        public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(Registries.BLOCK, EclipticSeasonsApi.MODID);
-        public static DeferredHolder<Block, Block> snowySlab = ModBlocks.register("snowy_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
-        public static DeferredHolder<Block, Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
-        public static DeferredHolder<Block, Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
-        public static DeferredHolder<Block, Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+        public static final DeferredRegister<Block> BLOCK_DEFERRED_REGISTER = DeferredRegister.create(Registries.BLOCK, EclipticSeasonsApi.MODID);
+        public static final DeferredRegister<Item> ITEM_DEFERRED_REGISTER = DeferredRegister.create(Registries.ITEM, EclipticSeasonsApi.MODID);
+        public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPE_DEFERRED_REGISTER = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, EclipticSeasonsApi.MODID);
+
+
+        public static DeferredHolder<Block, Block> snowySlab = BLOCK_DEFERRED_REGISTER.register("snowy_slab", () -> new SlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
+        public static DeferredHolder<Block, Block> snowyStairs = BLOCK_DEFERRED_REGISTER.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS.defaultBlockState(), BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
+        public static DeferredHolder<Block, Block> snowyBlock = BLOCK_DEFERRED_REGISTER.register("snowy_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+        public static DeferredHolder<Block, Block> snowyLeaves = BLOCK_DEFERRED_REGISTER.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+
+        // calendar 日历
+        public static final DeferredHolder<Block, Block> calendar = BLOCK_DEFERRED_REGISTER.register("calendar", () -> new CalendarBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.DESTROY)));
+        public static final DeferredHolder<Item, BlockItem> calendar_item = ITEM_DEFERRED_REGISTER.register("calendar", () -> new BlockItem(calendar.get(), (new Item.Properties())));
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CalendarBlockEntity>> calendar_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("calendar", () -> BlockEntityType.Builder.of(CalendarBlockEntity::new, ModContents.calendar.get()).build(null));
+
+        // paper_wind_mill 纸风车
+        public static final DeferredHolder<Block, Block> paper_wind_mill = BLOCK_DEFERRED_REGISTER.register("paper_wind_mill", () -> new PaperWindmillBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.DESTROY)));
+        public static final DeferredHolder<Item, BlockItem> paper_wind_mill_item = ITEM_DEFERRED_REGISTER.register("paper_wind_mill", () -> new BlockItem(paper_wind_mill.get(), (new Item.Properties())));
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PaperWindmillBlockEntity>> paper_wind_mill_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("paper_wind_mill", () -> BlockEntityType.Builder.of(PaperWindmillBlockEntity::new, ModContents.paper_wind_mill.get()).build(null));
+
+        // wind_chimes 风铃
+        public static final DeferredHolder<Block, Block> wind_chimes = BLOCK_DEFERRED_REGISTER.register("wind_chimes", () -> new WindChimesBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.DESTROY)));
+        public static final DeferredHolder<Item, BlockItem> wind_chimes_item = ITEM_DEFERRED_REGISTER.register("wind_chimes", () -> new BlockItem(wind_chimes.get(), (new Item.Properties())));
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WindChimesBlockEntity>> wind_chimes_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("wind_chimes", () -> BlockEntityType.Builder.of(WindChimesBlockEntity::new, ModContents.wind_chimes.get()).build(null));
+
+        // advancement
+        public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_DEFERRED_REGISTER = DeferredRegister.create(Registries.TRIGGER_TYPE, EclipticSeasonsApi.MODID);
+        public static final Supplier<SolarTermsCriterion> SOLAR_TERMS = TRIGGER_DEFERRED_REGISTER.register("solar_terms", SolarTermsCriterion::new);
+
     }
 
 

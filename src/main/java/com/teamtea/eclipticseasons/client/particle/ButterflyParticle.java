@@ -31,7 +31,8 @@ public class ButterflyParticle extends FireflyParticle {
         this.spriteSet = spriteSet;
 
         this.isBlink = false;
-        setSpriteFromAge(this.spriteSet);
+        // setSpriteFromAge(this.spriteSet);
+        setSprite(spriteSet.get(level.getRandom()));
     }
 
     @Override
@@ -42,35 +43,51 @@ public class ButterflyParticle extends FireflyParticle {
     @Override
     protected void renderRotatedQuad(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pPartialTicks) {
         float f = this.getQuadSize(pPartialTicks);
-        float f1 = this.getU0();
-        float f2 = this.getU1();
-        float f3 = this.getV0();
-        float f4 = this.getV1();
+        float u0 = this.getU0();
+        float u1 = this.getU1();
+        float v0 = this.getV0();
+        float v1 = this.getV1();
         int i = this.getLightColor(pPartialTicks);
         i = 15728880;
         if (this.age >= this.lifetime * 0.8) {
             i = this.getLightColor(pPartialTicks);
         }
 
-        float ff=System.currentTimeMillis()%4000;
+        float ff = System.currentTimeMillis() % 4000;
 
-        ff= (ff-2000)/2000f;
+        ff = (ff - 2000) / 2000f;
 
+        // pQuaternion=pQuaternion.rotateXYZ(0,0,-Mth.DEG_TO_RAD*90);
         // 主要问题在于枢纽点，后续更换纹理需要更新xoffse和yoffeset
-        pQuaternion = pQuaternion.rotateAxis(ff*45*Mth.DEG_TO_RAD,1,0,0);
-        // pQuaternion = pQuaternion.add( new Quaternionf(0, 0.2f, 0, 0));
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, -0.35f, f, f2, f4, i, 1f);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, .65f, f, f2, f3, i, 1f);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -.35f, .65f, f, f1, f3, i, 1f);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -0.35f, -0.35f, f, f1, f4, i, 1f);
+        // pQuaternion = pQuaternion.rotateAxis(ff*45*Mth.DEG_TO_RAD,1,0,0);
 
-        pQuaternion = pQuaternion.rotateAxis(ff*-90*Mth.DEG_TO_RAD,1,0,0);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, -0.35f, f, f2, f4, i, 1f);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, .65f, .65f, f, f2, f3, i, 1f);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -.35f, .65f, f, f1, f3, i, 1f);
-        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, -0.35f, -0.35f, f, f1, f4, i, 1f);
+        float pXOffset1 = .65f;
+        float pXOffset0 = -0.35f;
+        float pYOffset1 = .65f;
+        float pYOffset0 = -0.35f;
+        pQuaternion=new Quaternionf();
 
+        pQuaternion = pQuaternion.rotateAxis(ff * 45 * Mth.DEG_TO_RAD, 1, 0, 0);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset0, f, u1, v1, i, 1f);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset1, f, u1, v0, i, 1f);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset1, f, u0, v0, i, 1f);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset0, f, u0, v1, i, 1f);
+
+        pQuaternion = pQuaternion.rotateAxis(ff * -90 * Mth.DEG_TO_RAD, 1, 0, 0);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset0, f, u1, v1, i, 1f);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset1, f, u1, v0, i, 1f);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset1, f, u0, v0, i, 1f);
+        this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset0, f, u0, v1, i, 1f);
+// super.renderRotatedQuad(pBuffer, pQuaternion, pX, pY, pZ, pPartialTicks);
     }
 
+    @Override
+    protected void renderVertex(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pXOffset, float pYOffset, float pQuadSize, float pU, float pV, int pPackedLight, float alpha) {
+        super.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset, pYOffset, pQuadSize, pU, pV, pPackedLight, alpha);
+    }
 
+    @Override
+    public void tick() {
+        super.tick();
+    }
 }

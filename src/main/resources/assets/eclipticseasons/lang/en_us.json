@@ -68,7 +68,6 @@
     "info.teastory.environment.solar_term.alternation.winter_solstice": "Shadows become longer. The endless long night comes.",
     "info.teastory.environment.solar_term.alternation.lesser_cold": "Severe cold in the depth of winter.",
     "info.teastory.environment.solar_term.alternation.greater_cold": "Winds died away, but icy coldness still.",
-    "info.teastory.record": "You haven't installed Record Resources Pack",
     "commands.teastory.solar.set": "Set the solar day to %s",
     "effect.eclipticseasons.heat_stroke": "Heat Stroke"
 }

@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.common;
+package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.teacon.common;
 
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -64,7 +64,7 @@ public abstract class MixinTeaconServerLevel extends Level {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z")
     )
     private boolean teacon$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-               if (TeaconCheckTool.isValidPos(this, levelChunk))
+        if (TeaconCheckTool.isValidPos(this, levelChunk))
             return true;
         else return original.call(serverLevel);
     }

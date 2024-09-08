@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -57,7 +58,8 @@ public class ClientWeatherChecker {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
             var pos = player.getOnPos();
-            for (BlockPos blockPos : List.of(pos.east(4), pos.north(4), pos.south(4), pos.west(4))) {
+            int offset=64;
+            for (BlockPos blockPos : List.of(pos.east(offset), pos.north(offset), pos.south(offset), pos.west(offset))) {
                 // var standBiome = clientLevel.getBiome(blockPos);
                 var standBiome = MapChecker.getSurfaceBiome(clientLevel, blockPos);
 
@@ -70,6 +72,7 @@ public class ClientWeatherChecker {
             if (changeTime > 0) {
                 changeTime--;
                 if (lastBiomeRainLevel >= 0 && !isNear(rainLevel, lastBiomeRainLevel, 0.01f)) {
+                    // rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
                     rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
                 }
                 // else
@@ -78,6 +81,7 @@ public class ClientWeatherChecker {
                     // EclipticSeasonsMod.logger(lastBiomeRainLevel,rainLevel);
                 }
 
+                lastBiomeRainLevel=     Mth.clamp(rainLevel, 0.0F, 1.0F);
 
             } else {
                 if (rainLevel != lastBiomeRainLevel) {

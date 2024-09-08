@@ -14,12 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientLevel.class)
 public abstract class MixinClientClientLevel {
-
-
-    @Shadow
-    public abstract void addParticle(ParticleOptions p_104706_, double p_104707_, double p_104708_, double p_104709_, double p_104710_, double p_104711_, double p_104712_);
-
-
     @Shadow
     public abstract void addDestroyBlockEffect(BlockPos p_171667_, BlockState p_171668_);
 

@@ -48,9 +48,9 @@ public class BiomeClimateManager {
         boolean isServer = level instanceof ServerLevel;
         level.registryAccess().registry(Registries.BIOME).ifPresent(biomeRegistry -> biomeRegistry.forEach(biome ->
         {
-            var temperature = BiomeClimateManager.getDefaultTemperature(biome, isServer) > SNOW_LEVEL ?
-                    Math.max(SNOW_LEVEL + 0.001F, BiomeClimateManager.getDefaultTemperature(biome, isServer) + solarTermIndex.getTemperatureChange()) :
-                    Math.min(SNOW_LEVEL, BiomeClimateManager.getDefaultTemperature(biome, isServer) + solarTermIndex.getTemperatureChange());
+            var temperature = biome.getModifiedClimateSettings().temperature() > SNOW_LEVEL ?
+                    Math.max(SNOW_LEVEL + 0.001F, biome.getModifiedClimateSettings().temperature()+ solarTermIndex.getTemperatureChange()) :
+                    Math.min(SNOW_LEVEL,biome.getModifiedClimateSettings().temperature() + solarTermIndex.getTemperatureChange());
             if (isServer) {
                 BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, temperature);
             } else {

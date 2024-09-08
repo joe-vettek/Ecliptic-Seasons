@@ -21,7 +21,6 @@ public class TeaconCheckTool {
         // Minecraft.getInstance().getCurrentServer().motd
         // if (FMLLoader.getDist() == Dist.DEDICATED_SERVER)
         //     return System.getenv("TEACON_DEDICATED_SERVER") != null;
-        // return teacon;
         return teacon;
     }
 

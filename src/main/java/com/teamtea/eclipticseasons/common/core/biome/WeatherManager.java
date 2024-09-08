@@ -340,7 +340,7 @@ public class WeatherManager {
                                     }
                                 }
                             }
-                            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasonsMod.EffectRegistry.HEAT_STROKE)).get();
+                            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
                             // !player.hasEffect(holder) &&
                             if (!isColdHe) {
                                 player.addEffect(new MobEffectInstance(holder, 600));

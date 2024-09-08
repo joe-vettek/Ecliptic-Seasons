@@ -18,7 +18,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 
-public class ClientRenderer {
+public class WorldRenderer {
     public static long reMainTick = 0;
 
     private static float getProgress(boolean fadeIn) {
@@ -35,7 +35,7 @@ public class ClientRenderer {
     public static void applyEffect(GameRenderer gameRenderer, LocalPlayer player) {
         if (player == null) return;
 
-        var holder = BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(EclipticSeasonsMod.EffectRegistry.HEAT_STROKE)).get();
+        var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
 
         int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
         if (blurStatus != oldBlurStatus) {

@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.common;
+package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.teacon.common;
 
 
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;

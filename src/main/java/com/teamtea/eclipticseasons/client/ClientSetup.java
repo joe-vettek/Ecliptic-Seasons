@@ -2,8 +2,12 @@ package com.teamtea.eclipticseasons.client;
 
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
+import com.teamtea.eclipticseasons.client.particle.ButterflyParticle;
 import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.client.particle.WildGooseParticle;
+import com.teamtea.eclipticseasons.client.render.ber.CalendarBlockEntityRenderer;
+import com.teamtea.eclipticseasons.client.render.ber.PaperWindmillBlockEntityRenderer;
+import com.teamtea.eclipticseasons.client.render.ber.WindChimesBlockEntityRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -40,6 +44,10 @@ public class ClientSetup {
         event.registerSpriteSet(EclipticSeasonsMod.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new WildGooseParticle(level, x, y, z,0.01,0.01,0.01, p_277215_));
+        event.registerSpriteSet(EclipticSeasonsMod.ParticleRegistry.BUTTERFLY, (p_277215_) ->
+                (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
+                        new ButterflyParticle(level, x, y, z, p_277215_));
+
     }
 
     @SubscribeEvent
@@ -59,9 +67,6 @@ public class ClientSetup {
         event.register(ModelManager.snow_height2);
         event.register(ModelManager.snow_height2_top);
         event.register(ModelManager.grass_flower);
-        event.register(ModelManager.butterfly1);
-        event.register(ModelManager.butterfly2);
-        event.register(ModelManager.butterfly3);
     }
 
     @SubscribeEvent
@@ -79,14 +84,11 @@ public class ClientSetup {
         });
     }
 
-    //    注意static是单次，比如启动类，没有比如右击事件
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // FluidDrawersLegacyMod.logger("Register Renderer");
-        // ModContents.DRBlockEntities.getEntries().forEach((reg) -> {
-        //     event.registerBlockEntityRenderer((BlockEntityType<BlockEntityFluidDrawer>)reg.get(),
-        //             TESRFluidDrawer::new);
-        // });
+        event.registerBlockEntityRenderer(EclipticSeasonsMod.ModContents.calendar_entity_type.get(), CalendarBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(EclipticSeasonsMod.ModContents.paper_wind_mill_entity_type.get(), PaperWindmillBlockEntityRenderer::new);
+        event.registerBlockEntityRenderer(EclipticSeasonsMod.ModContents.wind_chimes_entity_type.get(), WindChimesBlockEntityRenderer::new);
     }
 
     // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
@@ -99,26 +101,12 @@ public class ClientSetup {
 
         ModelManager.quadMap.clear();
         ModelManager.quadMap_1.clear();
-        // net.minecraft.client.resources.model.ModelManager.reload
-        // p_251134_.listPacks().toList().get(0).getResource(PackType.CLIENT_RESOURCES, completablefuture.get().entrySet().stream().toList().get(0).getKey()).get().readAllBytes()
-        // p_251134_.listPacks().toList().get(1).getResource(PackType.CLIENT_RESOURCES, Ecliptic.rl("textures/block/icon.png")).get().readAllBytes()
-
-        // for (Map.Entry<ResourceKey<Block>, Block> resourceKeyBlockEntry : BuiltInRegistries.BLOCK.entrySet()) {
-        //     Block block = resourceKeyBlockEntry.getValue();
-        //     for (BlockState state : block.getStateDefinition().getPossibleStates()) {
-        //         for (Direction direction : List.of(Direction.UP, Direction.NORTH, Direction.WEST, Direction.SOUTH, Direction.EAST, Direction.DOWN)) {
-        //     }
-        // }
-
-        // models.entrySet().stream().filter(e->e.getKey().namespace.equals(Ecliptic.MODID)&&e.getKey().toString().contains("slab")).toList();
-
     }
 
     @SubscribeEvent
     public static void onRegisterColorHandlersEvent_Block(RegisterColorHandlersEvent.Block event) {
         // BlockState birchLeaves = Blocks.BIRCH_LEAVES.defaultBlockState();
         // BlockColors blockColors = event.getBlockColors();
-
 
         event.register((state, blockAndTintGetter, pos, i) -> {
             if (i == 1) {

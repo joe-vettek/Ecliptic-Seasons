@@ -2,6 +2,9 @@ package com.teamtea.eclipticseasons.data;
 
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
+import com.teamtea.eclipticseasons.data.advancement.Advancements;
+import com.teamtea.eclipticseasons.data.advancement.FDAdvancementGenerator;
+import com.teamtea.eclipticseasons.data.loot.EclipticSeasonsLootTableProvider;
 import com.teamtea.eclipticseasons.data.tag.TagsDataProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -25,7 +28,8 @@ public class start {
             EclipticSeasonsMod.logger("Generate We Data!!!");
 
             generator.addProvider(event.includeServer(),new TagsDataProvider(packOutput,lookupProvider,MODID,helper));
-
+            generator.addProvider(event.includeServer(),new Advancements(packOutput,lookupProvider,helper));
+            generator.addProvider(event.includeServer(),new EclipticSeasonsLootTableProvider(packOutput,lookupProvider));
         }
         if (event.includeClient()) {
 
