@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 
-@Mixin(LevelRenderer.class)
+@Mixin(value = LevelRenderer.class,priority = 2000)
 public abstract class MixinTeaconLevelRender {
 
 

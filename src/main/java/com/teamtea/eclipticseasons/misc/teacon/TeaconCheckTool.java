@@ -13,6 +13,11 @@ public class TeaconCheckTool {
     public static boolean teacon = System.getenv("TEACON_DEDICATED_SERVER") != null;
 
     static {
+        updateCheck();
+    }
+
+    public static void updateCheck() {
+        teacon = System.getenv("TEACON_DEDICATED_SERVER") != null;
         if (!teacon)
             teacon = new File("config/eclipticseasons-teacon.toml").exists();
     }

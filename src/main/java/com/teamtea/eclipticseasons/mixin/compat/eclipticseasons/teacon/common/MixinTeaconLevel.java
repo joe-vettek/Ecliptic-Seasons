@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Level.class)
+@Mixin(value = Level.class,priority = 2000)
 public class MixinTeaconLevel {
 
     @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)

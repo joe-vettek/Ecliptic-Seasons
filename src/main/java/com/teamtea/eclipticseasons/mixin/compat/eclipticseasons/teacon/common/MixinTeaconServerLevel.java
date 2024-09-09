@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.function.Supplier;
 
-@Mixin({ServerLevel.class})
+@Mixin(value = ServerLevel.class,priority = 2000)
 public abstract class MixinTeaconServerLevel extends Level {
 
     protected MixinTeaconServerLevel(WritableLevelData p_270739_, ResourceKey<Level> p_270683_, RegistryAccess p_270200_, Holder<DimensionType> p_270240_, Supplier<ProfilerFiller> p_270692_, boolean p_270904_, boolean p_270470_, long p_270248_, int p_270466_) {

@@ -42,6 +42,7 @@ public class ClientConfig
         public static ModConfigSpec.BooleanValue deeperSnow;
         public static ModConfigSpec.BooleanValue underSnow;
         public static ModConfigSpec.BooleanValue particle;
+        public static ModConfigSpec.IntValue offset;
 
         private static void load(ModConfigSpec.Builder builder)
         {
@@ -58,6 +59,8 @@ public class ClientConfig
                     .define("UnderSnow", false);
             particle = builder.comment("Particle.")
                     .define("Particle", true);
+            offset = builder.comment("Offset.")
+                    .defineInRange("Offset", 16,1,80);
             builder.pop();
         }
     }

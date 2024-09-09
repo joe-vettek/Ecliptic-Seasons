@@ -38,6 +38,9 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.WeatherCheck;
 import net.neoforged.neoforge.common.util.FakePlayer;
 
 import java.util.*;
@@ -444,6 +447,30 @@ public class WeatherManager {
 
         }
         WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(serverPlayer.level()), List.of(serverPlayer));
+    }
+
+    public static boolean testWeatherCheck(LootContext pContext, WeatherCheck weatherCheck) {
+        boolean needThunder= weatherCheck.isThundering().isPresent();
+        boolean needRain= weatherCheck.isRaining().isPresent();
+        if(needThunder){
+            var pos=pContext.getParamOrNull(LootContextParams.ORIGIN);
+            if(pos!=null) {
+                boolean isThunderAt = isThunderAt(pContext.getLevel(), new BlockPos((int) pos.x, (int) pos.y+1, (int) pos.z));
+                if (weatherCheck.isThundering().get() !=isThunderAt){
+                    return false;
+                }
+            }
+        }
+        if(needRain){
+            var pos=pContext.getParamOrNull(LootContextParams.ORIGIN);
+            if(pos!=null) {
+                boolean isRainingAt = isRainingAt(pContext.getLevel(), new BlockPos((int) pos.x, (int) pos.y+1, (int) pos.z));
+                if (weatherCheck.isRaining().get() !=isRainingAt){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 

@@ -1,5 +1,6 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -151,31 +152,16 @@ public class MapChecker {
 
     // TODO:感觉用随机表性能更高
     public static boolean shouldSnowAt(Level level, BlockPos pos, BlockState state, RandomSource random, long seed) {
-        // biome =   level.getBiome(pos);
-        // var biome = ServerConfig.Season.biomeDetectNoise.get() ?
-        //         level.getBiome(pos) :
-        //         level.getNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2);
-
-        // var biomeList = WeatherManager
-        //         .getBiomeList(level);
-        //
-        // if (biomeList != null) {
-        //     int id = getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME);
-        //     if (id < biomeList.size()) {
-        //
-        //     }
-        // }
         var biomeHolder = getSurfaceBiome(level, pos);
         if (WeatherManager.getSnowDepthAtBiome(level, biomeHolder.value()) > Math.abs(seed % 100)) {
             return true;
         }
-
         return false;
-        // >= random.nextInt(100));
     }
 
     public static boolean isSmallBiome(Holder<Biome> biomeHolder) {
-        return biomeHolder.is(Tags.Biomes.IS_RIVER) || biomeHolder.is(Tags.Biomes.IS_BEACH);
+        return biomeHolder.is(Tags.Biomes.IS_RIVER)
+                || biomeHolder.is(Tags.Biomes.IS_BEACH);
     }
 
     public static Holder<Biome> idToBiome(Level level, int id) {
@@ -184,24 +170,22 @@ public class MapChecker {
         return
                 list != null ?
                         list.get(id).biomeHolder :
-                        level.registryAccess().registry(Registries.BIOME).get().getHolder(Biomes.THE_VOID).get();
+                        level.registryAccess().registry(Registries.BIOME).get().getHolder(id).get();
     }
 
     public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
-
-
-        var holde = idToBiome(level,getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME));
+        var biomeHolder = idToBiome(level,getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME));
         int i = 0;
-        while (isSmallBiome(holde)) {
+        while (isSmallBiome(biomeHolder)) {
             i += 2;
             for (Direction direction : Direction.Plane.HORIZONTAL) {
-                holde = idToBiome(level,getHeightOrUpdate(level, pos.relative(direction, i), false, ChunkHeightMap.TYPE_BIOME));
-                if (!isSmallBiome(holde)) {
+                biomeHolder = idToBiome(level,getHeightOrUpdate(level, pos.relative(direction, i), false, ChunkHeightMap.TYPE_BIOME));
+                if (!isSmallBiome(biomeHolder)) {
                     break;
                 }
             }
         }
-        return holde;
+        return biomeHolder;
     }
 
     // 获取chunk内部位置

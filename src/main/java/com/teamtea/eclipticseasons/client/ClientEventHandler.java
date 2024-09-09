@@ -112,7 +112,7 @@ public final class ClientEventHandler {
     public static void onWorldTick(LevelTickEvent.Post event) {
         if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
             if (event.getLevel().isClientSide()
-                    && event.getLevel().getGameTime() % 16 == 0) {
+                    && event.getLevel().getGameTime() % (20*10) == 0) {
                 var lr = Minecraft.getInstance().levelRenderer;
                 if (lr != null && lr.viewArea != null) {
                     // if (lr.visibleSections.size() < lr.viewArea.sections.length)

@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.client.core;
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
+import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -58,7 +59,7 @@ public class ClientWeatherChecker {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
             var pos = player.getOnPos();
-            int offset=64;
+            int offset= ClientConfig.Renderer.offset.getAsInt();
             for (BlockPos blockPos : List.of(pos.east(offset), pos.north(offset), pos.south(offset), pos.west(offset))) {
                 // var standBiome = clientLevel.getBiome(blockPos);
                 var standBiome = MapChecker.getSurfaceBiome(clientLevel, blockPos);
