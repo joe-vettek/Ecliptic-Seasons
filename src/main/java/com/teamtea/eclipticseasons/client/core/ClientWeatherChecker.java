@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
@@ -181,7 +182,16 @@ public class ClientWeatherChecker {
 
     // 0-》15
     public static int ModifySnowAmount(int constant) {
-        return (int) (constant* lastBiomeRainLevel);
+        return (int) (constant * lastBiomeRainLevel);
+    }
+
+    public static float modifyVolume(SoundEvent soundEvent, float pVolume) {
+        return pVolume * lastBiomeRainLevel*0.55f;
+    }
+
+    public static float modifyPitch(SoundEvent soundEvent, float pPitch) {
+        return pPitch * lastBiomeRainLevel;
+        // return pPitch;
     }
 
     // public static Boolean hasPrecipitation(Biome biome) {

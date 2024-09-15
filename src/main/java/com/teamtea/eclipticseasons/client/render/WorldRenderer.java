@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.client.render;
 
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.ClientEventHandler;
+import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -35,36 +36,47 @@ public class WorldRenderer {
     public static void applyEffect(GameRenderer gameRenderer, LocalPlayer player) {
         if (player == null) return;
 
-        var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
+        if (Minecraft.getInstance().isPaused()) {
+            if (oldBlurStatus == ON_BLUR || reMainTick > 0) {
+                gameRenderer.shutdownEffect();
+                oldBlurStatus = NONE_BLUR;
+                reMainTick = 0;
+                updateUniform("Progress", 0f);
 
-        int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
-        if (blurStatus != oldBlurStatus) {
-            if (blurStatus == ON_BLUR) {
-                {
-                    gameRenderer.loadEffect(EclipticSeasonsMod.rl("shaders/post/fade_in_blur.json"));
+            }
+            return;
+        }
+
+        if (ClientConfig.Renderer.effect.get()) {
+            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
+
+            int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
+            if (blurStatus != oldBlurStatus) {
+                if (blurStatus == ON_BLUR) {
+                    {
+                        gameRenderer.loadEffect(EclipticSeasonsMod.rl("shaders/post/fade_in_blur.json"));
+                    }
                 }
-            }
 
-            if (reMainTick > 0) {
-                reMainTick--;
-            } else reMainTick = 100;
+                if (reMainTick > 0) {
+                    reMainTick--;
+                } else reMainTick = 100;
 
-            float progress = getProgress(blurStatus == ON_BLUR) * 0.03f;
-            // if (progress != prevProgress)
-            {
-                // prevProgress = progress;
-                updateUniform("Progress", progress);
-            }
-            // EclipticSeasons.logger(reMainTick, progress, blurStatus, oldBlurStatus);
-            if (reMainTick == 0) {
-                oldBlurStatus = blurStatus;
-                if (oldBlurStatus == NONE_BLUR) {
-                    gameRenderer.shutdownEffect();
+                float progress = getProgress(blurStatus == ON_BLUR) * 0.03f;
+                // if (progress != prevProgress)
+                {
+                    // prevProgress = progress;
+                    updateUniform("Progress", progress);
+                }
+                // EclipticSeasons.logger(reMainTick, progress, blurStatus, oldBlurStatus);
+                if (reMainTick == 0) {
+                    oldBlurStatus = blurStatus;
+                    if (oldBlurStatus == NONE_BLUR) {
+                        gameRenderer.shutdownEffect();
+                    }
                 }
             }
         }
-
-
     }
 
     public static void updateUniform(String name, float value) {

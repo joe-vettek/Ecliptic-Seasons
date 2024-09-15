@@ -15,6 +15,8 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Final;
@@ -95,7 +97,7 @@ public abstract class MixinLevelRender {
     private Biome.Precipitation ecliptic$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         if (ServerConfig.Debug.useSolarWeather.get())
             return WeatherManager.getPrecipitationAt(level, biome, pos);
-        else return VanillaWeather.replacePrecipitationIfNeed(level,biome,original.call(biome, pos));
+        else return VanillaWeather.replacePrecipitationIfNeed(level, biome, original.call(biome, pos));
     }
 
     @WrapOperation(
@@ -105,7 +107,7 @@ public abstract class MixinLevelRender {
     private Biome.Precipitation ecliptic$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
         if (ServerConfig.Debug.useSolarWeather.get())
             return WeatherManager.getPrecipitationAt(level, biome, pos);
-        else return VanillaWeather.replacePrecipitationIfNeed(level,biome,original.call(biome, pos));
+        else return VanillaWeather.replacePrecipitationIfNeed(level, biome, original.call(biome, pos));
     }
 
 
@@ -114,20 +116,21 @@ public abstract class MixinLevelRender {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;getLightColor(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;)I")
     )
     private int ecliptic$getAdjustedLightColorForSnow(BlockAndTintGetter pLevel, BlockPos pos, Operation<Integer> original) {
-        if (ServerConfig.Debug.useSolarWeather.get()) {
-            final int packedLight = LevelRenderer.getLightColor(pLevel, pos);
-            // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
-            {
-                // Adjusts the light color via a heuristic that mojang uses to make snow appear more white
-                // This targets both paths, but since we always use the rain rendering, it's fine.
-                final int lightU = packedLight & 0xffff;
-                final int lightV = (packedLight >> 16) & 0xffff;
-                final int brightLightU = (lightU * 3 + 240) / 4;
-                final int brightLightV = (lightV * 3 + 240) / 4;
-                return brightLightU | (brightLightV << 16);
-            }
-            // return packedLight;
-        } else return original.call(pLevel, pos);
+        // if (ServerConfig.Debug.useSolarWeather.get()) {
+        //     final int packedLight = LevelRenderer.getLightColor(pLevel, pos);
+        //     // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
+        //     {
+        //         // Adjusts the light color via a heuristic that mojang uses to make snow appear more white
+        //         // This targets both paths, but since we always use the rain rendering, it's fine.
+        //         final int lightU = packedLight & 0xffff;
+        //         final int lightV = (packedLight >> 16) & 0xffff;
+        //         final int brightLightU = (lightU * 3 + 240) / 4;
+        //         final int brightLightV = (lightV * 3 + 240) / 4;
+        //         return brightLightU | (brightLightV << 16);
+        //     }
+        //     // return packedLight;
+        // } else
+        return original.call(pLevel, pos);
     }
 
 
@@ -147,5 +150,17 @@ public abstract class MixinLevelRender {
     private void ecliptic$renderSnowAndRain_ModifySnowAmount(LightTexture pLightTexture, float pPartialTick, double pCamX, double pCamY, double pCamZ, CallbackInfo ci, @Local(ordinal = 3) LocalIntRef integerLocalRef) {
         if (ServerConfig.Debug.useSolarWeather.get())
             integerLocalRef.set(ClientWeatherChecker.ModifySnowAmount(integerLocalRef.get()));
+    }
+
+    @WrapOperation(
+            method = "tickRain",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;playLocalSound(Lnet/minecraft/core/BlockPos;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V")
+    )
+    private void ecliptic$tickRain_modifySound(ClientLevel instance, BlockPos blockPos, SoundEvent soundEvent, SoundSource soundSource, float pVolume, float pPitch, boolean pDistanceDelay, Operation<Void> original) {
+        if (ServerConfig.Debug.useSolarWeather.get()) {
+            original.call(instance, blockPos, soundEvent, soundSource, ClientWeatherChecker.modifyVolume(soundEvent,pVolume), ClientWeatherChecker.modifyPitch(soundEvent,pPitch), pDistanceDelay);
+        } else {
+            original.call(instance, blockPos, soundEvent, soundSource, pVolume, pPitch, pDistanceDelay);
+        }
     }
 }

@@ -1,12 +1,13 @@
 package com.teamtea.eclipticseasons.common.core.biome;
 
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
-import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
+import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
@@ -18,6 +19,7 @@ public class BiomeClimateManager {
     public final static Map<Biome, Float> CLIENT_BIOME_DEFAULT_TEMPERATURE_MAP = new IdentityHashMap<>();
     public static final Map<Biome, TagKey<Biome>> BIOME_TAG_KEY_MAP = new IdentityHashMap<>(128);
     public static final Map<Biome, TagKey<Biome>> CLIENT_BIOME_TAG_KEY_MAP = new IdentityHashMap<>(128);
+    public static final Map<Biome, Boolean> SMALL_BIOME_MAP = new IdentityHashMap<>(16);
 
     public static void resetBiomeTemps(RegistryAccess registryAccess, boolean isServer) {
         resetBiomeTempsMap(registryAccess, isServer ? BIOME_DEFAULT_TEMPERATURE_MAP : CLIENT_BIOME_DEFAULT_TEMPERATURE_MAP);
@@ -49,8 +51,8 @@ public class BiomeClimateManager {
         level.registryAccess().registry(Registries.BIOME).ifPresent(biomeRegistry -> biomeRegistry.forEach(biome ->
         {
             var temperature = biome.getModifiedClimateSettings().temperature() > SNOW_LEVEL ?
-                    Math.max(SNOW_LEVEL + 0.001F, biome.getModifiedClimateSettings().temperature()+ solarTermIndex.getTemperatureChange()) :
-                    Math.min(SNOW_LEVEL,biome.getModifiedClimateSettings().temperature() + solarTermIndex.getTemperatureChange());
+                    Math.max(SNOW_LEVEL + 0.001F, biome.getModifiedClimateSettings().temperature() + solarTermIndex.getTemperatureChange()) :
+                    Math.min(SNOW_LEVEL, biome.getModifiedClimateSettings().temperature() + solarTermIndex.getTemperatureChange());
             if (isServer) {
                 BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, temperature);
             } else {
@@ -78,7 +80,7 @@ public class BiomeClimateManager {
     }
 
     public static Boolean agent$hasPrecipitation(Biome biome) {
-        return !getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS);
+        return !getTag(biome).equals(ClimateTypeBiomeTags.RAINLESS);
     }
 
 
@@ -92,24 +94,36 @@ public class BiomeClimateManager {
 
     public static TagKey<Biome> getTag(Biome biome) {
         // return getTag(WeatherManager.getMainServerLevel(), biome);
-        return BIOME_TAG_KEY_MAP.getOrDefault(biome, CLIENT_BIOME_TAG_KEY_MAP.getOrDefault(biome, SeasonTypeBiomeTags.RAINLESS));
+        return BIOME_TAG_KEY_MAP.getOrDefault(biome, CLIENT_BIOME_TAG_KEY_MAP.getOrDefault(biome, ClimateTypeBiomeTags.RAINLESS));
     }
 
     // Clear it on client exit a level
     public static void putTag(RegistryAccess registryAccess, boolean isServer) {
         var useMap = isServer ? BIOME_TAG_KEY_MAP : CLIENT_BIOME_TAG_KEY_MAP;
         useMap.clear();
-        var biomes = registryAccess.registry(Registries.BIOME);
-        if (biomes.isPresent()) {
+        for (Biome biome : SMALL_BIOME_MAP.entrySet().stream().filter(biomeBooleanEntry -> biomeBooleanEntry.getValue() == isServer).map(Map.Entry::getKey).toList()) {
+            SMALL_BIOME_MAP.remove(biome);
+        }
 
-            for (var resourceKeyBiomeEntry : biomes.get().entrySet()) {
+        var biomeRegistry = registryAccess.registry(Registries.BIOME);
+        if (biomeRegistry.isPresent()) {
+            for (var holder : biomeRegistry.get().holders().toList()) {
+                var tag = ClimateTypeBiomeTags.BIOME_TYPES.stream().filter(holder::is).findFirst();
+                // var tag = holder.get().tags().filter(ClimateTypeBiomeTags.BIOME_TYPES::contains).findFirst();
+                if (tag.isPresent()) {
+                    useMap.put(holder.value(), tag.get());
+                } else {
+                    // 我们按照降雨量进行分配，如果无预测则无雨
+                    int size = ClimateTypeBiomeTags.COMMON_BIOME_TYPES.size();
+                    int index = Mth.clamp(Mth.floor(holder.value().getModifiedClimateSettings().downfall() * size), 0, size - 1);
+                    if (!holder.value().hasPrecipitation()) {
+                        index = 0;
+                    }
+                    useMap.put(holder.value(), ClimateTypeBiomeTags.COMMON_BIOME_TYPES.get(index));
+                }
 
-                var holder = biomes.get().getHolder(resourceKeyBiomeEntry.getKey());
-                if (holder.isPresent()) {
-                    var tag = holder.get().tags().filter(SeasonTypeBiomeTags.BIOMES::contains).findFirst();
-                    if (tag.isPresent()) {
-                        useMap.put(holder.get().value(), tag.get());
-                    } else useMap.put(holder.get().value(), SeasonTypeBiomeTags.RAINLESS);
+                if (holder.is(ClimateTypeBiomeTags.IS_SMALL)) {
+                    SMALL_BIOME_MAP.put(holder.value(), isServer);
                 }
             }
         }

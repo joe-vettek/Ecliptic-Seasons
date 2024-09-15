@@ -1,12 +1,10 @@
 package com.teamtea.eclipticseasons.client.color.season;
 
-import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.color.SolarTermColor;
-import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
+import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
 import com.teamtea.eclipticseasons.client.core.ColorHelper;
-import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tags.TagKey;
@@ -16,7 +14,6 @@ import net.minecraft.world.level.biome.Biome;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class BiomeColorsHandler {
     // public static int[] newFoliageBuffer = new int[65536];
@@ -72,7 +69,7 @@ public class BiomeColorsHandler {
         {
 
             {
-                for (TagKey<Biome> biomeTagKey : SeasonTypeBiomeTags.BIOMES) {
+                for (TagKey<Biome> biomeTagKey : ClimateTypeBiomeTags.BIOME_TYPES) {
                     int[] newFoliageBuffer = new int[65536];
                     int[] newGrassBuffer = new int[65536];
                     int[] foliageBuffer = FoliageColor.pixels;

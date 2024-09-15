@@ -1,5 +1,6 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
+import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -159,10 +160,11 @@ public class MapChecker {
     }
 
     public static boolean isSmallBiome(Holder<Biome> biomeHolder) {
-        return biomeHolder.is(Tags.Biomes.IS_RIVER)
-                || biomeHolder.is(Tags.Biomes.IS_BEACH)
-                // || biomeHolder.is(Tags.Biomes.IS_OCEAN)
-                ;
+        // return biomeHolder.is(Tags.Biomes.IS_RIVER)
+        //         || biomeHolder.is(Tags.Biomes.IS_BEACH)
+        // || biomeHolder.is(Tags.Biomes.IS_OCEAN)
+        ;
+        return BiomeClimateManager.SMALL_BIOME_MAP.containsKey(biomeHolder.value());
     }
 
     public static Holder<Biome> idToBiome(Level level, int id) {

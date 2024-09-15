@@ -84,7 +84,7 @@ public class EclipticUtil {
 
             @Override
             public boolean isSnowySurfaceAt(Level level, BlockPos pos) {
-                long seed = (long) Mth.abs(pos.hashCode());
+                long seed = level.getBlockState(pos).getSeed(pos);
                 return MapChecker.shouldSnowAt(level, pos, level.getBlockState(pos), level.getRandom(), seed);
             }
         };

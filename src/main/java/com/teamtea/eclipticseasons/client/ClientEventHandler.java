@@ -101,7 +101,7 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onWorldTick(LevelTickEvent.Post event) {
         if (event.getLevel()instanceof  ClientLevel clientLevel){
-            ClientWeatherChecker.updateRainLevel(clientLevel);
+            // ClientWeatherChecker.updateRainLevel(clientLevel);
             ClientWeatherChecker.updateRainLevel(clientLevel);
         }
 
