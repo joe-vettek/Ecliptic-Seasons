@@ -4,6 +4,7 @@ package com.teamtea.eclipticseasons.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.teamtea.eclipticseasons.api.misc.BasicWeather;
 import com.teamtea.eclipticseasons.client.sound.SeasonalBiomeAmbientSoundsHandler;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -28,7 +29,7 @@ public abstract class MixinLocalPlayer implements BasicWeather {
 
     @Inject(at = {@At("RETURN")}, method = {"<init>"})
     private void ecliptic$init(CallbackInfo ci, @Local Minecraft minecraft, @Local ClientLevel clientLevel) {
-        if (ClientConfig.Sound.sound.get() && clientLevel.dimensionType().natural())
+        if (ClientConfig.Sound.sound.get() && MapChecker.isValidDimension(clientLevel))
             ambientSoundHandlers.add(new SeasonalBiomeAmbientSoundsHandler((LocalPlayer) (Object) this, minecraft.getSoundManager(), clientLevel.getBiomeManager()));
     }
 }

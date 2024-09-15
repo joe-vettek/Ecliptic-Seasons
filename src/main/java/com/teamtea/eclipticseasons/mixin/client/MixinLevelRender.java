@@ -8,7 +8,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
-import com.teamtea.eclipticseasons.misc.vanilla.VanillaWeather;
+import com.teamtea.eclipticseasons.compat.vanilla.VanillaWeather;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;

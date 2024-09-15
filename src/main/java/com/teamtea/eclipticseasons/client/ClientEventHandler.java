@@ -1,9 +1,12 @@
 package com.teamtea.eclipticseasons.client;
 
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
+import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
 import com.teamtea.eclipticseasons.client.render.WorldRenderer;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
@@ -18,18 +21,25 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -42,26 +52,6 @@ public final class ClientEventHandler {
         if (Minecraft.getInstance().player != null) {
             WorldRenderer.applyEffect(Minecraft.getInstance().gameRenderer, Minecraft.getInstance().player);
         }
-    }
-
-
-    public static float prevFogDensity = -1f;
-    public static long prevFogTick = -1L;
-
-    public static float r = 0.0f;
-    public static float g = 0.0f;
-    public static float b = 0.0f;
-
-    @SubscribeEvent
-    public static void onFogEvent(ViewportEvent.ComputeFogColor event) {
-        if (true) return;
-        WorldRenderer.renderFogColors(event.getCamera(), (float) event.getPartialTick(), event);
-    }
-
-    @SubscribeEvent
-    public static void onFogEvent(ViewportEvent.RenderFog event) {
-        if (true) return;
-        WorldRenderer.renderFogDensity(event.getCamera(), event);
     }
 
     @SubscribeEvent
@@ -110,9 +100,14 @@ public final class ClientEventHandler {
     // 强制区块渲染
     @SubscribeEvent
     public static void onWorldTick(LevelTickEvent.Post event) {
+        if (event.getLevel()instanceof  ClientLevel clientLevel){
+            ClientWeatherChecker.updateRainLevel(clientLevel);
+            ClientWeatherChecker.updateRainLevel(clientLevel);
+        }
+
         if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
             if (event.getLevel().isClientSide()
-                    && event.getLevel().getGameTime() % (20*10) == 0) {
+                    && event.getLevel().getGameTime() % (20 * 4) == 0) {
                 var lr = Minecraft.getInstance().levelRenderer;
                 if (lr != null && lr.viewArea != null) {
                     // if (lr.visibleSections.size() < lr.viewArea.sections.length)
@@ -145,6 +140,25 @@ public final class ClientEventHandler {
         }
     }
 
+
+    public static float prevFogDensity = -1f;
+    public static long prevFogTick = -1L;
+
+    public static float r = 0.0f;
+    public static float g = 0.0f;
+    public static float b = 0.0f;
+
+    @SubscribeEvent
+    public static void onFogEvent(ViewportEvent.ComputeFogColor event) {
+        if (true) return;
+        WorldRenderer.renderFogColors(event.getCamera(), (float) event.getPartialTick(), event);
+    }
+
+    @SubscribeEvent
+    public static void onFogEvent(ViewportEvent.RenderFog event) {
+        if (true) return;
+        WorldRenderer.renderFogDensity(event.getCamera(), event);
+    }
 
     @SubscribeEvent
     public static void onRenderLevelStageEvent(RenderLevelStageEvent event) {
@@ -180,5 +194,44 @@ public final class ClientEventHandler {
 
             poseStack.popPose();
         }
+    }
+
+    @SubscribeEvent
+    public static void onAddSectionGeometryEvent(AddSectionGeometryEvent event) {
+        if (true) return;
+
+        event.addRenderer(context -> {
+            var type = ItemBlockRenderTypes.getRenderLayer(Fluids.WATER.defaultFluidState());
+            VertexConsumer buffer = context.getOrCreateChunkBuffer(type);
+            PoseStack poseStack = context.getPoseStack();
+
+            poseStack.pushPose();
+
+            var pos = event.getSectionOrigin();
+            TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(IClientFluidTypeExtensions.of(Fluids.WATER).getStillTexture());
+
+            int color = IClientFluidTypeExtensions.of(Fluids.WATER).getTintColor();
+
+            int r = color >> 16 & 0xFF;
+            int g = color >> 8 & 0xFF;
+            int b = color & 0xFF;
+            int a = color >> 24 & 0xFF;
+
+            float height = 1f;
+
+
+            int light = 15728880;
+            light = LevelRenderer.getLightColor(context.getRegion(), pos);
+
+
+            Minecraft.getInstance().getBlockRenderer().renderLiquid(pos, context.getRegion(), buffer, Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState().getFluidState());
+            buffer.addVertex(poseStack.last().pose(), 0.125F, height, 0.125F).setColor(r, g, b, a).setUv(still.getU0(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
+            buffer.addVertex(poseStack.last().pose(), 0.125F, height, 0.875F).setColor(r, g, b, a).setUv(still.getU0(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
+            buffer.addVertex(poseStack.last().pose(), 0.875F, height, 0.875F).setColor(r, g, b, a).setUv(still.getU1(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
+            buffer.addVertex(poseStack.last().pose(), 0.875F, height, 0.125F).setColor(r, g, b, a).setUv(still.getU1(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
+
+
+            poseStack.popPose();
+        });
     }
 }

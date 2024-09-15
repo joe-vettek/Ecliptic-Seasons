@@ -21,7 +21,7 @@ public class MixinBeehiveBlockEntity {
     )
     private static boolean mixin$releaseOccupantCheckRain(Level level, Operation<Boolean> original, @Local(ordinal = 0) BlockPos blockPos) {
         if (ServerConfig.Debug.useSolarWeather.get())
-            return WeatherUtil.isBlockInRain(level, blockPos);
+            return WeatherUtil.isBlockInRainOrSnow(level, blockPos);
         else return original.call(level);
     }
 

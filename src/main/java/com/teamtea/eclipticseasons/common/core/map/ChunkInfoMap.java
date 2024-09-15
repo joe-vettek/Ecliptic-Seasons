@@ -3,7 +3,7 @@ package com.teamtea.eclipticseasons.common.core.map;
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import net.minecraft.core.BlockPos;
 
-public class ChunkHeightMap {
+public class ChunkInfoMap {
     public static final int TYPE_BIOME = 1;
     public static final int TYPE_HEIGHT = 0;
 
@@ -14,7 +14,7 @@ public class ChunkHeightMap {
     final int z;
     final short minY;
 
-    public ChunkHeightMap(int x, int z, int minY) {
+    public ChunkInfoMap(int x, int z, int minY) {
         this.minY = (short) minY;
         this.x = x;
         this.z = z;
@@ -78,5 +78,15 @@ public class ChunkHeightMap {
     public int updateHeight(BlockPos pos, int y) {
         return updateHeight(pos.getX(), pos.getZ(), y);
     }
+
+
+    public int getX() {
+        return x;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
 
 }

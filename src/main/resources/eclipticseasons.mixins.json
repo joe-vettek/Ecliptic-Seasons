@@ -1,7 +1,6 @@
 {
   "required": true,
   "package": "com.teamtea.eclipticseasons.mixin",
-  "compatibilityLevel": "JAVA_8",
   "refmap": "eclipticseasons.refmap.json",
   "mixins": [
     "common.MixinBiome",
@@ -44,6 +43,10 @@
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
+    "compat.distanthorizons.MixinFullDataToRenderDataTransformer",
+    "compat.distanthorizons.MixinNeoForgeClientLevelWrapper",
+    "compat.distanthorizons.MixinNetworkdUtil",
+    "compat.distanthorizons.MixinTintWithoutLevelOverrider",
     "compat.eclipticseasons.teacon.client.MixinTeaconClientLevel",
     "compat.eclipticseasons.teacon.client.MixinTeaconLevelRender",
     "compat.embeddium.MixinBlockRender2",

@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.teacon.client;
 
 
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
-import com.teamtea.eclipticseasons.misc.teacon.TeaconCheckTool;
+import com.teamtea.eclipticseasons.compat.teacon.TeaconCheckTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;

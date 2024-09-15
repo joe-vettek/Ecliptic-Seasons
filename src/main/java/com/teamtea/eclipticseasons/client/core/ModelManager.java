@@ -65,7 +65,7 @@ public class ModelManager {
     public static boolean shouldCutoutMipped(BlockState state) {
         if (Minecraft.getInstance().level != null) {
             var onBlock = state.getBlock();
-            if (!(onBlock instanceof FenceBlock)&&!(onBlock instanceof HalfTransparentBlock)&&!(onBlock instanceof IronBarsBlock)) {
+            if (!(onBlock instanceof FenceBlock) && !(onBlock instanceof HalfTransparentBlock) && !(onBlock instanceof IronBarsBlock)) {
                 // use EmptyBlockGetter.INSTANCE instead of null level
                 if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
                         || state.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)) {
@@ -92,22 +92,24 @@ public class ModelManager {
         // }
         // if (true)return list;
 
-        var level=Minecraft.getInstance().level;
-        if (level==null){
+        var level = Minecraft.getInstance().level;
+        if (level == null) {
             EclipticSeasonsMod.logger("NULLLLLLLL");
         }
-        if (level!=null
+        if (level != null
                 && ClientConfig.Renderer.snowyWinter.get()
                 && direction != Direction.DOWN
-                && !list.isEmpty()) {
+                && !list.isEmpty()
+                && MapChecker.isValidDimension(level)
+        ) {
 
             var onBlock = state.getBlock();
 
-            int flag = MapChecker.getBlockType(state,level,pos);
+            int flag = MapChecker.getBlockType(state, level, pos);
             if (flag == 0)
                 return list;
 
-            int offset = MapChecker.getSnowOffset(state,flag);
+            int offset = MapChecker.getSnowOffset(state, flag);
 
 
             boolean isLight = false;

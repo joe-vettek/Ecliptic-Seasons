@@ -1,29 +1,34 @@
 package com.teamtea.eclipticseasons.api.util;
 
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.loading.FMLLoader;
+import net.minecraft.world.level.biome.Biome;
 
 import java.util.List;
 
 public class WeatherUtil {
-    public static boolean isBlockInRain(Level level, BlockPos blockPos) {
+    public static boolean isBlockInRainOrSnow(Level level, BlockPos blockPos) {
         for (BlockPos pos : List.of(blockPos.above(), blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west())) {
-            if (WeatherManager.isRainingAt((ServerLevel) level, pos))
+            // if (WeatherManager.isRainingAt((ServerLevel) level, pos))
+            if (WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) != Biome.Precipitation.NONE)
                 return true;
         }
         return false;
     }
 
-    public static boolean isEntityInRain(LivingEntity entity) {
+    public static boolean isEntityInRainOrSnow(LivingEntity entity) {
         // return WeatherManager.isRainingAt((ServerLevel) entity.level(), entity.blockPosition());
-        BlockPos blockpos = entity.blockPosition();
-        return entity.level().isRainingAt(blockpos)
-                || entity.level().isRainingAt(BlockPos.containing(blockpos.getX(), entity.getBoundingBox().maxY, blockpos.getZ()));
+        BlockPos blockPos = entity.blockPosition();
+        var pos2 = BlockPos.containing(blockPos.getX(), entity.getBoundingBox().maxY, blockPos.getZ());
+        var pre = WeatherManager.getPrecipitationAt(entity.level(), MapChecker.getSurfaceBiome(entity.level(), blockPos).value(), blockPos);
+        var after = WeatherManager.getPrecipitationAt(entity.level(), MapChecker.getSurfaceBiome(entity.level(), pos2).value(), pos2);
+
+        return pre != Biome.Precipitation.NONE ||
+                after != Biome.Precipitation.NONE;
         // return entity.isInWaterOrRain();
     }
 

@@ -1,9 +1,8 @@
-package com.teamtea.eclipticseasons.misc.teacon;
+package com.teamtea.eclipticseasons.compat.teacon;
 
 
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

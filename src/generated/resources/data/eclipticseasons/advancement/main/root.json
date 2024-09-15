@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "solar_terms": {
+      "trigger": "eclipticseasons:solar_terms"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/block/bricks.png",
+    "description": {
+      "translate": "eclipticseasonsadvancement.root.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:book"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "eclipticseasonsadvancement.root"
+    }
+  },
+  "requirements": [
+    [
+      "solar_terms"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

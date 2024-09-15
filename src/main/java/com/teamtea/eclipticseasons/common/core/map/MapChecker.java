@@ -1,6 +1,5 @@
 package com.teamtea.eclipticseasons.common.core.map;
 
-import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,6 +17,7 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.common.Tags;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +26,8 @@ public class MapChecker {
     public static final int ChunkSizeLoc = ChunkSize - 1;
     public static final int ChunkSizeAxis = 4 + 5;
     // TODO:内存更新，双链表+Hash，用LRU
-    public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
+    public static final ArrayList<ChunkInfoMap> RegionList = new ArrayList<>(4);
+    public static final int FLAG_NONE_TYPE = 0;
     public static final int FLAG_BLOCK = 1;
     public static final int FLAG_SLAB = 2;
     public static final int FLAG_STAIRS = 3;
@@ -37,6 +38,11 @@ public class MapChecker {
     public static final List<Block> LowerPlant = List.of(Blocks.SHORT_GRASS, Blocks.FERN, Blocks.DANDELION);
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
     private static boolean updateLock;
+
+
+    public static boolean isUpdateLock() {
+        return updateLock;
+    }
 
     public static void clearHeightMap() {
         updateLock = true;
@@ -56,19 +62,13 @@ public class MapChecker {
     }
 
     public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate) {
-        return getHeightOrUpdate(levelNull, pos, forceUpdate, ChunkHeightMap.TYPE_HEIGHT);
+        return getSurfaceOrUpdate(levelNull, pos, forceUpdate, ChunkInfoMap.TYPE_HEIGHT);
     }
 
-    public static int getHeightOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate, int type) {
-        // if (ClientConfig.Renderer.useVanillaCheck.get())
-        //     return Integer.MIN_VALUE;
-        // EclipticSeasonsMod.logger(levelNull);
+    public static int getSurfaceOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate, int type) {
         int x = blockToSectionCoord(pos.getX());
         int z = blockToSectionCoord(pos.getZ());
-        // ChunkPos chunkPos = new ChunkPos(x, z);
-        // var map = ChunkMap.getOrDefault(chunkPos, null);
-
-        ChunkHeightMap map = null;
+        ChunkInfoMap map = null;
         // try{
         while (updateLock) {
             try {
@@ -91,37 +91,30 @@ public class MapChecker {
 
         int value = 0;
         if (map != null) {
-            if (type == ChunkHeightMap.TYPE_HEIGHT) {
+            if (type == ChunkInfoMap.TYPE_HEIGHT) {
                 value = map.getHeight(pos);
                 if (value <= map.minY || forceUpdate) {
                     var rh = levelNull.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
-                    // if (ClientConfig.Renderer.underSnow.get()) {
-                    //     var rmPos = new BlockPos.MutableBlockPos(pos.getX(), rh, pos.getZ());
-                    //     var s = levelNull.getBlockState(rmPos);
-                    //     while ((!(s.getBlock() instanceof LeavesBlock) && !s.isFaceSturdy(Minecraft.getInstance().level, rmPos, Direction.DOWN))) {
-                    //         rh--;
-                    //         s = levelNull.getBlockState(new BlockPos(pos.getX(), rh, pos.getZ()));
-                    //         rmPos.move(Direction.DOWN, 1);
-                    //     }
-                    // }
                     map.updateHeight(pos, rh);
                     value = rh;
                 }
-            } else if (type == ChunkHeightMap.TYPE_BIOME) {
+            } else if (type == ChunkInfoMap.TYPE_BIOME) {
                 value = map.getBiome(pos);
                 if (value == -1 || forceUpdate) {
-                    var rh = levelNull.registryAccess().registryOrThrow(Registries.BIOME).getId(levelNull.getBiome(pos).value());
-                    map.updateBiome(pos, rh);
-                    value = rh;
+                    if (levelNull.isLoaded(pos)) {
+                        var rh = levelNull.registryAccess().registryOrThrow(Registries.BIOME).getId(levelNull.getBiome(pos).value());
+                        map.updateBiome(pos, rh);
+                        value = rh;
+                    } else {
+                        value = levelNull.registryAccess().registry(Registries.BIOME).get().getId(Biomes.THE_VOID);
+                    }
                 }
             }
         } else {
-
             updateLock = true;
-            // ChunkMap.put(chunkPos, map);
             synchronized (RegionList) {
                 boolean hasBuild = false;
-                for (ChunkHeightMap chunkHeightMap : RegionList) {
+                for (ChunkInfoMap chunkHeightMap : RegionList) {
                     if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
                         hasBuild = true;
                         map = chunkHeightMap;
@@ -129,28 +122,27 @@ public class MapChecker {
                     }
                 }
                 if (!hasBuild) {
-                    map = new ChunkHeightMap(x, z, levelNull.getMinBuildHeight() - 1);
+                    // levelNull.registryAccess().registry(Registries.BIOME).get().getId(Biomes.THE_VOID)
+                    map = new ChunkInfoMap(x, z, levelNull.getMinBuildHeight() - 1);
                     RegionList.add(map);
                 }
             }
             updateLock = false;
 
-            if (type == ChunkHeightMap.TYPE_HEIGHT) {
+            if (type == ChunkInfoMap.TYPE_HEIGHT) {
                 value = levelNull.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() - 1;
                 map.updateHeight(pos, value);
-            } else if (type == ChunkHeightMap.TYPE_BIOME) {
-                value = levelNull.registryAccess().registryOrThrow(Registries.BIOME).getId(levelNull.getBiome(pos).value());
-                map.updateBiome(pos, value);
+            } else if (type == ChunkInfoMap.TYPE_BIOME) {
+                if (levelNull.isLoaded(pos)) {
+                    value = levelNull.registryAccess().registryOrThrow(Registries.BIOME).getId(levelNull.getBiome(pos).value());
+                    map.updateBiome(pos, value);
+                }
             }
-
-            // h = getHeightOrUpdate(pos, false);
-            // return h;
-
         }
         return value;
     }
 
-    // TODO:感觉用随机表性能更高
+
     public static boolean shouldSnowAt(Level level, BlockPos pos, BlockState state, RandomSource random, long seed) {
         var biomeHolder = getSurfaceBiome(level, pos);
         if (WeatherManager.getSnowDepthAtBiome(level, biomeHolder.value()) > Math.abs(seed % 100)) {
@@ -159,9 +151,18 @@ public class MapChecker {
         return false;
     }
 
+    public static boolean shouldSnowAtBiome(Level level, Biome biome, BlockState state, RandomSource random, long seed) {
+        if (WeatherManager.getSnowDepthAtBiome(level, biome) > Math.abs(seed % 100)) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean isSmallBiome(Holder<Biome> biomeHolder) {
         return biomeHolder.is(Tags.Biomes.IS_RIVER)
-                || biomeHolder.is(Tags.Biomes.IS_BEACH);
+                || biomeHolder.is(Tags.Biomes.IS_BEACH)
+                // || biomeHolder.is(Tags.Biomes.IS_OCEAN)
+                ;
     }
 
     public static Holder<Biome> idToBiome(Level level, int id) {
@@ -174,18 +175,36 @@ public class MapChecker {
     }
 
     public static Holder<Biome> getSurfaceBiome(Level level, BlockPos pos) {
-        var biomeHolder = idToBiome(level,getHeightOrUpdate(level, pos, false, ChunkHeightMap.TYPE_BIOME));
+        // fix the pos to surface
+        int y = getHeightOrUpdate(level, pos) + 1;
+        if (y != pos.getY()) {
+            pos = new BlockPos(pos.getX(), y, pos.getZ());
+        }
+
+        // var biomeHolder = idToBiome(level, getSurfaceOrUpdate(level, pos, false, ChunkInfoMap.TYPE_BIOME));
+        // int i = 0;
+        // while (isSmallBiome(biomeHolder)) {
+        //     i += 1;
+        //     for (Direction direction : Direction.Plane.HORIZONTAL) {
+        //         biomeHolder = idToBiome(level, getSurfaceOrUpdate(level, pos.relative(direction, i), false, ChunkInfoMap.TYPE_BIOME));
+        //         if (!isSmallBiome(biomeHolder)) {
+        //             break;
+        //         }
+        //     }
+        // }
+        // return biomeHolder;
+        var biome = level.getBiome(pos);
         int i = 0;
-        while (isSmallBiome(biomeHolder)) {
-            i += 2;
+        while (isSmallBiome(biome)) {
+            i += 1;
             for (Direction direction : Direction.Plane.HORIZONTAL) {
-                biomeHolder = idToBiome(level,getHeightOrUpdate(level, pos.relative(direction, i), false, ChunkHeightMap.TYPE_BIOME));
-                if (!isSmallBiome(biomeHolder)) {
+                biome = level.getBiome(pos.relative(direction, i));
+                if (!isSmallBiome(biome)) {
                     break;
                 }
             }
         }
-        return biomeHolder;
+        return biome;
     }
 
     // 获取chunk内部位置
@@ -195,7 +214,7 @@ public class MapChecker {
 
 
     public static int getBlockType(BlockState state, Level level, BlockPos pos) {
-        int flag = 0;
+        int flag = FLAG_NONE_TYPE;
         var onBlock = state.getBlock();
         if (onBlock instanceof LeavesBlock) {
             flag = MapChecker.FLAG_LEAVES;
@@ -249,5 +268,12 @@ public class MapChecker {
             mPos = mPos.move(Direction.DOWN);
         }
         return list;
+    }
+
+
+    public static boolean isValidDimension(@Nullable Level level) {
+        return level != null
+                && level.dimensionType().natural()
+                && !level.dimensionType().hasFixedTime();
     }
 }

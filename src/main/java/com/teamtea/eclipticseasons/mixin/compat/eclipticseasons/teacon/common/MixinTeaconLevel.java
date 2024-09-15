@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.mixin.compat.eclipticseasons.teacon.common;
 
 
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import com.teamtea.eclipticseasons.misc.teacon.TeaconCheckTool;
+import com.teamtea.eclipticseasons.compat.teacon.TeaconCheckTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;

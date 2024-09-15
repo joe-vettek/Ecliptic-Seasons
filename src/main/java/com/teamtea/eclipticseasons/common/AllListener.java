@@ -6,6 +6,7 @@ import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.crop.CropGrowthHandler;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.teamtea.eclipticseasons.common.handler.CustomRandomTickHandler;
 import com.teamtea.eclipticseasons.config.ServerConfig;
@@ -94,7 +95,7 @@ public class AllListener {
     public static void onWorldTick(LevelTickEvent.Post event) {
         if ( ServerConfig.Season.enableInform.get()
                 && !event.getLevel().isClientSide()
-                && event.getLevel().dimensionType().natural()) {
+                && MapChecker.isValidDimension(event.getLevel())) {
             SolarHolders.getSaveDataLazy(event.getLevel()).ifPresent(data ->
             {
                 if (!event.getLevel().players().isEmpty()) {

@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.misc.teacon;
+package com.teamtea.eclipticseasons.compat.teacon;
 
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;

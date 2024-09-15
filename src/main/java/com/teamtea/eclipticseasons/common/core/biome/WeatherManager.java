@@ -15,7 +15,7 @@ import com.teamtea.eclipticseasons.common.network.EmptyMessage;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
-import com.teamtea.eclipticseasons.misc.vanilla.VanillaWeather;
+import com.teamtea.eclipticseasons.compat.vanilla.VanillaWeather;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -82,7 +82,7 @@ public class WeatherManager {
     }
 
     public static Boolean isRainingEverywhere(ServerLevel level) {
-        if (!level.dimensionType().natural()) return false;
+        if (!MapChecker.isValidDimension(level)) return false;
         var ws = getBiomeList(level);
         if (ws != null) {
             var solarTerm = SolarHolders.getSaveData(level).getSolarTerm();
@@ -120,7 +120,7 @@ public class WeatherManager {
     }
 
     public static Boolean isThunderEverywhere(ServerLevel level) {
-        if (!level.dimensionType().natural()) return false;
+        if (!MapChecker.isValidDimension(level)) return false;
         var ws = getBiomeList(level);
         if (ws != null) {
             var solarTerm = SolarHolders.getSaveData(level).getSolarTerm();
@@ -146,7 +146,7 @@ public class WeatherManager {
     }
 
     public static Boolean isThunderAt(ServerLevel serverLevel, BlockPos pos) {
-        if (!serverLevel.dimensionType().natural()) {
+        if (!MapChecker.isValidDimension(serverLevel)) {
             return false;
         }
         // if (!isThunderAnywhere(serverLevel)) {
@@ -163,7 +163,7 @@ public class WeatherManager {
     }
 
     public static Boolean isRainingAt(ServerLevel serverLevel, BlockPos pos) {
-        if (!serverLevel.dimensionType().natural()) {
+        if (!MapChecker.isValidDimension(serverLevel)) {
             return false;
         }
         // if (!isRainingAnywhere(serverLevel)) {
@@ -322,7 +322,7 @@ public class WeatherManager {
 
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
         var level = player.level();
-        if (level.getRandom().nextInt(60) == 0)
+        if (level.getRandom().nextInt(150) == 0)
             SolarHolders.getSaveDataLazy(level).ifPresent(solarDataManager -> {
                 if (EclipticUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = level.getBiome(player.blockPosition()).value();
@@ -441,7 +441,7 @@ public class WeatherManager {
                 SimpleNetworkHandler.send(serverPlayer, new SolarTermsMessage(t.getSolarTermsDay()));
                 if (isLogged
                         && t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
-                    serverPlayer.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
+                    serverPlayer.sendSystemMessage(Component.translatable("info.eclipticseasons.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
                 }
             });
 
@@ -450,22 +450,22 @@ public class WeatherManager {
     }
 
     public static boolean testWeatherCheck(LootContext pContext, WeatherCheck weatherCheck) {
-        boolean needThunder= weatherCheck.isThundering().isPresent();
-        boolean needRain= weatherCheck.isRaining().isPresent();
-        if(needThunder){
-            var pos=pContext.getParamOrNull(LootContextParams.ORIGIN);
-            if(pos!=null) {
-                boolean isThunderAt = isThunderAt(pContext.getLevel(), new BlockPos((int) pos.x, (int) pos.y+1, (int) pos.z));
-                if (weatherCheck.isThundering().get() !=isThunderAt){
+        boolean needThunder = weatherCheck.isThundering().isPresent();
+        boolean needRain = weatherCheck.isRaining().isPresent();
+        if (needThunder) {
+            var pos = pContext.getParamOrNull(LootContextParams.ORIGIN);
+            if (pos != null) {
+                boolean isThunderAt = isThunderAt(pContext.getLevel(), new BlockPos((int) pos.x, (int) pos.y + 1, (int) pos.z));
+                if (weatherCheck.isThundering().get() != isThunderAt) {
                     return false;
                 }
             }
         }
-        if(needRain){
-            var pos=pContext.getParamOrNull(LootContextParams.ORIGIN);
-            if(pos!=null) {
-                boolean isRainingAt = isRainingAt(pContext.getLevel(), new BlockPos((int) pos.x, (int) pos.y+1, (int) pos.z));
-                if (weatherCheck.isRaining().get() !=isRainingAt){
+        if (needRain) {
+            var pos = pContext.getParamOrNull(LootContextParams.ORIGIN);
+            if (pos != null) {
+                boolean isRainingAt = isRainingAt(pContext.getLevel(), new BlockPos((int) pos.x, (int) pos.y + 1, (int) pos.z));
+                if (weatherCheck.isRaining().get() != isRainingAt) {
                     return false;
                 }
             }
@@ -542,7 +542,7 @@ public class WeatherManager {
 
     public static boolean agentAdvanceWeatherCycle(ServerLevel level, ServerLevelData serverLevelData, WritableLevelData levelData, RandomSource random) {
 
-        if (!level.dimensionType().natural()) {
+        if (!MapChecker.isValidDimension(level)) {
             return true;
         }
 

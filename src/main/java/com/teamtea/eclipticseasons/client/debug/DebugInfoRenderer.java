@@ -107,11 +107,11 @@ public final class DebugInfoRenderer {
 
     private void drawInfo(GuiGraphics matrixStack, int screenWidth, int screenHeight, String s, int index) {
         if (s.isEmpty()) return;
-        matrixStack.fill(screenWidth / 2 - mc.font.width(s) / 2 - 2,
-                index * 9 + 3,
-                screenWidth / 2 + mc.font.width(s) / 2 + 2,
-                index * 9 + 3 + mc.font.lineHeight,
-                Color.decode("#baccd9").getRGB());
+        // matrixStack.fill(screenWidth / 2 - mc.font.width(s) / 2 - 2,
+        //         index * 9 + 3,
+        //         screenWidth / 2 + mc.font.width(s) / 2 + 2,
+        //         index * 9 + 3 + mc.font.lineHeight,
+        //         Color.decode("#baccd9").getRGB());
         matrixStack.drawString(mc.font, s, screenWidth / 2 - mc.font.width(s) / 2, index * 9 + 3, 0xFFFFFF);
     }
 

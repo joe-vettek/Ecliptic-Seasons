@@ -23,8 +23,8 @@ public class FDAdvancementGenerator implements AdvancementProvider.AdvancementGe
     public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> consumer, ExistingFileHelper existingFileHelper) {
         AdvancementHolder seasons = Advancement.Builder.advancement()
                 .display(Items.BOOK,
-                        Component.translatable(EclipticSeasonsApi.MODID + "advancement.root"),
-                        Component.translatable(EclipticSeasonsApi.MODID + "advancement.root.desc"),
+                        Component.translatable( "eclipticseasons.advancement.root"),
+                        Component.translatable( "eclipticseasons.advancement.root.desc"),
                         ResourceLocation.parse("minecraft:textures/block/bricks.png"),
                         AdvancementType.TASK, false, false, false)
                 .addCriterion("solar_terms", SolarTermsCriterion.TriggerInstance.simple())

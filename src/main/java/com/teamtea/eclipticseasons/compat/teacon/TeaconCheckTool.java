@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.misc.teacon;
+package com.teamtea.eclipticseasons.compat.teacon;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -20,6 +20,8 @@ public class TeaconCheckTool {
         teacon = System.getenv("TEACON_DEDICATED_SERVER") != null;
         if (!teacon)
             teacon = new File("config/eclipticseasons-teacon.toml").exists();
+
+        teacon=false;
     }
 
     public static boolean isOnTeaconServer() {
@@ -43,10 +45,13 @@ public class TeaconCheckTool {
     }
 
     public static boolean isValidPos(Level level, LevelChunk levelChunk) {
-        var chunkpos = levelChunk.getPos();
-        int i = chunkpos.getMiddleBlockX();
-        int j = chunkpos.getMiddleBlockZ();
-        BlockPos blockpos1 = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
-        return isValidPos(level, blockpos1);
+        if(isOnTeaconServer()) {
+            var chunkpos = levelChunk.getPos();
+            int i = chunkpos.getMiddleBlockX();
+            int j = chunkpos.getMiddleBlockZ();
+            BlockPos blockpos1 = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
+            return isValidPos(level, blockpos1);
+        }
+        return false;
     }
 }

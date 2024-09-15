@@ -10,9 +10,11 @@ import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.teamtea.eclipticseasons.common.misc.MapExporter;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.ResourceOrTagArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -98,6 +100,11 @@ public class CommandHandler {
                                         .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagArgument.getResourceOrTag(commandContext, "biome", Registries.BIOME), false, false)))
                         )
                 )
+                .then(Commands.literal("export")
+                        .requires((source) -> source.hasPermission(2))
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos()).executes((stackCommandContext) ->
+                                MapExporter.exportMap(stackCommandContext.getSource(), BlockPosArgument.getLoadedBlockPos(stackCommandContext, "pos"))))
+                )
         );
     }
 
@@ -137,7 +144,7 @@ public class CommandHandler {
             });
         }
 
-        source.sendSuccess(() -> Component.translatable("commands.teastory.solar.set", day), true);
+        source.sendSuccess(() -> Component.translatable("commands.eclipticseasons.solar.set", day), true);
         return getDay(source.getLevel());
     }
 

@@ -22,6 +22,7 @@ public class ClientWeatherChecker {
     public static float lastBiomeRThunderLevel = -1;
     public static float nowBiomeRainLevel = 0;
     public static int changeTime = 0;
+    public static long lastTime = 0;
     public static int changeTime_thunder = 0;
     public static int MAX_CHANGE_TIME = 200;
 
@@ -53,25 +54,36 @@ public class ClientWeatherChecker {
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
     public static Float getRainLevel(ClientLevel clientLevel, float p46723) {
+        return lastBiomeRainLevel;
+    }
+
+    public static Float updateRainLevel(ClientLevel clientLevel) {
         // if (Minecraft.getInstance().cameraEntity instanceof Player player &&clientLevel.getBiome(Minecraft.getInstance().cameraEntity.getOnPos()).is(Biomes.PLAINS) )return 0.01f;
-        float rainLevel = getStandardRainLevel(p46723, clientLevel, null);
+        float rainLevel = getStandardRainLevel(1f, clientLevel, null);
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
             var pos = player.getOnPos();
-            int offset= ClientConfig.Renderer.offset.getAsInt();
+            int offset = ClientConfig.Renderer.offset.getAsInt();
+
+            rainLevel = getStandardRainLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, pos));
+
             for (BlockPos blockPos : List.of(pos.east(offset), pos.north(offset), pos.south(offset), pos.west(offset))) {
                 // var standBiome = clientLevel.getBiome(blockPos);
                 var standBiome = MapChecker.getSurfaceBiome(clientLevel, blockPos);
 
-                float orainLevel = getStandardRainLevel(p46723, clientLevel, standBiome);
-                if (orainLevel > rainLevel) {
-                    rainLevel = orainLevel;
-                }
+                float orainLevel = getStandardRainLevel(1f, clientLevel, standBiome);
+                // if (orainLevel > rainLevel) {
+                //     rainLevel = orainLevel;
+                // }
+                rainLevel += orainLevel;
             }
+            rainLevel = rainLevel / 5f;
+
 
             if (changeTime > 0) {
                 changeTime--;
+
                 if (lastBiomeRainLevel >= 0 && !isNear(rainLevel, lastBiomeRainLevel, 0.01f)) {
                     // rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
                     rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
@@ -82,7 +94,7 @@ public class ClientWeatherChecker {
                     // EclipticSeasonsMod.logger(lastBiomeRainLevel,rainLevel);
                 }
 
-                lastBiomeRainLevel=     Mth.clamp(rainLevel, 0.0F, 1.0F);
+                lastBiomeRainLevel = Mth.clamp(rainLevel, 0.0F, 1.0F);
 
             } else {
                 if (rainLevel != lastBiomeRainLevel) {
@@ -154,7 +166,7 @@ public class ClientWeatherChecker {
         } else if (clientLevel.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).getY() > blockPos.getY()) {
             return false;
         }
-        return WeatherManager.getPrecipitationAt(clientLevel,MapChecker.getSurfaceBiome(clientLevel, blockPos).value(),blockPos)
+        return WeatherManager.getPrecipitationAt(clientLevel, MapChecker.getSurfaceBiome(clientLevel, blockPos).value(), blockPos)
                 == Biome.Precipitation.RAIN;
     }
 
@@ -169,7 +181,7 @@ public class ClientWeatherChecker {
 
     // 0-》15
     public static int ModifySnowAmount(int constant) {
-        return 15;
+        return (int) (constant* lastBiomeRainLevel);
     }
 
     // public static Boolean hasPrecipitation(Biome biome) {
