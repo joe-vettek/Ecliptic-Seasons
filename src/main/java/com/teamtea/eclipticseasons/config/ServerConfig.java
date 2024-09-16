@@ -28,14 +28,14 @@ public class ServerConfig {
 
     public static class Temperature {
         public static ModConfigSpec.BooleanValue iceMelt;
-        public static ModConfigSpec.BooleanValue effect;
+        public static ModConfigSpec.BooleanValue heatStroke;
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Temperature");
             iceMelt = builder.comment("Ice or snow layer will melt in warm place..")
                     .define("IceAndSnowMelt", false);
-            effect = builder.comment("Add heat stroke effect in summer noon.")
-                    .define("Effect", true);
+            heatStroke = builder.comment("Add heat stroke effect in summer noon while in hot biome.")
+                    .define("HeatStroke", true);
             builder.pop();
         }
     }

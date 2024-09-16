@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -38,16 +39,15 @@ public class WorldRenderer {
 
         if (Minecraft.getInstance().isPaused()) {
             if (oldBlurStatus == ON_BLUR || reMainTick > 0) {
-                // gameRenderer.shutdownEffect();
+                gameRenderer.shutdownEffect();
                 oldBlurStatus = NONE_BLUR;
                 reMainTick = 0;
-                updateUniform("Progress", 0f);
-
+                updateUniform("RadiusMultiplier", 0f);
             }
             return;
         }
 
-        if (ServerConfig.Temperature.effect.get()) {
+        if (ServerConfig.Temperature.heatStroke.get()) {
             var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
 
             int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
@@ -55,7 +55,9 @@ public class WorldRenderer {
                 if (blurStatus == ON_BLUR) {
                     {
 
-                        gameRenderer.loadEffect(EclipticSeasonsMod.rl("shaders/post/fade_in_blur.json"));
+                        // 我们写的shader好像有问题？
+                        // gameRenderer.loadEffect(EclipticSeasonsMod.rl("shaders/post/fade_in_blur.json"));
+                        gameRenderer.loadEffect( ResourceLocation.withDefaultNamespace("shaders/post/blur.json"));
                     }
                 }
 
@@ -67,7 +69,10 @@ public class WorldRenderer {
                 // if (progress != prevProgress)
                 {
                     // prevProgress = progress;
-                    updateUniform("Progress", progress);
+                    // 用于mc原版blur
+                    progress*=10f;
+
+                    updateUniform("RadiusMultiplier", progress);
                 }
                 // EclipticSeasons.logger(reMainTick, progress, blurStatus, oldBlurStatus);
                 if (reMainTick == 0) {

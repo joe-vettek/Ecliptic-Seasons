@@ -2,8 +2,6 @@ package com.teamtea.eclipticseasons.mixin.compat.embeddium;
 
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;

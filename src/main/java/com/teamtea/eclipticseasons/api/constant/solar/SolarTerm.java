@@ -5,6 +5,7 @@ import com.teamtea.eclipticseasons.api.constant.solar.color.*;
 import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -56,11 +57,11 @@ public enum SolarTerm {
         return this.toString().toLowerCase();
     }
 
-    public Component getTranslation() {
+    public MutableComponent getTranslation() {
         return Component.translatable("info.eclipticseasons.environment.solar_term." + getName());
     }
 
-    public Component getAlternationText() {
+    public MutableComponent getAlternationText() {
         return Component.translatable("info.eclipticseasons.environment.solar_term.alternation." + getName()).withStyle(getSeason().getColor());
     }
 

@@ -54,6 +54,7 @@
   "info.eclipticseasons.environment.solar_term.greater_cold": "大寒",
   "info.eclipticseasons.environment.solar_term.greater_heat": "大暑",
   "info.eclipticseasons.environment.solar_term.heavy_snow": "大雪",
+  "info.eclipticseasons.environment.solar_term.hint": "当前节气：",
   "info.eclipticseasons.environment.solar_term.insects_awakening": "惊蛰",
   "info.eclipticseasons.environment.solar_term.lesser_cold": "小寒",
   "info.eclipticseasons.environment.solar_term.lesser_fullness": "小满",
@@ -72,5 +73,6 @@
   "info.eclipticseasons.environment.temperature.hot": "炎热",
   "info.eclipticseasons.environment.temperature.over_heat": "酷暑",
   "info.eclipticseasons.environment.temperature.under_freezing": "严寒",
-  "info.eclipticseasons.environment.temperature.warm": "温暖"
+  "info.eclipticseasons.environment.temperature.warm": "温暖",
+  "itemGroup.eclipticseasons.core": "节气"
 }

@@ -2,11 +2,7 @@ package com.teamtea.eclipticseasons.mixin.compat.distanthorizons;
 
 
 import com.seibel.distanthorizons.core.api.internal.SharedApi;
-import com.seibel.distanthorizons.core.level.DhClientLevel;
-import com.seibel.distanthorizons.core.level.DhClientServerLevel;
 import com.seibel.distanthorizons.core.level.IDhClientLevel;
-import com.seibel.distanthorizons.core.pos.DhSectionPos;
-import com.seibel.distanthorizons.core.util.objects.quadTree.QuadTree;
 import com.seibel.distanthorizons.core.world.IDhClientWorld;
 import com.teamtea.eclipticseasons.common.network.EmptyMessage;
 import com.teamtea.eclipticseasons.common.network.NetworkdUtil;

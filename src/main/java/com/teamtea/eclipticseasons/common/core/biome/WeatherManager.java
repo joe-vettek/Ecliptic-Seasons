@@ -321,7 +321,7 @@ public class WeatherManager {
     }
 
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
-        if (player.isCreative() || !ServerConfig.Temperature.effect.get()) return;
+        if (player.isCreative() || !ServerConfig.Temperature.heatStroke.get()) return;
         var level = player.level();
         if (MapChecker.isValidDimension(level)
                 && level.getRandom().nextInt(150) == 0)

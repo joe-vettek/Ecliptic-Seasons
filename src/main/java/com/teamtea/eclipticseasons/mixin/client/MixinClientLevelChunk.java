@@ -22,7 +22,7 @@ public abstract class MixinClientLevelChunk {
     private Level level;
 
     /**
-     * TODO:是否应该迁移到服务器上呢，目前还是未知的
+     * TODO:是否应该迁移到服务器上呢，目前还是未知的。客户端区块的话，注意一个加载问题。
      * **/
     @Inject(
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/Heightmap;update(IIILnet/minecraft/world/level/block/state/BlockState;)Z", ordinal = 1),

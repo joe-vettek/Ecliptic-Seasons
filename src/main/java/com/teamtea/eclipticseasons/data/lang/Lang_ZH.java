@@ -15,6 +15,9 @@ public class Lang_ZH extends LangHelper {
 
     @Override
     protected void addTranslations() {
+        add("info.eclipticseasons.environment.solar_term.hint", "当前节气：");
+        add("itemGroup." + EclipticSeasonsApi.MODID + ".core", "节气");
+
         add(EclipticSeasonsMod.ModContents.calendar.get(), "日历");
         add(EclipticSeasonsMod.ModContents.wind_chimes.get(), "风铃");
         add(EclipticSeasonsMod.ModContents.paper_wind_mill.get(), "纸风车");

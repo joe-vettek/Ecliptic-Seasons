@@ -5,6 +5,7 @@ import com.teamtea.eclipticseasons.api.misc.BasicWeather;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.common.advancement.SolarTermsCriterion;
 import com.teamtea.eclipticseasons.common.block.CalendarBlock;
+import com.teamtea.eclipticseasons.common.block.CalendarBlockItem;
 import com.teamtea.eclipticseasons.common.block.PaperWindmillBlock;
 import com.teamtea.eclipticseasons.common.block.WindChimesBlock;
 import com.teamtea.eclipticseasons.common.block.blockentity.CalendarBlockEntity;
@@ -19,6 +20,7 @@ import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -26,7 +28,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -192,6 +196,7 @@ public class EclipticSeasonsMod {
 
     }
 
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     public static class ModContents {
         public static final DeferredRegister<Block> BLOCK_DEFERRED_REGISTER = DeferredRegister.create(Registries.BLOCK, EclipticSeasonsApi.MODID);
         public static final DeferredRegister<Item> ITEM_DEFERRED_REGISTER = DeferredRegister.create(Registries.ITEM, EclipticSeasonsApi.MODID);
@@ -205,7 +210,7 @@ public class EclipticSeasonsMod {
 
         // calendar 日历
         public static final DeferredHolder<Block, Block> calendar = BLOCK_DEFERRED_REGISTER.register("calendar", () -> new CalendarBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.DESTROY)));
-        public static final DeferredHolder<Item, BlockItem> calendar_item = ITEM_DEFERRED_REGISTER.register("calendar", () -> new BlockItem(calendar.get(), (new Item.Properties())));
+        public static final DeferredHolder<Item, BlockItem> calendar_item = ITEM_DEFERRED_REGISTER.register("calendar", () -> new CalendarBlockItem(calendar.get(), (new Item.Properties())));
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CalendarBlockEntity>> calendar_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("calendar", () -> BlockEntityType.Builder.of(CalendarBlockEntity::new, ModContents.calendar.get()).build(null));
 
         // paper_wind_mill 纸风车
@@ -222,6 +227,21 @@ public class EclipticSeasonsMod {
         public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_DEFERRED_REGISTER = DeferredRegister.create(Registries.TRIGGER_TYPE, EclipticSeasonsApi.MODID);
         public static final Supplier<SolarTermsCriterion> SOLAR_TERMS = TRIGGER_DEFERRED_REGISTER.register("solar_terms", SolarTermsCriterion::new);
 
+        @SubscribeEvent
+        public static void blockRegister(RegisterEvent event) {
+            if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB)
+                event.register(Registries.CREATIVE_MODE_TAB, helper -> {
+                    helper.register(EclipticSeasonsMod.rl(EclipticSeasonsApi.MODID),
+                            CreativeModeTab.builder().icon(() -> new ItemStack(ModContents.calendar_item.get()))
+                                    .title(Component.translatable("itemGroup." + EclipticSeasonsApi.MODID + ".core"))
+                                    .displayItems((params, output) -> {
+                                        output.accept(calendar_item.get());
+                                        output.accept(paper_wind_mill_item.get());
+                                        output.accept(wind_chimes_item.get());
+                                    })
+                                    .build());
+                });
+        }
     }
 
 

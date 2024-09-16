@@ -54,6 +54,7 @@
   "info.eclipticseasons.environment.solar_term.greater_cold": "Greater Cold",
   "info.eclipticseasons.environment.solar_term.greater_heat": "Greater Heat",
   "info.eclipticseasons.environment.solar_term.heavy_snow": "Heavy Snow",
+  "info.eclipticseasons.environment.solar_term.hint": "Current Solar Term:",
   "info.eclipticseasons.environment.solar_term.insects_awakening": "Insects Awakening",
   "info.eclipticseasons.environment.solar_term.lesser_cold": "Lesser Cold",
   "info.eclipticseasons.environment.solar_term.lesser_fullness": "Lesser Fullness",
@@ -72,5 +73,6 @@
   "info.eclipticseasons.environment.temperature.hot": "Hot",
   "info.eclipticseasons.environment.temperature.over_heat": "Over Heat",
   "info.eclipticseasons.environment.temperature.under_freezing": "Under Freezing",
-  "info.eclipticseasons.environment.temperature.warm": "Warm"
+  "info.eclipticseasons.environment.temperature.warm": "Warm",
+  "itemGroup.eclipticseasons.core": "Ecliptic Seasons"
 }

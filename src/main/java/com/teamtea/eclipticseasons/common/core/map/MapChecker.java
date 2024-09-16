@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
@@ -66,9 +67,29 @@ public class MapChecker {
         return getSurfaceOrUpdate(levelNull, pos, forceUpdate, ChunkInfoMap.TYPE_HEIGHT);
     }
 
-    public static int getSurfaceOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate, int type) {
-        int x = blockToSectionCoord(pos.getX());
-        int z = blockToSectionCoord(pos.getZ());
+    public static boolean clearChunk(ChunkPos chunkPos) {
+        int x0 = chunkPos.getMinBlockX();
+        int x1 = chunkPos.getMaxBlockX();
+        int z0 = chunkPos.getMinBlockZ();
+        int z1 = chunkPos.getMaxBlockZ();
+
+        int x = blockToSectionCoord(x0);
+        int z = blockToSectionCoord(z0);
+        ChunkInfoMap map = getChunkMap(x, z);
+
+        if (map != null) {
+            for (int i = x0; i < x1 + 1; i++) {
+                for (int j = z0; j < z1 + 1; j++) {
+                    map.updateHeight(i, j, map.minY);
+                }
+            }
+            return true;
+        }
+        return false;
+
+    }
+
+    public static ChunkInfoMap getChunkMap(int regionX, int regionZ) {
         ChunkInfoMap map = null;
         // try{
         while (updateLock) {
@@ -78,17 +99,24 @@ public class MapChecker {
             }
         }
         // map = RegionList.stream()
-        //         .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
+        //         .filter(chunkHeightMap -> chunkHeightMap.regionX == regionX && chunkHeightMap.regionZ == regionZ)
         //         .findFirst()
         //         .orElse(null);
         // size add is dangerous
         for (int i = 0; i < RegionList.size(); i++) {
             var chunkHeightMap = RegionList.get(i);
-            if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
+            if (chunkHeightMap.x == regionX && chunkHeightMap.z == regionZ) {
                 map = chunkHeightMap;
                 break;
             }
         }
+        return map;
+    }
+
+    public static int getSurfaceOrUpdate(Level levelNull, BlockPos pos, boolean forceUpdate, int type) {
+        int x = blockToSectionCoord(pos.getX());
+        int z = blockToSectionCoord(pos.getZ());
+        ChunkInfoMap map = getChunkMap(x, z);
 
         int value = 0;
         if (map != null) {

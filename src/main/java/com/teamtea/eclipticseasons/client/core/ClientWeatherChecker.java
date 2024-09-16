@@ -1,6 +1,5 @@
 package com.teamtea.eclipticseasons.client.core;
 
-import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.config.ClientConfig;
@@ -65,7 +64,7 @@ public class ClientWeatherChecker {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
             var pos = player.getOnPos();
-            int offset = ClientConfig.Renderer.offset.getAsInt();
+            int offset = ClientConfig.Renderer.weatherBufferDistance.getAsInt();
 
             rainLevel = getStandardRainLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, pos));
 
@@ -195,6 +194,10 @@ public class ClientWeatherChecker {
     public static float modifyPitch(SoundEvent soundEvent, float pPitch) {
         return pPitch * lastBiomeRainLevel;
         // return pPitch;
+    }
+
+    public static int modifyRainAmount(int originalNum) {
+        return (int) (originalNum * lastBiomeRainLevel);
     }
 
     // public static Boolean hasPrecipitation(Biome biome) {

@@ -17,7 +17,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ParticleUtil {
     public static void createParticle(ClientLevel clientLevel, int x, int y, int z) {
-        if (!ClientConfig.Renderer.particle.get()) return;
+        if (!ClientConfig.Renderer.seasonParticle.get()) return;
         if (MapChecker.isValidDimension(clientLevel)) {
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
             var sd = EclipticUtil.getNowSolarTerm(clientLevel).getSeason();

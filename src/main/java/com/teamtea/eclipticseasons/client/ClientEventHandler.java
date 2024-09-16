@@ -41,6 +41,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
@@ -71,6 +72,12 @@ public final class ClientEventHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
+        if (event.getLevel() instanceof ClientLevel clientLevel) {
+            MapChecker.clearChunk(event.getChunk().getPos());
+        }
+    }
 
     @SubscribeEvent
     public static void onLevelUnloadEvent(LevelEvent.Unload event) {

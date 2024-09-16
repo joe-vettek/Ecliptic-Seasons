@@ -15,6 +15,10 @@ public class Lang_EN extends LangHelper {
 
     @Override
     protected void addTranslations() {
+        add("info.eclipticseasons.environment.solar_term.hint", "Current Solar Term:");
+
+        add("itemGroup." + EclipticSeasonsApi.MODID + ".core", "Ecliptic Seasons");
+
         add(EclipticSeasonsMod.ModContents.calendar.get(), "calendar");
         add(EclipticSeasonsMod.ModContents.wind_chimes.get(), "Wind Chimes");
         add(EclipticSeasonsMod.ModContents.paper_wind_mill.get(), "paper Wind Mill");
