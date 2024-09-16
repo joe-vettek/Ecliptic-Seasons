@@ -87,7 +87,10 @@ public class ClientWeatherChecker {
 
                 if (lastBiomeRainLevel >= 0 && !isNear(rainLevel, lastBiomeRainLevel, 0.01f)) {
                     // rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
-                    rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
+                    // rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
+                    float add = 0.005f * ((rainLevel - lastBiomeRainLevel) > 0 ? 1 : -1);
+                    lastBiomeRainLevel += add;
+                    rainLevel=lastBiomeRainLevel;
                 }
                 // else
                 {
@@ -186,7 +189,7 @@ public class ClientWeatherChecker {
     }
 
     public static float modifyVolume(SoundEvent soundEvent, float pVolume) {
-        return pVolume * lastBiomeRainLevel*0.55f;
+        return pVolume * lastBiomeRainLevel * 0.55f;
     }
 
     public static float modifyPitch(SoundEvent soundEvent, float pPitch) {

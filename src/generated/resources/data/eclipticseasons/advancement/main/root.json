@@ -8,7 +8,7 @@
     "announce_to_chat": false,
     "background": "minecraft:textures/block/bricks.png",
     "description": {
-      "translate": "eclipticseasonsadvancement.root.desc"
+      "translate": "eclipticseasons.advancement.root.desc"
     },
     "icon": {
       "count": 1,
@@ -16,7 +16,7 @@
     },
     "show_toast": false,
     "title": {
-      "translate": "eclipticseasonsadvancement.root"
+      "translate": "eclipticseasons.advancement.root"
     }
   },
   "requirements": [

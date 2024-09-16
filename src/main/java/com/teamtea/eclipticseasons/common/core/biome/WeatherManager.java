@@ -321,16 +321,17 @@ public class WeatherManager {
     }
 
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
+        if (player.isCreative() || !ServerConfig.Temperature.effect.get()) return;
         var level = player.level();
-        if (level.getRandom().nextInt(150) == 0)
+        if (MapChecker.isValidDimension(level)
+                && level.getRandom().nextInt(150) == 0)
             SolarHolders.getSaveDataLazy(level).ifPresent(solarDataManager -> {
                 if (EclipticUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = level.getBiome(player.blockPosition()).value();
-                    if (b.getTemperature(player.blockPosition()) > 0.5f) {
-
-
+                    if (b.getTemperature(player.blockPosition()) > 0.85f) {
                         if (!player.isInWaterOrRain()
-                                && ((EclipticUtil.isNoon(level) && (level.canSeeSky(player.blockPosition()))))
+                                && ((EclipticUtil.isNoon(level)
+                                && (level.canSeeSky(player.blockPosition()))))
                         ) {
                             boolean isColdHe = false;
                             for (ItemStack itemstack : player.getArmorSlots()) {
@@ -343,10 +344,9 @@ public class WeatherManager {
                                     }
                                 }
                             }
-                            var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
-                            // !player.hasEffect(holder) &&
+                            var mobEffectReference = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
                             if (!isColdHe) {
-                                player.addEffect(new MobEffectInstance(holder, 600));
+                                player.addEffect(new MobEffectInstance(mobEffectReference, 600));
                             }
                         }
                     }

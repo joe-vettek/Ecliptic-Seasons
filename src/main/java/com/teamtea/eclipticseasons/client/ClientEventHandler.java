@@ -100,7 +100,7 @@ public final class ClientEventHandler {
     // 强制区块渲染
     @SubscribeEvent
     public static void onWorldTick(LevelTickEvent.Post event) {
-        if (event.getLevel()instanceof  ClientLevel clientLevel){
+        if (event.getLevel() instanceof ClientLevel clientLevel) {
             // ClientWeatherChecker.updateRainLevel(clientLevel);
             ClientWeatherChecker.updateRainLevel(clientLevel);
         }

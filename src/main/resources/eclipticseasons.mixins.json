@@ -51,7 +51,8 @@
     "compat.eclipticseasons.teacon.client.MixinTeaconLevelRender",
     "compat.embeddium.MixinBlockRender2",
     "compat.sodium.MixinAbstractBlockRenderContext",
-    "compat.sodium.MixinNeoForgeModelAccess"
+    "compat.sodium.MixinNeoForgeModelAccess",
+    "compat.iris.MixinBiomeUniforms"
   ],
   "injectors": {
     "defaultRequire": 1

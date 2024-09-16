@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.client.render;
 
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.ClientEventHandler;
-import com.teamtea.eclipticseasons.config.ClientConfig;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -38,7 +38,7 @@ public class WorldRenderer {
 
         if (Minecraft.getInstance().isPaused()) {
             if (oldBlurStatus == ON_BLUR || reMainTick > 0) {
-                gameRenderer.shutdownEffect();
+                // gameRenderer.shutdownEffect();
                 oldBlurStatus = NONE_BLUR;
                 reMainTick = 0;
                 updateUniform("Progress", 0f);
@@ -47,13 +47,14 @@ public class WorldRenderer {
             return;
         }
 
-        if (ClientConfig.Renderer.effect.get()) {
+        if (ServerConfig.Temperature.effect.get()) {
             var holder = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
 
             int blurStatus = player.hasEffect(holder) ? ON_BLUR : NONE_BLUR;
             if (blurStatus != oldBlurStatus) {
                 if (blurStatus == ON_BLUR) {
                     {
+
                         gameRenderer.loadEffect(EclipticSeasonsMod.rl("shaders/post/fade_in_blur.json"));
                     }
                 }

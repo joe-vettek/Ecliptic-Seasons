@@ -195,6 +195,7 @@ public class MapChecker {
         //     }
         // }
         // return biomeHolder;
+
         var biome = level.getBiome(pos);
         int i = 0;
         while (isSmallBiome(biome)) {
