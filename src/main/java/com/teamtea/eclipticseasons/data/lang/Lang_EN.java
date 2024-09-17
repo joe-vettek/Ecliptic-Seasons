@@ -15,6 +15,9 @@ public class Lang_EN extends LangHelper {
 
     @Override
     protected void addTranslations() {
+        add("eclipticseasons.advancement.root", "Spring After Autumn");
+        add("eclipticseasons.advancement.root.desc", "Span a year with 24 solar terms.");
+
         add("info.eclipticseasons.environment.solar_term.hint", "Current Solar Term:");
 
         add("itemGroup." + EclipticSeasonsApi.MODID + ".core", "Ecliptic Seasons");

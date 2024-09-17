@@ -5,7 +5,6 @@
     }
   },
   "display": {
-    "announce_to_chat": false,
     "background": "minecraft:textures/block/bricks.png",
     "description": {
       "translate": "eclipticseasons.advancement.root.desc"
@@ -14,7 +13,6 @@
       "count": 1,
       "id": "minecraft:book"
     },
-    "show_toast": false,
     "title": {
       "translate": "eclipticseasons.advancement.root"
     }

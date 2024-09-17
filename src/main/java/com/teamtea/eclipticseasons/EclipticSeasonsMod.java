@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons;
 
 import com.teamtea.eclipticseasons.api.misc.BasicWeather;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
+import com.teamtea.eclipticseasons.common.advancement.SolarTermsRecord;
 import com.teamtea.eclipticseasons.common.advancement.SolarTermsCriterion;
 import com.teamtea.eclipticseasons.common.block.CalendarBlock;
 import com.teamtea.eclipticseasons.common.block.CalendarBlockItem;
@@ -44,6 +45,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -51,6 +53,7 @@ import net.neoforged.neoforge.registries.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -72,7 +75,9 @@ public class EclipticSeasonsMod {
         ModContents.ITEM_DEFERRED_REGISTER.register(modEventBus);
         ModContents.BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register(modEventBus);
         ModContents.TRIGGER_DEFERRED_REGISTER.register(modEventBus);
-        OtherContents.weathers.register(modEventBus);
+        ModContents.ATTACHMENT_TYPES.register(modEventBus);
+
+        TestContents.weathers.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, ServerConfig.SERVER_CONFIG);
         modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.CLIENT_CONFIG);
@@ -227,6 +232,12 @@ public class EclipticSeasonsMod {
         public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_DEFERRED_REGISTER = DeferredRegister.create(Registries.TRIGGER_TYPE, EclipticSeasonsApi.MODID);
         public static final Supplier<SolarTermsCriterion> SOLAR_TERMS = TRIGGER_DEFERRED_REGISTER.register("solar_terms", SolarTermsCriterion::new);
 
+        // DataComponent
+        public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, EclipticSeasonsApi.MODID);
+        public static final Supplier<AttachmentType<SolarTermsRecord>> SOLAR_TERMS_RECORD =ATTACHMENT_TYPES.register(
+                "solar_terms_record",
+                ()->AttachmentType.builder(() -> new SolarTermsRecord(new ArrayList<>())).serialize(SolarTermsRecord.CODEC).build());
+
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
             if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB)
@@ -242,6 +253,8 @@ public class EclipticSeasonsMod {
                                     .build());
                 });
         }
+
+
     }
 
 
@@ -250,7 +263,7 @@ public class EclipticSeasonsMod {
     }
 
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
-    public static class OtherContents {
+    public static class TestContents {
         public static final ResourceKey<Registry<BasicWeather>> WEATHER = createRegistryKey("weather");
         public static final Registry<BasicWeather> BASIC_WEATHERS = new RegistryBuilder<>(WEATHER).sync(true).create();
         public static final DeferredRegister<BasicWeather> weathers = DeferredRegister.create(WEATHER, EclipticSeasonsApi.MODID);

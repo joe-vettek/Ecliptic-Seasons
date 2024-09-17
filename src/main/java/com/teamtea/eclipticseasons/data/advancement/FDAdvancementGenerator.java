@@ -14,6 +14,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -26,11 +27,10 @@ public class FDAdvancementGenerator implements AdvancementProvider.AdvancementGe
                         Component.translatable( "eclipticseasons.advancement.root"),
                         Component.translatable( "eclipticseasons.advancement.root.desc"),
                         ResourceLocation.parse("minecraft:textures/block/bricks.png"),
-                        AdvancementType.TASK, false, false, false)
+                        AdvancementType.TASK, true, true, false)
                 .addCriterion("solar_terms", SolarTermsCriterion.TriggerInstance.simple())
                 .requirements(AdvancementRequirements.Strategy.AND)
                 .save(consumer, getNameId("main/root"));
-
 
     }
 

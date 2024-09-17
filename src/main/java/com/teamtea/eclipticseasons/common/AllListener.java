@@ -22,6 +22,7 @@ import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = EclipticSeasonsApi.MODID)
 public class AllListener {
@@ -134,5 +135,14 @@ public class AllListener {
     @SubscribeEvent
     public static void onCropGrowUp(CropGrowEvent.Pre event) {
         CropGrowthHandler.beforeCropGrowUp(event);
+    }
+
+
+    @SubscribeEvent
+    public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
+       if(event.getEntity() instanceof ServerPlayer serverPlayer){
+           WeatherManager.tickPlayerSeasonEffecct(serverPlayer);
+           WeatherManager.tickPlayerForSeasonCheck(serverPlayer);
+       }
     }
 }

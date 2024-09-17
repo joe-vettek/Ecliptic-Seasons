@@ -15,6 +15,9 @@ public class Lang_ZH extends LangHelper {
 
     @Override
     protected void addTranslations() {
+        add("eclipticseasons.advancement.root", "春去秋来");
+        add("eclipticseasons.advancement.root.desc", "度过一年二十四个节气后开启");
+
         add("info.eclipticseasons.environment.solar_term.hint", "当前节气：");
         add("itemGroup." + EclipticSeasonsApi.MODID + ".core", "节气");
 

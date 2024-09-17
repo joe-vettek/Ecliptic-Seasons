@@ -3,6 +3,8 @@
   "block.eclipticseasons.paper_wind_mill": "paper Wind Mill",
   "block.eclipticseasons.wind_chimes": "Wind Chimes",
   "commands.eclipticseasons.solar.set": "Set the solar day to %s",
+  "eclipticseasons.advancement.root": "Spring After Autumn",
+  "eclipticseasons.advancement.root.desc": "Span a year with 24 solar terms.",
   "effect.eclipticseasons.heat_stroke": "Heat Stroke",
   "info.eclipticseasons.environment.humidity": "Suitable Humidity:",
   "info.eclipticseasons.environment.humidity.arid": "Arid",

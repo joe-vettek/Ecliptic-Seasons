@@ -1,12 +1,15 @@
 package com.teamtea.eclipticseasons.common.core.biome;
 
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
+import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.climate.BiomeRain;
 import com.teamtea.eclipticseasons.api.constant.climate.FlatRain;
 import com.teamtea.eclipticseasons.api.constant.climate.SnowTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.client.ClientCon;
+import com.teamtea.eclipticseasons.common.advancement.SolarTermsCriterion;
+import com.teamtea.eclipticseasons.common.advancement.SolarTermsRecord;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.common.handler.SolarUtil;
@@ -16,6 +19,7 @@ import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.compat.vanilla.VanillaWeather;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -24,6 +28,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.commands.AdvancementCommands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
@@ -471,6 +476,19 @@ public class WeatherManager {
             }
         }
         return true;
+    }
+
+    public static void tickPlayerForSeasonCheck(ServerPlayer serverPlayer) {
+        var level = serverPlayer.level();
+        if (level.getGameTime() % 12000 == 0) {
+            var holder = serverPlayer.getData(EclipticSeasonsMod.ModContents.SOLAR_TERMS_RECORD.get());
+            if (holder.solarTerm().size() < SolarTermsRecord.size) {
+                var st = EclipticSeasonsApi.getInstance().getSolarTerm(level);
+                if (!holder.solarTerm().contains(st))
+                    holder.solarTerm().add(st);
+                serverPlayer.setData(EclipticSeasonsMod.ModContents.SOLAR_TERMS_RECORD.get(), holder);
+            } else EclipticSeasonsMod.ModContents.SOLAR_TERMS.get().trigger(serverPlayer);
+        }
     }
 
 
