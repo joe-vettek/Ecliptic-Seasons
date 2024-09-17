@@ -226,11 +226,16 @@ public class EclipticSeasonsMod {
         // wind_chimes 风铃
         public static final DeferredHolder<Block, Block> wind_chimes = BLOCK_DEFERRED_REGISTER.register("wind_chimes", () -> new WindChimesBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.DESTROY)));
         public static final DeferredHolder<Item, BlockItem> wind_chimes_item = ITEM_DEFERRED_REGISTER.register("wind_chimes", () -> new BlockItem(wind_chimes.get(), (new Item.Properties())));
-        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WindChimesBlockEntity>> wind_chimes_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("wind_chimes", () -> BlockEntityType.Builder.of(WindChimesBlockEntity::new, ModContents.wind_chimes.get()).build(null));
+        public static final DeferredHolder<Block, Block> paper_wind_chimes = BLOCK_DEFERRED_REGISTER.register("paper_wind_chimes", () -> new WindChimesBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.WOOD).noOcclusion().pushReaction(PushReaction.DESTROY)));
+        public static final DeferredHolder<Item, BlockItem> paper_wind_chimes_item = ITEM_DEFERRED_REGISTER.register("paper_wind_chimes", () -> new BlockItem(paper_wind_chimes.get(), (new Item.Properties())));
+        public static final DeferredHolder<Block, Block> bamboo_wind_chimes = BLOCK_DEFERRED_REGISTER.register("bamboo_wind_chimes", () -> new WindChimesBlock(BlockBehaviour.Properties.of().strength(0.5f).sound(SoundType.BAMBOO).noOcclusion().pushReaction(PushReaction.DESTROY)));
+        public static final DeferredHolder<Item, BlockItem> bamboo_wind_chimes_item = ITEM_DEFERRED_REGISTER.register("bamboo_wind_chimes", () -> new BlockItem(bamboo_wind_chimes.get(), (new Item.Properties())));
+        public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WindChimesBlockEntity>> wind_chimes_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("wind_chimes", () -> BlockEntityType.Builder.of(WindChimesBlockEntity::new, ModContents.wind_chimes.get(), ModContents.paper_wind_chimes.get(), ModContents.bamboo_wind_chimes.get()).build(null));
 
         // advancement
         public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_DEFERRED_REGISTER = DeferredRegister.create(Registries.TRIGGER_TYPE, EclipticSeasonsApi.MODID);
         public static final Supplier<SolarTermsCriterion> SOLAR_TERMS = TRIGGER_DEFERRED_REGISTER.register("solar_terms", SolarTermsCriterion::new);
+        public static final Supplier<SolarTermsCriterion> heatStroke = TRIGGER_DEFERRED_REGISTER.register("heat_stroke", SolarTermsCriterion::new);
 
         // DataComponent
         public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, EclipticSeasonsApi.MODID);
@@ -246,9 +251,10 @@ public class EclipticSeasonsMod {
                             CreativeModeTab.builder().icon(() -> new ItemStack(ModContents.calendar_item.get()))
                                     .title(Component.translatable("itemGroup." + EclipticSeasonsApi.MODID + ".core"))
                                     .displayItems((params, output) -> {
-                                        output.accept(calendar_item.get());
-                                        output.accept(paper_wind_mill_item.get());
-                                        output.accept(wind_chimes_item.get());
+                                        ITEM_DEFERRED_REGISTER.getEntries().forEach(
+                                                itemDeferredHolder ->
+                                                        output.accept(itemDeferredHolder.value())
+                                        );
                                     })
                                     .build());
                 });

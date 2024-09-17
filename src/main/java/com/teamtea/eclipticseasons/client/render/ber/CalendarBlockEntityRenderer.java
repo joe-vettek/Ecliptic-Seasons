@@ -13,9 +13,12 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
+
+import java.awt.*;
 
 
 public class CalendarBlockEntityRenderer implements BlockEntityRenderer<CalendarBlockEntity> {
@@ -30,13 +33,25 @@ public class CalendarBlockEntityRenderer implements BlockEntityRenderer<Calendar
     public void render(CalendarBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLight, int combinedOverlay) {
 
         var facing = blockEntity.getBlockState().getValue(SimpleHorizontalEntityBlock.FACING).ordinal() * 90;
+        var st = EclipticSeasonsApi.getInstance().getSolarTerm(blockEntity.getLevel());
+        var label = st.getAlternationText().getString();
 
-        drawText(0, EclipticSeasonsApi.getInstance().getSolarTerm(blockEntity.getLevel()).getTranslation().getString(), blockEntity, poseStack, bufferIn, combinedLight);
+        drawText(2, Component.translatable("info.eclipticseasons.environment.solar_term.hint").getString(), Color.GRAY.getRGB(), blockEntity, poseStack, bufferIn, combinedLight);
+
+        drawText(1, st.getTranslation().getString(), st.getSeason().getColor().getColor(), blockEntity, poseStack, bufferIn, combinedLight);
+
+
+        // drawText(2, st.getAlternationText().getString().substring(0,5), st.getSeason().getColor().getColor(), blockEntity, poseStack, bufferIn, combinedLight);
+        //
+        // drawText(1, st.getAlternationText().getString().substring(5), st.getSeason().getColor().getColor(), blockEntity, poseStack, bufferIn, combinedLight);
 
     }
 
-    private void drawText(int line, String label, BlockEntity tile, PoseStack matrixStackIn, MultiBufferSource txtBuffer, int combinedLightIn) {
+    private void drawText(int line, String label, int color, BlockEntity tile, PoseStack matrixStackIn, MultiBufferSource txtBuffer, int combinedLightIn) {
+
+
         matrixStackIn.pushPose();
+
 
         Font fontRenderer = this.font;
         // MultiBufferSource.BufferSource txtBuffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -56,10 +71,10 @@ public class CalendarBlockEntityRenderer implements BlockEntityRenderer<Calendar
 
         float extraHeight = 0f;
 
-        matrixStackIn.translate(x, y, z);
+        matrixStackIn.translate(x, y, z + 0.74f);
         matrixStackIn.scale(scale_x, scale_y, scale_z);
         fontRenderer.drawInBatch(label
-                , (float) (-textWidth) / 2.0F, -18F - lh * 1.2f * line - 1.2f * extraHeight, 0xFFFFFF, false, matrixStackIn.last().pose(), txtBuffer, Font.DisplayMode.NORMAL, 0, combinedLightIn);
+                , (float) (-textWidth) / 2.0F, -18F - lh * 1.2f * line - 1.2f * extraHeight, color, false, matrixStackIn.last().pose(), txtBuffer, Font.DisplayMode.NORMAL, 0, combinedLightIn);
         // txtBuffer.endBatch();
 
         matrixStackIn.popPose();

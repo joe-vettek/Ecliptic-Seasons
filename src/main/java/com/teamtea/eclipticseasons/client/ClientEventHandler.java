@@ -110,6 +110,7 @@ public final class ClientEventHandler {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
             // ClientWeatherChecker.updateRainLevel(clientLevel);
             ClientWeatherChecker.updateRainLevel(clientLevel);
+            ClientWeatherChecker.updateThunderLevel(clientLevel);
         }
 
         if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {

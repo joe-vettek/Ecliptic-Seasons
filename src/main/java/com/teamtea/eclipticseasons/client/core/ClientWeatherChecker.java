@@ -57,6 +57,7 @@ public class ClientWeatherChecker {
         return lastBiomeRainLevel;
     }
 
+    // 后续优化方向为优先计算玩家面朝的方向，这个方向加一个权限。
     public static Float updateRainLevel(ClientLevel clientLevel) {
         // if (Minecraft.getInstance().cameraEntity instanceof Player player &&clientLevel.getBiome(Minecraft.getInstance().cameraEntity.getOnPos()).is(Biomes.PLAINS) )return 0.01f;
         float rainLevel = getStandardRainLevel(1f, clientLevel, null);
@@ -68,6 +69,13 @@ public class ClientWeatherChecker {
 
             rainLevel = getStandardRainLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, pos));
 
+            var lookAt = Minecraft.getInstance().hitResult.getLocation();
+            var crs = lookAt.subtract(Minecraft.getInstance().getCameraEntity().position());
+            lookAt = lookAt.add(crs).add(crs).add(crs);
+            var lookPos = BlockPos.containing(lookAt);
+            rainLevel += getStandardRainLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, lookPos)) * 2;
+
+
             for (BlockPos blockPos : List.of(pos.east(offset), pos.north(offset), pos.south(offset), pos.west(offset))) {
                 // var standBiome = clientLevel.getBiome(blockPos);
                 var standBiome = MapChecker.getSurfaceBiome(clientLevel, blockPos);
@@ -78,7 +86,7 @@ public class ClientWeatherChecker {
                 // }
                 rainLevel += orainLevel;
             }
-            rainLevel = rainLevel / 5f;
+            rainLevel = rainLevel / 7f;
 
 
             if (changeTime > 0) {
@@ -87,9 +95,9 @@ public class ClientWeatherChecker {
                 if (lastBiomeRainLevel >= 0 && !isNear(rainLevel, lastBiomeRainLevel, 0.01f)) {
                     // rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
                     // rainLevel = rainLevel + (lastBiomeRainLevel - rainLevel) * 0.99f;
-                    float add = 0.005f * ((rainLevel - lastBiomeRainLevel) > 0 ? 1 : -1);
+                    float add = 0.008f * ((rainLevel - lastBiomeRainLevel) > 0 ? 1 : -1);
                     lastBiomeRainLevel += add;
-                    rainLevel=lastBiomeRainLevel;
+                    rainLevel = lastBiomeRainLevel;
                 }
                 // else
                 {
@@ -128,32 +136,39 @@ public class ClientWeatherChecker {
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
     public static Float getThunderLevel(ClientLevel clientLevel, float p46723) {
-        float thunderLevel = getStandardThunderLevel(p46723, clientLevel, null);
+        return lastBiomeRThunderLevel;
+    }
+
+
+    public static Float updateThunderLevel(ClientLevel clientLevel) {
+        float thunderLevel = getStandardThunderLevel(1f, clientLevel, null);
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
-            // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
             var pos = player.getOnPos();
-            for (BlockPos blockPos : List.of(pos.east(4), pos.north(4), pos.south(4), pos.west(4))) {
+            int offset = ClientConfig.Renderer.weatherBufferDistance.getAsInt();
+            thunderLevel = getStandardThunderLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, pos));
+            var lookAt = Minecraft.getInstance().hitResult.getLocation();
+            var crs = lookAt.subtract(Minecraft.getInstance().getCameraEntity().position());
+            lookAt = lookAt.add(crs).add(crs).add(crs);
+            var lookPos = BlockPos.containing(lookAt);
+            thunderLevel += getStandardThunderLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, lookPos)) * 2;
+
+            for (BlockPos blockPos : List.of(pos.east(offset), pos.north(offset), pos.south(offset), pos.west(offset))) {
                 var standBiome = MapChecker.getSurfaceBiome(clientLevel, blockPos);
-                float orainLevel = getStandardThunderLevel(p46723, clientLevel, standBiome);
-                if (orainLevel > thunderLevel) {
-                    thunderLevel = orainLevel;
-                }
+                float othunderLevel = getStandardThunderLevel(1f, clientLevel, standBiome);
+                thunderLevel += othunderLevel;
             }
+            thunderLevel = thunderLevel / 7f;
 
             if (changeTime_thunder > 0) {
                 changeTime_thunder--;
                 if (lastBiomeRThunderLevel >= 0 && !isNear(thunderLevel, lastBiomeRThunderLevel, 0.01f)) {
-                    thunderLevel = thunderLevel + (lastBiomeRThunderLevel - thunderLevel) * 0.99f;
+                    float add = 0.008f * ((thunderLevel - lastBiomeRThunderLevel) > 0 ? 1 : -1);
+                    lastBiomeRThunderLevel += add;
+                    thunderLevel = lastBiomeRThunderLevel;
                 }
-                // else
-                {
-                    lastBiomeRThunderLevel = thunderLevel;
-                }
-
-
+                lastBiomeRThunderLevel = Mth.clamp(thunderLevel, 0.0F, 1.0F);
             } else {
                 if (thunderLevel != lastBiomeRThunderLevel) {
-                    // 设置了一个极限时间，可能需要看情况
                     changeTime_thunder = MAX_CHANGE_TIME;
                     thunderLevel = lastBiomeRThunderLevel;
                 }
@@ -183,8 +198,8 @@ public class ClientWeatherChecker {
     }
 
     // 0-》15
-    public static int ModifySnowAmount(int constant) {
-        return (int) (constant * lastBiomeRainLevel);
+    public static int ModifySnowAmount(int constant, float pPartialTick) {
+        return (int) (constant * Mth.clamp(lastBiomeRainLevel * 0.6f, 0.6f, 1f));
     }
 
     public static float modifyVolume(SoundEvent soundEvent, float pVolume) {
@@ -197,7 +212,7 @@ public class ClientWeatherChecker {
     }
 
     public static int modifyRainAmount(int originalNum) {
-        return (int) (originalNum * lastBiomeRainLevel);
+        return (int) (originalNum * lastBiomeRainLevel * 0.6f);
     }
 
     // public static Boolean hasPrecipitation(Biome biome) {

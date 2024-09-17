@@ -3,10 +3,12 @@ package com.teamtea.eclipticseasons.data;
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.data.advancement.Advancements;
-import com.teamtea.eclipticseasons.data.advancement.FDAdvancementGenerator;
 import com.teamtea.eclipticseasons.data.lang.Lang_EN;
 import com.teamtea.eclipticseasons.data.lang.Lang_ZH;
 import com.teamtea.eclipticseasons.data.loot.EclipticSeasonsLootTableProvider;
+import com.teamtea.eclipticseasons.data.model.BlockStatesDataProvider;
+import com.teamtea.eclipticseasons.data.model.ESBlockModelProvider;
+import com.teamtea.eclipticseasons.data.model.ESItemModelProvider;
 import com.teamtea.eclipticseasons.data.tag.TagsDataProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -36,6 +38,10 @@ public class start {
         if (event.includeClient()) {
             generator.addProvider(event.includeClient(),new Lang_EN(packOutput,helper));
             generator.addProvider(event.includeClient(),new Lang_ZH(packOutput,helper));
+            generator.addProvider(event.includeClient(), new BlockStatesDataProvider(packOutput, helper));
+            generator.addProvider(event.includeClient(), new ESItemModelProvider(packOutput, MODID, helper));
+            generator.addProvider(event.includeClient(), new ESBlockModelProvider(packOutput, MODID, helper));
+
         }
 
 

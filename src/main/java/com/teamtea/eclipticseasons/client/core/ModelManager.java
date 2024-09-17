@@ -55,7 +55,9 @@ public class ModelManager {
     public static ModelResourceLocation snow_height2 = mrl("block/snow_height2");
     public static ModelResourceLocation snow_height2_top = mrl("block/snow_height2_top");
     public static ModelResourceLocation grass_flower = mrl("block/grass_flower");
-
+    public static List<ModelResourceLocation> flower_on_grass = List.of(1, 2, 3, 4, 5, 6).stream().map(
+            i -> mrl("block/flower_%s".formatted(i))
+    ).toList();
 
     public static ModelResourceLocation mrl(String s) {
         return ModelResourceLocation.standalone(EclipticSeasonsMod.rl(s));
@@ -244,12 +246,13 @@ public class ModelManager {
                         if (cc != null) {
                             return cc;
                         } else {
-                            BakedModel snowModel = models.get(grass_flower);
+                            // BakedModel snowModel = models.get(grass_flower);
+                            BakedModel snowModel = models.get(flower_on_grass.get(random.nextInt(flower_on_grass.size())));
                             if (snowModel != null) {
                                 int size = list.size();
                                 var snowList = snowModel.getQuads(null, direction, null);
                                 ArrayList<BakedQuad> newList;
-                                newList = new ArrayList<BakedQuad>(size + snowList.size());
+                                newList = new ArrayList<>(size + snowList.size());
                                 newList.addAll(list);
                                 newList.addAll(snowList);
                                 quadMap_GRASS.putIfAbsent(list, newList);

@@ -11,7 +11,7 @@
     },
     "icon": {
       "count": 1,
-      "id": "minecraft:book"
+      "id": "eclipticseasons:calendar"
     },
     "title": {
       "translate": "eclipticseasons.advancement.root"

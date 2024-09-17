@@ -32,11 +32,11 @@ import net.minecraft.server.commands.AdvancementCommands;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -46,6 +46,7 @@ import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.WeatherCheck;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.util.FakePlayer;
 
 import java.util.*;
@@ -326,7 +327,8 @@ public class WeatherManager {
     }
 
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
-        if (player.isCreative() || !ServerConfig.Temperature.heatStroke.get()) return;
+        if (  // player.isCreative() ||
+                !ServerConfig.Temperature.heatStroke.get()) return;
         var level = player.level();
         if (MapChecker.isValidDimension(level)
                 && level.getRandom().nextInt(150) == 0)
@@ -343,15 +345,32 @@ public class WeatherManager {
                                 Item item = itemstack.getItem();
                                 if (item instanceof ArmorItem armorItem) {
                                     if (armorItem.getType() == ArmorItem.Type.HELMET) {
-                                        if (itemstack.getEnchantmentLevel(level.registryAccess().holderOrThrow(Enchantments.FIRE_PROTECTION)) > 0) {
+                                        if (itemstack.getEnchantmentLevel(level.registryAccess().holderOrThrow(Enchantments.FIRE_PROTECTION)) > 0
+                                                || itemstack.getEnchantmentLevel(level.registryAccess().holderOrThrow(Enchantments.FROST_WALKER)) > 0) {
                                             isColdHe = true;
+                                            break;
                                         }
                                     }
                                 }
                             }
-                            var mobEffectReference = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
+
                             if (!isColdHe) {
-                                player.addEffect(new MobEffectInstance(mobEffectReference, 600));
+                                for (ItemStack itemstack : player.getInventory().items) {
+                                    var item = itemstack.getItem();
+                                    if (item == Items.SNOWBALL ||
+                                            (item instanceof BlockItem blockItem &&
+                                                    (blockItem.getBlock().defaultBlockState().is(BlockTags.SNOW)
+                                                            || blockItem.getBlock().defaultBlockState().is(BlockTags.ICE)))) {
+                                        isColdHe = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!isColdHe) {
+                                var heatStroke = BuiltInRegistries.MOB_EFFECT.getHolder(EclipticSeasonsMod.EffectRegistry.Effects.HEAT_STROKE).get();
+                                player.addEffect(new MobEffectInstance(heatStroke, 600));
+                                EclipticSeasonsMod.ModContents.heatStroke.get().trigger(player);
                             }
                         }
                     }

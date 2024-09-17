@@ -15,14 +15,18 @@ public class Lang_ZH extends LangHelper {
 
     @Override
     protected void addTranslations() {
-        add("eclipticseasons.advancement.root", "春去秋来");
-        add("eclipticseasons.advancement.root.desc", "度过一年二十四个节气后开启");
+        add("eclipticseasons.advancement.root", "节气 - 春去秋来");
+        add("eclipticseasons.advancement.root.desc", "度过一年二十四个节气");
+        add("eclipticseasons.advancement.heat_stroke", "第一次中暑");
+        add("eclipticseasons.advancement.heat_stroke.desc", "夏季中午请勿在炎热的群系直面太阳行走，如有必要，带上能抵抗炎热的装备或者冰雪降温。");
 
-        add("info.eclipticseasons.environment.solar_term.hint", "当前节气：");
+        add("info.eclipticseasons.environment.solar_term.hint", "今日节气:");
         add("itemGroup." + EclipticSeasonsApi.MODID + ".core", "节气");
 
         add(EclipticSeasonsMod.ModContents.calendar.get(), "日历");
         add(EclipticSeasonsMod.ModContents.wind_chimes.get(), "风铃");
+        add(EclipticSeasonsMod.ModContents.paper_wind_chimes.get(), "纸风铃");
+        add(EclipticSeasonsMod.ModContents.bamboo_wind_chimes.get(), "竹风铃");
         add(EclipticSeasonsMod.ModContents.paper_wind_mill.get(), "纸风车");
 
         add("info.eclipticseasons.environment.temperature.under_freezing","严寒");

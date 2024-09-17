@@ -67,6 +67,9 @@ public class ClientSetup {
         event.register(ModelManager.snow_height2);
         event.register(ModelManager.snow_height2_top);
         event.register(ModelManager.grass_flower);
+        for (ModelResourceLocation flowerOnGrass : ModelManager.flower_on_grass) {
+            event.register(flowerOnGrass);
+        }
     }
 
     @SubscribeEvent

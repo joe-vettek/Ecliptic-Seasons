@@ -37,6 +37,13 @@ public class SolarTermsCriterion extends SimpleCriterionTrigger<SolarTermsCriter
             );
         }
 
+        public static Criterion<TriggerInstance> simple2() {
+            return EclipticSeasonsMod.ModContents.heatStroke.get().createCriterion(
+                    new TriggerInstance(Optional.empty())
+            );
+        }
+
+
         public boolean test() {
             return true;
         }

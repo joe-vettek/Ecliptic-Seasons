@@ -18,9 +18,9 @@ public class CalendarBlockItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
         super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
-        var sd = EclipticSeasonsApi.getInstance().getSolarTerm(pContext.level());
-        pTooltipComponents.add(Component.translatable("info.eclipticseasons.environment.solar_term.hint")
-                .withStyle(ChatFormatting.GRAY));
-        pTooltipComponents.add(sd.getTranslation().withStyle(sd.getSeason().getColor()));
+        // var sd = EclipticSeasonsApi.getInstance().getSolarTerm(pContext.level());
+        // pTooltipComponents.add(Component.translatable("info.eclipticseasons.environment.solar_term.hint")
+        //         .withStyle(ChatFormatting.GRAY));
+        // pTooltipComponents.add(sd.getTranslation().withStyle(sd.getSeason().getColor()));
     }
 }

@@ -15,15 +15,20 @@ public class Lang_EN extends LangHelper {
 
     @Override
     protected void addTranslations() {
-        add("eclipticseasons.advancement.root", "Spring After Autumn");
+        add("eclipticseasons.advancement.root", "Ecliptic Seasons : Spring After Autumn");
         add("eclipticseasons.advancement.root.desc", "Span a year with 24 solar terms.");
 
-        add("info.eclipticseasons.environment.solar_term.hint", "Current Solar Term:");
+        add("eclipticseasons.advancement.heat_stroke", "First Heat Stroke");
+        add("eclipticseasons.advancement.heat_stroke.desc", "Do not walk directly under the sun in hot communities during the summer afternoon. If necessary, bring heat-resistant gear or take ice and snow to cool down.");
+
+        add("info.eclipticseasons.environment.solar_term.hint", "Solar Term Today:");
 
         add("itemGroup." + EclipticSeasonsApi.MODID + ".core", "Ecliptic Seasons");
 
         add(EclipticSeasonsMod.ModContents.calendar.get(), "calendar");
         add(EclipticSeasonsMod.ModContents.wind_chimes.get(), "Wind Chimes");
+        add(EclipticSeasonsMod.ModContents.paper_wind_chimes.get(), "Paper Wind Chimes");
+        add(EclipticSeasonsMod.ModContents.bamboo_wind_chimes.get(), "Bamboo Wind Chimes");
         add(EclipticSeasonsMod.ModContents.paper_wind_mill.get(), "paper Wind Mill");
 
         add("info.eclipticseasons.environment.temperature.under_freezing","Under Freezing");

@@ -103,7 +103,7 @@ public abstract class MixinLevelRender {
     )
     private void ecliptic$renderSnowAndRain_ModifySnowAmount(LightTexture pLightTexture, float pPartialTick, double pCamX, double pCamY, double pCamZ, CallbackInfo ci, @Local(ordinal = 3) LocalIntRef integerLocalRef) {
         if (ServerConfig.Debug.useSolarWeather.get())
-            integerLocalRef.set(ClientWeatherChecker.ModifySnowAmount(integerLocalRef.get()));
+            integerLocalRef.set(ClientWeatherChecker.ModifySnowAmount(integerLocalRef.get(),pPartialTick));
     }
 
     @WrapOperation(

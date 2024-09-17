@@ -5,19 +5,36 @@ import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.common.block.base.SimpleHorizontalEntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class CalendarBlock extends SimpleHorizontalEntityBlock {
+
+    protected final static VoxelShape shape_N = Shapes.box(0.1875, 0, 0.75, 0.8125, 0.875, 1);
+    protected final static VoxelShape shape_S = Shapes.box(0.1875, 0, 0, 0.8125, 0.875, 0.25);
+    protected final static VoxelShape shape_W = Shapes.box(0.75, 0, 0.1875, 1, 0.875, 0.8125);
+    protected final static VoxelShape shape_E = Shapes.box(0, 0, 0.1875, 0.25, 0.875, 0.8125);
+    protected final static VoxelShape[] shapes = new VoxelShape[]{
+            shape_S, shape_W, shape_N, shape_E
+    };
+
     public CalendarBlock(Properties properties) {
         super(properties);
     }
 
+    @Override
+    protected VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+       return shapes[pState.getValue(FACING).get2DDataValue()];
+    }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
