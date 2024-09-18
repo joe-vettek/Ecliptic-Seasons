@@ -43,7 +43,7 @@
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
     "compat.distanthorizons.MixinFullDataToRenderDataTransformer",
-    "compat.distanthorizons.MixinNeoForgeClientLevelWrapper",
+    "compat.distanthorizons.MixinClientLevel",
     "compat.distanthorizons.MixinNetworkdUtil",
     "compat.distanthorizons.MixinTintWithoutLevelOverrider",
     "compat.eclipticseasons.teacon.client.MixinTeaconClientLevel",

@@ -101,7 +101,7 @@ public class SolarDataManager extends SavedData {
     }
 
     public int getSolarTermIndex() {
-        return  getSolarTermsDay()  / ServerConfig.Season.lastingDaysOfEachTerm.get();
+        return getSolarTermsDay() / ServerConfig.Season.lastingDaysOfEachTerm.get();
     }
 
     public SolarTerm getSolarTerm() {
@@ -132,6 +132,7 @@ public class SolarDataManager extends SavedData {
             if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
                 player.sendSystemMessage(Component.translatable("info.eclipticseasons.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
             }
+            WeatherManager.tickPlayerForSeasonCheck(player);
         }
     }
 

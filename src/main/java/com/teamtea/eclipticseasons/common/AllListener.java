@@ -142,7 +142,7 @@ public class AllListener {
     public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
        if(event.getEntity() instanceof ServerPlayer serverPlayer){
            WeatherManager.tickPlayerSeasonEffecct(serverPlayer);
-           WeatherManager.tickPlayerForSeasonCheck(serverPlayer);
+           // WeatherManager.tickPlayerForSeasonCheck(serverPlayer);
        }
     }
 }

@@ -31,6 +31,8 @@ public class ClientConfig
     public static class Renderer
     {
         public static ModConfigSpec.BooleanValue forceChunkRenderUpdate;
+        public static ModConfigSpec.BooleanValue enhancementChunkRenderUpdate;
+
         public static ModConfigSpec.BooleanValue useVanillaCheck;
         public static ModConfigSpec.BooleanValue snowyWinter;
         public static ModConfigSpec.BooleanValue flowerOnGrass;
@@ -44,6 +46,8 @@ public class ClientConfig
             builder.push("Renderer");
             forceChunkRenderUpdate = builder.comment("Force to update chunk rendering.")
                     .define("ForceChunkRenderUpdate", true);
+            enhancementChunkRenderUpdate = builder.comment("Enhanced reload, which will refresh all sections periodically.")
+                    .define("EnhancementChunkRenderUpdate", false);
             useVanillaCheck = builder.comment("Determines whether snow is falling based on vanilla lighting checks.")
                     .define("useVanillaCheck", false);
             snowyWinter = builder.comment("If snow falls during cold weather, it will gradually cover all solid blocks and grass.")

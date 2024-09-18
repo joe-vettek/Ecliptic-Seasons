@@ -382,6 +382,10 @@ public class WeatherManager {
         if (!biomeWeather.biomeHolder.value().hasPrecipitation())
             return;
         boolean isEcliptic = VanillaWeather.canRunSpecialWeather();
+
+
+        size = (int) (size * (Math.clamp(7f / ServerConfig.Season.lastingDaysOfEachTerm.get(), 0.8f, 3f)));
+
         if (isEcliptic) {
             if (biomeWeather.shouldClear()) {
                 biomeWeather.clearTime--;
@@ -499,7 +503,8 @@ public class WeatherManager {
 
     public static void tickPlayerForSeasonCheck(ServerPlayer serverPlayer) {
         var level = serverPlayer.level();
-        if (level.getGameTime() % 12000 == 0) {
+        // if (level.getGameTime() % 12000 == 0)
+        {
             var holder = serverPlayer.getData(EclipticSeasonsMod.ModContents.SOLAR_TERMS_RECORD.get());
             if (holder.solarTerm().size() < SolarTermsRecord.size) {
                 var st = EclipticSeasonsApi.getInstance().getSolarTerm(level);
@@ -583,7 +588,6 @@ public class WeatherManager {
             return true;
         }
 
-
         int pos = NEXT_CHECK_BIOME_MAP.getOrDefault(level, -1);
 
         var levelBiomeWeather = getBiomeList(level);
@@ -600,7 +604,7 @@ public class WeatherManager {
         }
         // Ecliptic.logger(level.getGameTime(),level.getGameTime() & 100);
         if (levelBiomeWeather != null && (level.getGameTime() % 100) == 0 && !level.players().isEmpty()) {
-            // Ecliptic.logger(level.getGameTime());
+            // EclipticSeasonsMod.logger(level.getGameTime());
             sendBiomePacket(levelBiomeWeather, level.players());
         }
 
