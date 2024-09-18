@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Map;
 
 @Mixin({net.minecraft.client.renderer.ItemBlockRenderTypes.class})
-public abstract class ItemBlockRenderTypes {
+public abstract class MixinItemBlockRenderTypes {
 
     @Shadow
     private static boolean renderCutout;

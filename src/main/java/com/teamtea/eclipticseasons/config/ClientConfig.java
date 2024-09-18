@@ -33,9 +33,11 @@ public class ClientConfig
         public static ModConfigSpec.BooleanValue forceChunkRenderUpdate;
         public static ModConfigSpec.BooleanValue useVanillaCheck;
         public static ModConfigSpec.BooleanValue snowyWinter;
+        public static ModConfigSpec.BooleanValue flowerOnGrass;
         public static ModConfigSpec.BooleanValue deeperSnow;
         public static ModConfigSpec.BooleanValue seasonParticle;
         public static ModConfigSpec.IntValue weatherBufferDistance;
+        public static ModConfigSpec.BooleanValue seasonalColorWorld;
 
         private static void load(ModConfigSpec.Builder builder)
         {
@@ -52,6 +54,10 @@ public class ClientConfig
                     .define("SeasonParticle", true);
             weatherBufferDistance = builder.comment("Modify the buffer distance for local weather changes.")
                     .defineInRange("WeatherBufferDistance", 16,1,80);
+            seasonalColorWorld = builder.comment("The colors of the grass and leaves change with the time of year.")
+                    .define("SeasonalColorWorld", true);
+            flowerOnGrass = builder.comment("In spring, grass blocks will occasionally have small flowers on them.")
+                    .define("FlowerOnGrass", true);
             builder.pop();
         }
     }

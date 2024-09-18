@@ -30,13 +30,13 @@
     "compat.eclipticseasons.teacon.inner.MixinTeaconWeatherManager"
   ],
   "client": [
-    "client.ItemBlockRenderTypes",
     "client.MixinBlockRenderVanilla",
     "client.MixinClientClientLevel",
     "client.MixinClientLevel",
     "client.MixinClientLevelChunk",
     "client.MixinClientPanda",
     "client.MixinGameRenderer",
+    "client.MixinItemBlockRenderTypes",
     "client.MixinLevelRender",
     "client.MixinLocalPlayer",
     "client.block.MixinLeavesBlock",
@@ -49,9 +49,9 @@
     "compat.eclipticseasons.teacon.client.MixinTeaconClientLevel",
     "compat.eclipticseasons.teacon.client.MixinTeaconLevelRender",
     "compat.embeddium.MixinBlockRender2",
+    "compat.iris.MixinBiomeUniforms",
     "compat.sodium.MixinAbstractBlockRenderContext",
-    "compat.sodium.MixinNeoForgeModelAccess",
-    "compat.iris.MixinBiomeUniforms"
+    "compat.sodium.MixinNeoForgeModelAccess"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -99,7 +99,6 @@ public class ModelManager {
             EclipticSeasonsMod.logger("NULLLLLLLL");
         }
         if (level != null
-                && ClientConfig.Renderer.snowyWinter.get()
                 && direction != Direction.DOWN
                 && !list.isEmpty()
                 && MapChecker.isValidDimension(level)
@@ -124,7 +123,8 @@ public class ModelManager {
             // SimpleUtil.testTime(()->{getHeightOrUpdate(pos, false);});
 
             if (isLight) {
-                if (onBlock != Blocks.SNOW_BLOCK
+                if (ClientConfig.Renderer.snowyWinter.get() &&
+                        onBlock != Blocks.SNOW_BLOCK
                         && MapChecker.shouldSnowAt(level, pos.below(offset), state, random, seed)) {
                     // DynamicLeavesBlock
 
@@ -228,7 +228,9 @@ public class ModelManager {
 
                         }
                     }
-                } else if (direction == Direction.UP
+                } else if (
+                        ClientConfig.Renderer.flowerOnGrass.get()
+                        &&direction == Direction.UP
                         && state.getBlock() instanceof GrassBlock
                         && random.nextInt(15) == 0
                 ) {
