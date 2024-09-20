@@ -36,7 +36,7 @@ public class ClientWeatherChecker {
     }
 
 
-    public static Float getStandardRainLevel(float p46723, ClientLevel clientLevel, Holder<Biome> biomeHolder) {
+    public static float getStandardRainLevel(float p46723, ClientLevel clientLevel, Holder<Biome> biomeHolder) {
         // if (biomeHolder != null && biomeHolder.is(Tags.Biomes.IS_DESERT)) {
         //     return 0.0f;
         // }
@@ -53,14 +53,18 @@ public class ClientWeatherChecker {
     }
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
-    public static Float getRainLevel(ClientLevel clientLevel, float p46723) {
+    public static float getRainLevel(ClientLevel clientLevel, float p46723) {
         return lastBiomeRainLevel;
     }
 
     // 后续优化方向为优先计算玩家面朝的方向，这个方向加一个权限。
-    public static Float updateRainLevel(ClientLevel clientLevel) {
+    public static float updateRainLevel(ClientLevel clientLevel) {
         // if (Minecraft.getInstance().cameraEntity instanceof Player player &&clientLevel.getBiome(Minecraft.getInstance().cameraEntity.getOnPos()).is(Biomes.PLAINS) )return 0.01f;
         float rainLevel = getStandardRainLevel(1f, clientLevel, null);
+        // 初始小于0会导致出现暗角
+        if (lastBiomeRainLevel < 0) {
+            lastBiomeRainLevel = rainLevel;
+        }
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
@@ -118,7 +122,7 @@ public class ClientWeatherChecker {
         return rainLevel;
     }
 
-    public static Float getStandardThunderLevel(float p46723, ClientLevel clientLevel, Holder<Biome> biomeHolder) {
+    public static float getStandardThunderLevel(float p46723, ClientLevel clientLevel, Holder<Biome> biomeHolder) {
         var lists = WeatherManager.getBiomeList(clientLevel);
         if (lists != null)
             for (WeatherManager.BiomeWeather biomeWeather : lists) {
@@ -135,13 +139,16 @@ public class ClientWeatherChecker {
 
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
-    public static Float getThunderLevel(ClientLevel clientLevel, float p46723) {
+    public static float getThunderLevel(ClientLevel clientLevel, float p46723) {
         return lastBiomeRThunderLevel;
     }
 
 
-    public static Float updateThunderLevel(ClientLevel clientLevel) {
+    public static float updateThunderLevel(ClientLevel clientLevel) {
         float thunderLevel = getStandardThunderLevel(1f, clientLevel, null);
+        if (lastBiomeRThunderLevel < 0) {
+            lastBiomeRThunderLevel = thunderLevel;
+        }
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
             var pos = player.getOnPos();
             int offset = ClientConfig.Renderer.weatherBufferDistance.getAsInt();

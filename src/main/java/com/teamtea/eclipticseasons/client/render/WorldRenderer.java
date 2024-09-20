@@ -75,11 +75,12 @@ public class WorldRenderer {
                     updateUniform("RadiusMultiplier", progress);
                 }
                 // EclipticSeasons.logger(reMainTick, progress, blurStatus, oldBlurStatus);
-                if (reMainTick == 0) {
+                if (reMainTick <= 0) {
                     oldBlurStatus = blurStatus;
                     if (oldBlurStatus == NONE_BLUR) {
                         gameRenderer.shutdownEffect();
                     }
+                    reMainTick=0;
                 }
             }
         }
