@@ -54,6 +54,10 @@ public class ClientWeatherChecker {
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
     public static float getRainLevel(ClientLevel clientLevel, float p46723) {
+        // 初始小于0会导致出现暗角
+        if (lastBiomeRainLevel < 0) {
+            lastBiomeRainLevel =  getStandardRainLevel(1f, clientLevel, null);
+        }
         return lastBiomeRainLevel;
     }
 
@@ -61,10 +65,6 @@ public class ClientWeatherChecker {
     public static float updateRainLevel(ClientLevel clientLevel) {
         // if (Minecraft.getInstance().cameraEntity instanceof Player player &&clientLevel.getBiome(Minecraft.getInstance().cameraEntity.getOnPos()).is(Biomes.PLAINS) )return 0.01f;
         float rainLevel = getStandardRainLevel(1f, clientLevel, null);
-        // 初始小于0会导致出现暗角
-        if (lastBiomeRainLevel < 0) {
-            lastBiomeRainLevel = rainLevel;
-        }
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
             // Ecliptic.logger(clientLevel.getNoiseBiome((int) player.getX(), (int) player.getY(), (int) player.getZ()));
             // TODO：根据群系过渡计算雨量（也许需要维护一个群系位置）,目前设置为时间平滑
@@ -140,15 +140,15 @@ public class ClientWeatherChecker {
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
     public static float getThunderLevel(ClientLevel clientLevel, float p46723) {
+        if (lastBiomeRThunderLevel < 0) {
+            lastBiomeRThunderLevel = getStandardThunderLevel(1f, clientLevel, null);
+        }
         return lastBiomeRThunderLevel;
     }
 
 
     public static float updateThunderLevel(ClientLevel clientLevel) {
         float thunderLevel = getStandardThunderLevel(1f, clientLevel, null);
-        if (lastBiomeRThunderLevel < 0) {
-            lastBiomeRThunderLevel = thunderLevel;
-        }
         if (Minecraft.getInstance().cameraEntity instanceof Player player) {
             var pos = player.getOnPos();
             int offset = ClientConfig.Renderer.weatherBufferDistance.getAsInt();
