@@ -11,6 +11,6 @@ import java.util.concurrent.CompletableFuture;
 public class Advancements extends AdvancementProvider
 {
     public Advancements(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, existingFileHelper, List.of(new FDAdvancementGenerator()));
+        super(output, lookupProvider, existingFileHelper, List.of(new ESAdvancementGenerator()));
     }
 }

@@ -8,14 +8,14 @@
   "display": {
     "announce_to_chat": false,
     "description": {
-      "translate": "eclipticseasons.advancement.heat_stroke.desc"
+      "translate": "advancement.eclipticseasons.heat_stroke.desc"
     },
     "icon": {
       "count": 1,
       "id": "minecraft:magma_block"
     },
     "title": {
-      "translate": "eclipticseasons.advancement.heat_stroke"
+      "translate": "advancement.eclipticseasons.heat_stroke"
     }
   },
   "requirements": [

@@ -21,17 +21,17 @@ import java.util.List;
 
 
 public final class CustomRandomTickHandler {
-    private static final CustomRandomTick SNOW_MELT = (state, world, pos) ->
+    private static final CustomRandomTick SNOW_MELT = (state, serverLevel, pos) ->
     {
-        BlockPos blockpos = new BlockPos(pos.getX(), world.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
-        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).value().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
-            BlockState topState = world.getBlockState(blockpos);
+        BlockPos blockpos = new BlockPos(pos.getX(), serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
+        if (serverLevel.isAreaLoaded(blockpos, 1) && serverLevel.getBiome(blockpos).value().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
+            BlockState topState = serverLevel.getBlockState(blockpos);
             if (topState.getBlock().equals(Blocks.SNOW)) {
-                world.setBlockAndUpdate(blockpos, Blocks.AIR.defaultBlockState());
+                serverLevel.setBlockAndUpdate(blockpos, Blocks.AIR.defaultBlockState());
             } else {
-                BlockState belowState = world.getBlockState(blockpos.below());
+                BlockState belowState = serverLevel.getBlockState(blockpos.below());
                 if (belowState.getBlock().equals(Blocks.ICE)) {
-                    world.setBlockAndUpdate(blockpos.below(), Blocks.WATER.defaultBlockState());
+                    serverLevel.setBlockAndUpdate(blockpos.below(), Blocks.WATER.defaultBlockState());
                 }
             }
         }
@@ -50,11 +50,10 @@ public final class CustomRandomTickHandler {
 
                     LevelChunk optional = chunkHolder.getTickingChunkFuture().getNow(ChunkHolder.UNLOADED_LEVEL_CHUNK).orElse(null);
                     if (optional!=null) {
-                        LevelChunk chunk = optional;
-                        for (var chunksection : chunk.getSections()) {
+                        for (var chunksection : optional.getSections()) {
                             if (chunksection.isRandomlyTicking()) {
-                                int i = chunk.getPos().getMinBlockX();
-                                int j = chunk.getPos().getMinBlockZ();
+                                int i = optional.getPos().getMinBlockX();
+                                int j = optional.getPos().getMinBlockZ();
                                 BlockPos blockpos1 = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, level.getBlockRandomPos(i, 0, j, 15));
                                 // BlockPos blockpos2 = blockpos1.below();
                                 // Biome biome = level.getBiome(blockpos1).value();
@@ -77,9 +76,9 @@ public final class CustomRandomTickHandler {
         }
     }
 
-    private static void doCustomRandomTick(ServerLevel world, int x, int y, int z) {
+    private static void doCustomRandomTick(ServerLevel serverLevel, int x, int y, int z) {
         if (ServerConfig.Temperature.iceMelt.get()) {
-            SNOW_MELT.tick(null, world, new BlockPos(x, y, z));
+            SNOW_MELT.tick(null, serverLevel, new BlockPos(x, y, z));
         }
     }
 }

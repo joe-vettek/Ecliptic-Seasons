@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.AmbientSoundHandler;
-import net.minecraft.server.commands.TickCommand;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,7 +28,7 @@ public abstract class MixinLocalPlayer implements BasicWeather {
 
     @Inject(at = {@At("RETURN")}, method = {"<init>"})
     private void ecliptic$init(CallbackInfo ci, @Local Minecraft minecraft, @Local ClientLevel clientLevel) {
-        if (ClientConfig.Sound.sound.get() && MapChecker.isValidDimension(clientLevel))
+        if (ClientConfig.Sound.naturalSound.get() && MapChecker.isValidDimension(clientLevel))
             ambientSoundHandlers.add(new SeasonalBiomeAmbientSoundsHandler((LocalPlayer) (Object) this, minecraft.getSoundManager(), clientLevel.getBiomeManager()));
     }
 }

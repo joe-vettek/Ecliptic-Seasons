@@ -4,29 +4,22 @@ import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.common.advancement.SolarTermsCriterion;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
-public class FDAdvancementGenerator implements AdvancementProvider.AdvancementGenerator {
+public class ESAdvancementGenerator implements AdvancementProvider.AdvancementGenerator {
     @Override
     public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> consumer, ExistingFileHelper existingFileHelper) {
         AdvancementHolder seasons = Advancement.Builder.advancement()
                 .display(EclipticSeasonsMod.ModContents.calendar_item.get(),
-                        Component.translatable("eclipticseasons.advancement.root"),
-                        Component.translatable("eclipticseasons.advancement.root.desc"),
+                        Component.translatable("advancement.eclipticseasons.root"),
+                        Component.translatable("advancement.eclipticseasons.root.desc"),
                         ResourceLocation.parse("minecraft:textures/block/bricks.png"),
                         AdvancementType.TASK, true, true, false)
                 .addCriterion("solar_terms", SolarTermsCriterion.TriggerInstance.simple())
@@ -36,8 +29,8 @@ public class FDAdvancementGenerator implements AdvancementProvider.AdvancementGe
         AdvancementHolder heatStroke = Advancement.Builder.advancement()
                 .parent(seasons)
                 .display(Items.MAGMA_BLOCK,
-                        Component.translatable("eclipticseasons.advancement.heat_stroke"),
-                        Component.translatable("eclipticseasons.advancement.heat_stroke.desc"),
+                        Component.translatable("advancement.eclipticseasons.heat_stroke"),
+                        Component.translatable("advancement.eclipticseasons.heat_stroke.desc"),
                         null,
                         AdvancementType.TASK, true, false, false)
                 .addCriterion("heat_stroke", SolarTermsCriterion.TriggerInstance.simple2())

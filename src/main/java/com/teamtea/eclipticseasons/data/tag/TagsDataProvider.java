@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.data.tag;
 
 import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
+import com.teamtea.eclipticseasons.api.constant.tag.SeasonalBlockTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -23,13 +24,14 @@ public class TagsDataProvider extends TagsProvider<Biome> {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(ClimateTypeBiomeTags.SEASONAL).addTags(Tags.Biomes.IS_OVERWORLD);
-        this.tag(ClimateTypeBiomeTags.MONSOONAL).addTags(Tags.Biomes.IS_SAVANNA);
-        this.tag(ClimateTypeBiomeTags.RAINLESS).addTags(Tags.Biomes.IS_CAVE);
-        this.tag(ClimateTypeBiomeTags.ARID).addTags(Tags.Biomes.IS_BADLANDS, Tags.Biomes.IS_DESERT);
-        this.tag(ClimateTypeBiomeTags.DROUGHTY).addTags(Tags.Biomes.IS_MOUNTAIN_PEAK, Tags.Biomes.IS_COLD_OVERWORLD);
-        this.tag(ClimateTypeBiomeTags.SOFT).addTags(Tags.Biomes.IS_BEACH, Tags.Biomes.IS_OCEAN, Tags.Biomes.IS_DEEP_OCEAN);
-        this.tag(ClimateTypeBiomeTags.RAINY).addTags(Tags.Biomes.IS_JUNGLE);
-        this.tag(ClimateTypeBiomeTags.IS_SMALL).addTags(Tags.Biomes.IS_BEACH, Tags.Biomes.IS_RIVER);
+        tag(ClimateTypeBiomeTags.SEASONAL).addTags(Tags.Biomes.IS_OVERWORLD);
+        tag(ClimateTypeBiomeTags.MONSOONAL).addTags(Tags.Biomes.IS_SAVANNA);
+        tag(ClimateTypeBiomeTags.RAINLESS).addTags(Tags.Biomes.IS_CAVE);
+        tag(ClimateTypeBiomeTags.ARID).addTags(Tags.Biomes.IS_BADLANDS, Tags.Biomes.IS_DESERT);
+        tag(ClimateTypeBiomeTags.DROUGHTY).addTags(Tags.Biomes.IS_MOUNTAIN_PEAK, Tags.Biomes.IS_COLD_OVERWORLD);
+        tag(ClimateTypeBiomeTags.SOFT).addTags(Tags.Biomes.IS_BEACH, Tags.Biomes.IS_OCEAN, Tags.Biomes.IS_DEEP_OCEAN);
+        tag(ClimateTypeBiomeTags.RAINY).addTags(Tags.Biomes.IS_JUNGLE);
+        tag(ClimateTypeBiomeTags.IS_SMALL).addTags(Tags.Biomes.IS_BEACH, Tags.Biomes.IS_RIVER);
+
     }
 }

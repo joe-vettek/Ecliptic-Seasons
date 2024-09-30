@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.client.particle;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
@@ -41,6 +42,7 @@ public class ButterflyParticle extends FireflyParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
+    // 注意这样子可能有模组改镜头滚转角
     @Override
     protected void renderRotatedQuad(VertexConsumer pBuffer, Quaternionf pQuaternion, float pX, float pY, float pZ, float pPartialTicks) {
         float f = this.getQuadSize(pPartialTicks);
@@ -69,6 +71,18 @@ public class ButterflyParticle extends FireflyParticle {
         float pYOffset0 = -1.f;
         // pQuaternion=new Quaternionf();
 
+        if (Minecraft.getInstance().getCameraEntity() != null) {
+            var viewVec = Minecraft.getInstance().getCameraEntity().getLookAngle();
+            double vx = viewVec.x;
+            double vz = viewVec.z;
+            double crossY = vx * zd - vz * xd;
+            // 浮点数要防抖
+            if (crossY < 0.01f) {
+                float ut = u0;
+                u0 = u1;
+                u1 = ut;
+            }
+        }
 
         pQuaternion = pQuaternion.rotateAxis(ff * 70 * Mth.DEG_TO_RAD, 1, 1, 0);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset0, f, u1, v1, i, 1f);

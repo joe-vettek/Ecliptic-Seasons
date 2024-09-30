@@ -116,7 +116,8 @@ public final class ClientEventHandler {
             ClientWeatherChecker.updateThunderLevel(clientLevel);
 
             if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
-                if (clientLevel.getGameTime() - lastFreshTime > 80) {
+                if (clientLevel.getGameTime() - lastFreshTime > 80
+                        || clientLevel.getGameTime() < lastFreshTime - 1) {
                     lastFreshTime = clientLevel.getGameTime();
                     var lr = Minecraft.getInstance().levelRenderer;
                     if (lr != null && lr.viewArea != null) {
@@ -218,6 +219,8 @@ public final class ClientEventHandler {
         if (true) return;
 
         event.addRenderer(context -> {
+
+
             var type = ItemBlockRenderTypes.getRenderLayer(Fluids.WATER.defaultFluidState());
             VertexConsumer buffer = context.getOrCreateChunkBuffer(type);
             PoseStack poseStack = context.getPoseStack();

@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.client;
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
 import com.teamtea.eclipticseasons.client.particle.ButterflyParticle;
+import com.teamtea.eclipticseasons.client.particle.FallenLeavesParticle;
 import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.client.particle.WildGooseParticle;
 import com.teamtea.eclipticseasons.client.render.ber.CalendarBlockEntityRenderer;
@@ -47,6 +48,11 @@ public class ClientSetup {
         event.registerSpriteSet(EclipticSeasonsMod.ParticleRegistry.BUTTERFLY, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new ButterflyParticle(level, x, y, z, p_277215_));
+        event.registerSpriteSet(EclipticSeasonsMod.ParticleRegistry.FALLEN_LEAVES, (p_277215_) ->
+                (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
+                        new FallenLeavesParticle(level, x, y, z, p_277222_, p_277223_, p_277224_,particleType, p_277215_));
+
+
 
     }
 

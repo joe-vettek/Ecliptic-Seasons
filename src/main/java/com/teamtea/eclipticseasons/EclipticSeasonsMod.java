@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons;
 
 
+import com.mojang.serialization.MapCodec;
 import com.teamtea.eclipticseasons.api.misc.BasicWeather;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.common.advancement.SolarTermsRecord;
@@ -19,9 +20,15 @@ import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.data.start;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -56,6 +63,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 // import xueluoanping.fluiddrawerslegacy.handler.ControllerFluidCapabilityHandler;
 
@@ -170,6 +178,7 @@ public class EclipticSeasonsMod {
         public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
         public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
         public static final SimpleParticleType BUTTERFLY = new SimpleParticleType(false);
+        public static final ParticleType<ColorParticleOption> FALLEN_LEAVES = create(false,ColorParticleOption::codec, ColorParticleOption::streamCodec);
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
@@ -177,7 +186,26 @@ public class EclipticSeasonsMod {
                 particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
                 particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
                 particleTypeRegisterHelper.register(rl("butterfly"), BUTTERFLY);
+                particleTypeRegisterHelper.register(rl("fallen_leaves"), FALLEN_LEAVES);
             });
+        }
+
+        private static <T extends ParticleOptions> ParticleType<T> create(
+                boolean pOverrideLimitter,
+                final Function<ParticleType<T>, MapCodec<T>> pCodecGetter,
+                final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> pStreamCodecGetter
+        ) {
+            return new ParticleType<T>(pOverrideLimitter) {
+                @Override
+                public MapCodec<T> codec() {
+                    return pCodecGetter.apply(this);
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec() {
+                    return pStreamCodecGetter.apply(this);
+                }
+            };
         }
 
 
@@ -239,9 +267,9 @@ public class EclipticSeasonsMod {
 
         // DataComponent
         public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, EclipticSeasonsApi.MODID);
-        public static final Supplier<AttachmentType<SolarTermsRecord>> SOLAR_TERMS_RECORD =ATTACHMENT_TYPES.register(
+        public static final Supplier<AttachmentType<SolarTermsRecord>> SOLAR_TERMS_RECORD = ATTACHMENT_TYPES.register(
                 "solar_terms_record",
-                ()->AttachmentType.builder(() -> new SolarTermsRecord(new ArrayList<>())).serialize(SolarTermsRecord.CODEC).build());
+                () -> AttachmentType.builder(() -> new SolarTermsRecord(new ArrayList<>())).serialize(SolarTermsRecord.CODEC).build());
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
