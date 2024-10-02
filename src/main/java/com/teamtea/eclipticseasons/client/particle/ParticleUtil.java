@@ -55,27 +55,32 @@ public class ParticleUtil {
                     case AUTUMN -> chanceW = 9;
                     case WINTER -> chanceW = 15;
                 }
+                chanceW *= (int) (ClientConfig.Particle.fallenLeavesDropWeight.get() *0.1f);
                 if (random.nextInt(chanceW) == 0) {
                     fallenLeaves(clientLevel, blockpos$mutableblockpos, blockstate);
                 }
             }
-        } else if (ClientConfig.Particle.butterfly.get()
-                && blockstate.is(SeasonalBlockTags.HABITAT_BUTTERFLY)) {
-            if (EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SPRING
-                    && EclipticUtil.isDay(clientLevel)
+        }
+        if (ClientConfig.Particle.butterfly.get()
+                && EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SPRING
+                && EclipticUtil.isDay(clientLevel)
+        ) {
+            if (blockstate.is(SeasonalBlockTags.HABITAT_BUTTERFLY)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                     && clientLevel.canSeeSky(blockpos$mutableblockpos)
-                    && random.nextInt(25) == 0
+                    && random.nextInt(1024 *  (int) (ClientConfig.Particle.butterflySpawnWeight.get() *0.1f)) == 0
             ) {
                 clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.BUTTERFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
             }
-        } else if (ClientConfig.Particle.firefly.get()
-                && blockstate.is(SeasonalBlockTags.HABITAT_FIREFLY)) {
-            if (EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
-                    && EclipticUtil.isEvening(clientLevel)
+        }
+        if (ClientConfig.Particle.firefly.get()
+                && EclipticUtil.getNowSolarTerm(clientLevel).getSeason() == Season.SUMMER
+                && EclipticUtil.isEvening(clientLevel)
+        ) {
+            if (blockstate.is(SeasonalBlockTags.HABITAT_FIREFLY)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                     && clientLevel.canSeeSky(blockpos$mutableblockpos)
-                    && random.nextInt(5) == 0
+                    && random.nextInt(160 * (int) (ClientConfig.Particle.fireflySpawnWeight.get() *0.1f)) == 0
             ) {
                 clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
             }
@@ -87,8 +92,8 @@ public class ParticleUtil {
                 && clientLevel.canSeeSky(blockpos$mutableblockpos)
                 && clientLevel.isEmptyBlock(blockpos$mutableblockpos)
                 && !clientLevel.isRainingAt(blockpos$mutableblockpos)
-                && clientLevel.getBiome(blockpos$mutableblockpos).value().getBaseTemperature() < 0.601f
-                && random.nextInt(255) == 0) {
+                && clientLevel.getBiome(blockpos$mutableblockpos).value().getBaseTemperature() < 0.95f
+                && random.nextInt(2295 * (int) (ClientConfig.Particle.wildGooseSpawnWeight.get() *0.1f)) == 0) {
             clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
         }
     }

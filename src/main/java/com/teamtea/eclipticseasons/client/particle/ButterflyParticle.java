@@ -39,7 +39,7 @@ public class ButterflyParticle extends FireflyParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
     // 注意这样子可能有模组改镜头滚转角
@@ -58,7 +58,7 @@ public class ButterflyParticle extends FireflyParticle {
 
         float ff = System.currentTimeMillis() % 4000;
 
-        ff =  1- (Math.abs((ff - 2000) / 2000f));
+        ff = 1 - (Math.abs((ff - 2000) / 2000f));
 
 
         // pQuaternion=pQuaternion.rotateXYZ(0,0,-Mth.DEG_TO_RAD*90);
@@ -71,27 +71,35 @@ public class ButterflyParticle extends FireflyParticle {
         float pYOffset0 = -1.f;
         // pQuaternion=new Quaternionf();
 
+        boolean revex = true;
         if (Minecraft.getInstance().getCameraEntity() != null) {
             var viewVec = Minecraft.getInstance().getCameraEntity().getLookAngle();
             double vx = viewVec.x;
             double vz = viewVec.z;
             double crossY = vx * zd - vz * xd;
+
             // 浮点数要防抖
             if (crossY < 0.01f) {
                 float ut = u0;
                 u0 = u1;
                 u1 = ut;
+                revex = false;
             }
         }
 
-        pQuaternion = pQuaternion.rotateAxis(ff * 70 * Mth.DEG_TO_RAD, 1, 1, 0);
+        pQuaternion =
+                revex ?
+                        pQuaternion.rotateAxis(ff * 70 * Mth.DEG_TO_RAD, 1, 1, 0)
+                        : pQuaternion.rotateAxis(ff * 70 * Mth.DEG_TO_RAD, -1, 1, 0);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset0, f, u1, v1, i, 1f);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset1, f, u1, v0, i, 1f);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset1, f, u0, v0, i, 1f);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset0, f, u0, v1, i, 1f);
 
 
-        pQuaternion = pQuaternion.rotateAxis(ff * -140 * Mth.DEG_TO_RAD, 1, 1, 0);
+        pQuaternion = revex ?
+                pQuaternion.rotateAxis(ff * -140 * Mth.DEG_TO_RAD, 1, 1, 0)
+                :  pQuaternion.rotateAxis(ff * -140 * Mth.DEG_TO_RAD, -1, 1, 0);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset0, f, u1, v1, i, 1f);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset1, pYOffset1, f, u1, v0, i, 1f);
         this.renderVertex(pBuffer, pQuaternion, pX, pY, pZ, pXOffset0, pYOffset1, f, u0, v0, i, 1f);

@@ -8,6 +8,7 @@ import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
+import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.client.render.WorldRenderer;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
@@ -21,6 +22,7 @@ import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -41,10 +43,13 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+
+import java.awt.*;
 
 @EventBusSubscriber(modid = EclipticSeasonsApi.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
@@ -222,15 +227,17 @@ public final class ClientEventHandler {
 
 
             var type = ItemBlockRenderTypes.getRenderLayer(Fluids.WATER.defaultFluidState());
-            VertexConsumer buffer = context.getOrCreateChunkBuffer(type);
+            VertexConsumer buffer = context.getOrCreateChunkBuffer(RenderType.cutoutMipped());
             PoseStack poseStack = context.getPoseStack();
+
 
             poseStack.pushPose();
 
             var pos = event.getSectionOrigin();
             TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(IClientFluidTypeExtensions.of(Fluids.WATER).getStillTexture());
-
+            still=Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(EclipticSeasonsMod.rl("block/snow_overlay_2"));
             int color = IClientFluidTypeExtensions.of(Fluids.WATER).getTintColor();
+            color= Color.WHITE.getRGB();
 
             int r = color >> 16 & 0xFF;
             int g = color >> 8 & 0xFF;
@@ -242,16 +249,35 @@ public final class ClientEventHandler {
 
             int light = 15728880;
             light = LevelRenderer.getLightColor(context.getRegion(), pos);
+            // light=LevelRenderer.getLightColor(context.getRegion(), BlockPos.ZERO);;
+            light = 15728880;
+            //
+            // Minecraft.getInstance().getBlockRenderer().renderLiquid(pos, context.getRegion(), buffer, Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState().getFluidState());
 
 
-            Minecraft.getInstance().getBlockRenderer().renderLiquid(pos, context.getRegion(), buffer, Blocks.WATER.defaultBlockState(), Blocks.WATER.defaultBlockState().getFluidState());
-            buffer.addVertex(poseStack.last().pose(), 0.125F, height, 0.125F).setColor(r, g, b, a).setUv(still.getU0(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
-            buffer.addVertex(poseStack.last().pose(), 0.125F, height, 0.875F).setColor(r, g, b, a).setUv(still.getU0(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
-            buffer.addVertex(poseStack.last().pose(), 0.875F, height, 0.875F).setColor(r, g, b, a).setUv(still.getU1(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
-            buffer.addVertex(poseStack.last().pose(), 0.875F, height, 0.125F).setColor(r, g, b, a).setUv(still.getU1(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 0, 1, 1).setColor(r, g, b, a).setUv(still.getU0(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 0, 0, 1).setColor(r, g, b, a).setUv(still.getU0(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 1, 0, 1).setColor(r, g, b, a).setUv(still.getU1(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 1, 1, 1).setColor(r, g, b, a).setUv(still.getU1(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
+            //
+            // buffer.addVertex(poseStack.last().pose(), 0, 1, 0).setColor(r, g, b, a).setUv(still.getU0(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 0, 0, 0).setColor(r, g, b, a).setUv(still.getU0(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 1, 0, 0).setColor(r, g, b, a).setUv(still.getU1(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
+            // buffer.addVertex(poseStack.last().pose(), 1, 1, 0).setColor(r, g, b, a).setUv(still.getU1(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
 
+            if(!context.getRegion().getBlockState(pos).isEmpty())
+            Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(
+                    poseStack.last(),
+                    buffer,
+                    null,
+                    Minecraft.getInstance().getModelManager().getModel(BlockModelShaper.stateToModelLocation(EclipticSeasonsMod.ModContents.snowyLeaves.get().defaultBlockState())),
+                    1,1,1,
+                    light,0, ModelData.EMPTY,RenderType.cutoutMipped()
+            );
 
             poseStack.popPose();
+
+
         });
     }
 }

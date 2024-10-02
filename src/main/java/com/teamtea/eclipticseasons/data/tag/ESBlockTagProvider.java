@@ -22,6 +22,6 @@ public final class ESBlockTagProvider extends BlockTagsProvider {
     protected void addTags(HolderLookup.Provider pProvider) {
         tag(SeasonalBlockTags.NONE_FALLEN_LEAVES).add(Blocks.CHERRY_LEAVES);
         tag(SeasonalBlockTags.HABITAT_BUTTERFLY).addTag(BlockTags.FLOWERS);
-        tag(SeasonalBlockTags.HABITAT_FIREFLY).addTag(BlockTags.FLOWERS).add(Blocks.SHORT_GRASS, Blocks.TALL_GRASS);
+        tag(SeasonalBlockTags.HABITAT_FIREFLY).addTag(BlockTags.SMALL_FLOWERS).add(Blocks.SHORT_GRASS, Blocks.TALL_GRASS);
     }
 }

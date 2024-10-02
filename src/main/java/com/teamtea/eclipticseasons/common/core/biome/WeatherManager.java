@@ -389,7 +389,8 @@ public class WeatherManager {
                     biomeWeather.rainTime--;
                     if (!biomeWeather.shouldThunder()) {
                         BiomeRain biomeRain = SolarHolders.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                        float weight = biomeRain.getThunderChance();
+                        float weight = biomeRain.getThunderChance()
+                                * ((ServerConfig.Season.thunderChanceMultiplier.get() * 1f) / 100f);
                         if (level.getRandom().nextInt(1000) / 1000.f < weight) {
                             biomeWeather.thunderTime = ServerLevel.THUNDER_DURATION.sample(random) / size;
                         }

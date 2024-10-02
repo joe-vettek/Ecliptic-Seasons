@@ -46,6 +46,8 @@ public class ServerConfig {
         public static ModConfigSpec.IntValue lastingDaysOfEachTerm;
         public static ModConfigSpec.IntValue initialSolarTermIndex;
         public static ModConfigSpec.IntValue rainChanceMultiplier;
+        public static ModConfigSpec.IntValue thunderChanceMultiplier;
+
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Season");
@@ -62,6 +64,9 @@ public class ServerConfig {
 
             rainChanceMultiplier = builder.comment("Set the percentage multiplier of the probability of rain, the range should be between 0 and 1000.")
                     .defineInRange("RainChancePercentMultiplier", 60, 0, 1000);
+
+            thunderChanceMultiplier = builder.comment("Set the percentage multiplier of the probability of thunder in the rain, the range should be between 0 and 1000.")
+                    .defineInRange("ThunderChancePercentMultiplier", 100, 0, 1000);
 
 
             builder.pop();

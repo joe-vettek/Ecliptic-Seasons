@@ -75,9 +75,13 @@ public class ClientConfig {
         public static ModConfigSpec.BooleanValue seasonParticle;
 
         public static ModConfigSpec.BooleanValue butterfly;
+        public static ModConfigSpec.IntValue butterflySpawnWeight;
         public static ModConfigSpec.BooleanValue fallenLeaves;
+        public static ModConfigSpec.IntValue fallenLeavesDropWeight;
         public static ModConfigSpec.BooleanValue firefly;
+        public static ModConfigSpec.IntValue fireflySpawnWeight;
         public static ModConfigSpec.BooleanValue wildGoose;
+        public static ModConfigSpec.IntValue wildGooseSpawnWeight;
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Particle");
@@ -85,14 +89,24 @@ public class ClientConfig {
                     .define("SeasonParticle", true);
             butterfly = builder.comment("In spring, butterflies fly over the flowers.")
                     .define("Butterfly", true);
+            butterflySpawnWeight = builder.comment("The difficulty multiplier of butterfly particles, the value should be between 1-10000, the default is 10.")
+                    .defineInRange("butterflySpawnWeight", 10, 1, 10000);
 
             fallenLeaves = builder.comment("Leaf blocks will drop leaves, and most frequently in the fall.")
                     .define("FallenLeaves", true);
+            fallenLeavesDropWeight = builder.comment("The difficulty multiplier of fallen leaves particles, the value should be between 1-10000, the default is 10.")
+                    .defineInRange("FallenLeavesDropWeight", 10, 1, 10000);
 
             firefly = builder.comment("In the summer evenings, you can see fireflies beside the flowers.")
                     .define("Firefly", true);
+            fireflySpawnWeight = builder.comment("The difficulty multiplier of firefly particles, the value should be between 1-10000, the default is 10.")
+                    .defineInRange("FireflySpawnWeight", 10, 1, 10000);
+
             wildGoose = builder.comment("When the grass and trees turn yellow, the wild geese fly south.")
                     .define("WildGoose", true);
+            wildGooseSpawnWeight = builder.comment("The difficulty multiplier of wild geese particles, the value should be between 1-10000, the default is 10.")
+                    .defineInRange("WildGooseSpawnWeight", 10, 1, 10000);
+
             builder.pop();
         }
     }

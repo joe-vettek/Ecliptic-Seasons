@@ -263,7 +263,9 @@ public class MapChecker {
             flag = MapChecker.FLAG_GRASS;
         } else if (MapChecker.LARGE_GRASS.contains(onBlock)) {
             flag = MapChecker.FLAG_GRASS_LARGE;
-        } else if ((onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock)) {
+        } else if ((
+                onBlock instanceof FarmBlock ||
+                        onBlock instanceof DirtPathBlock)) {
             flag = MapChecker.FLAG_FARMLAND;
         }
         return flag;
