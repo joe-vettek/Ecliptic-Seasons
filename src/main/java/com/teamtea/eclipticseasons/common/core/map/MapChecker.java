@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.common.core.map;
 
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -175,6 +176,16 @@ public class MapChecker {
     public static boolean shouldSnowAt(Level level, BlockPos pos, BlockState state, RandomSource random, long seed) {
         var biomeHolder = getSurfaceBiome(level, pos);
         if (WeatherManager.getSnowDepthAtBiome(level, biomeHolder.value()) > Math.abs(seed % 100)) {
+            if (ServerConfig.Debug.notSnowyUnderLight.get()) {
+                var abovePos = pos.above();
+                if (level.isLoaded(abovePos)) {
+                    var stateAbove = level.getBlockState(abovePos);
+                    if (stateAbove.getBlock() instanceof LightBlock) {
+                        if (stateAbove.getValue(LightBlock.LEVEL) == 0)
+                            return false;
+                    }
+                }
+            }
             return true;
         }
         return false;

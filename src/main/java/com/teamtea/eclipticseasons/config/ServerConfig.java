@@ -15,6 +15,7 @@ public class ServerConfig {
     public static class Debug {
         public static ModConfigSpec.BooleanValue debugMode;
         public static ModConfigSpec.BooleanValue useSolarWeather;
+        public static ModConfigSpec.BooleanValue notSnowyUnderLight;
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Debug");
@@ -22,6 +23,8 @@ public class ServerConfig {
                     .define("Debug", false);
             useSolarWeather = builder.comment("Enable solar term weather system.")
                     .define("UseSolarWeather", true);
+            notSnowyUnderLight = builder.comment("Without snowy block under the light blocks which level is 0.")
+                    .define("NotSnowyUnderLight", true);
             builder.pop();
         }
     }
