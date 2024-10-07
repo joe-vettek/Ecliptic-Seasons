@@ -56,6 +56,7 @@ public class ParticleUtil {
                     case WINTER -> chanceW = 15;
                 }
                 chanceW *= (int) (ClientConfig.Particle.fallenLeavesDropWeight.get() *0.1f);
+                // chanceW*=4;
                 if (random.nextInt(chanceW) == 0) {
                     fallenLeaves(clientLevel, blockpos$mutableblockpos, blockstate);
                 }

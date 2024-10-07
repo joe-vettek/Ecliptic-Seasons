@@ -24,7 +24,7 @@ public class ServerConfig {
             useSolarWeather = builder.comment("Enable solar term weather system.")
                     .define("UseSolarWeather", true);
             notSnowyUnderLight = builder.comment("Without snowy block under the light blocks which level is 0.")
-                    .define("NotSnowyUnderLight", true);
+                    .define("NotSnowyUnderLight", false);
             builder.pop();
         }
     }

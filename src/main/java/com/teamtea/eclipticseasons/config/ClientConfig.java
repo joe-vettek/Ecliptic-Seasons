@@ -44,7 +44,7 @@ public class ClientConfig {
                     .define("EnhancementChunkRenderUpdate", false);
 
             useVanillaCheck = builder.comment("Determines whether snow is falling based on vanilla lighting checks.")
-                    .define("useVanillaCheck", false);
+                    .define("UseVanillaCheck", false);
             snowyWinter = builder.comment("If snow falls during cold weather, it will gradually cover all solid blocks and grass.")
                     .define("SnowyWinter", true);
             deeperSnow = builder.comment("Occasionally a thicker layer of snow will cover the flowers and grass, especially.")
