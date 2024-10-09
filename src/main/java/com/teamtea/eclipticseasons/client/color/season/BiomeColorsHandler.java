@@ -31,7 +31,7 @@ public class BiomeColorsHandler {
         //     return MapColor.SNOW.col;
         // }
         int originColor = biome.getGrassColor(posX, posZ);
-        if (ClientConfig.Renderer.seasonalColorWorld.get()) {
+        if (ClientConfig.Renderer.seasonalGrassColorChange.get()) {
             if (needRefresh) {
                 reloadColors();
             }
@@ -55,7 +55,7 @@ public class BiomeColorsHandler {
     public static final ColorResolver FOLIAGE_COLOR = (biome, posX, posZ) ->
     {
         int originColor = biome.getFoliageColor();
-        if (ClientConfig.Renderer.seasonalColorWorld.get()) {
+        if (ClientConfig.Renderer.seasonalGrassColorChange.get()) {
             if (needRefresh) {
                 reloadColors();
             }

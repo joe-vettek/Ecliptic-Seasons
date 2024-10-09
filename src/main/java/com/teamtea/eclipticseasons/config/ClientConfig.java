@@ -34,7 +34,7 @@ public class ClientConfig {
         public static ModConfigSpec.BooleanValue flowerOnGrass;
         public static ModConfigSpec.BooleanValue deeperSnow;
         public static ModConfigSpec.IntValue weatherBufferDistance;
-        public static ModConfigSpec.BooleanValue seasonalColorWorld;
+        public static ModConfigSpec.BooleanValue seasonalGrassColorChange;
 
         private static void load(ModConfigSpec.Builder builder) {
             builder.push("Renderer");
@@ -51,8 +51,8 @@ public class ClientConfig {
                     .define("DeeperSnow", false);
             weatherBufferDistance = builder.comment("Modify the buffer distance for local weather changes.")
                     .defineInRange("WeatherBufferDistance", 16, 1, 80);
-            seasonalColorWorld = builder.comment("The colors of the grass and leaves change with the time of year.")
-                    .define("SeasonalColorWorld", true);
+            seasonalGrassColorChange = builder.comment("The colors of the grass and leaves change with the time of year.")
+                    .define("SeasonalGrassColorChange", true);
             flowerOnGrass = builder.comment("In spring, grass blocks will occasionally have small flowers on them.")
                     .define("FlowerOnGrass", true);
             builder.pop();
