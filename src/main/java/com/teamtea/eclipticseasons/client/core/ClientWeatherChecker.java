@@ -26,6 +26,8 @@ public class ClientWeatherChecker {
     public static int changeTime_thunder = 0;
     public static int MAX_CHANGE_TIME = 200;
 
+    public static boolean updateForPlayerLogin = false;
+
     public static boolean isNear(float a, float b, float interval) {
         return Math.abs(a - b) < interval;
     }
@@ -55,8 +57,19 @@ public class ClientWeatherChecker {
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
     public static float getRainLevel(ClientLevel clientLevel, float p46723) {
         // 初始小于0会导致出现暗角
+        if (updateForPlayerLogin) {
+            if (Minecraft.getInstance().cameraEntity instanceof Player) {
+                updateForPlayerLogin = false;
+                lastBiomeRainLevel = -1;
+            }
+        }
+
         if (lastBiomeRainLevel < 0) {
-            lastBiomeRainLevel =  getStandardRainLevel(1f, clientLevel, null);
+            lastBiomeRainLevel =
+                    Minecraft.getInstance().cameraEntity instanceof Player player ?
+                            getStandardRainLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, player.getOnPos().above()))
+                            :
+                            getStandardRainLevel(1f, clientLevel, null);
         }
         return lastBiomeRainLevel;
     }
@@ -140,8 +153,17 @@ public class ClientWeatherChecker {
 
     //   TODO：net.minecraft.client.renderer.LevelRenderer.renderSnowAndRain 可以参考平滑方式
     public static float getThunderLevel(ClientLevel clientLevel, float p46723) {
+        if (updateForPlayerLogin) {
+            if (Minecraft.getInstance().cameraEntity instanceof Player) {
+                lastBiomeRainLevel = -1;
+            }
+        }
         if (lastBiomeRThunderLevel < 0) {
-            lastBiomeRThunderLevel = getStandardThunderLevel(1f, clientLevel, null);
+            lastBiomeRThunderLevel =
+                    Minecraft.getInstance().cameraEntity instanceof Player player ?
+                            getStandardThunderLevel(1f, clientLevel, MapChecker.getSurfaceBiome(clientLevel, player.getOnPos().above()))
+                            :
+                            getStandardThunderLevel(1f, clientLevel, null);
         }
         return lastBiomeRThunderLevel;
     }
@@ -220,6 +242,12 @@ public class ClientWeatherChecker {
 
     public static int modifyRainAmount(int originalNum) {
         return (int) (originalNum * lastBiomeRainLevel * 0.6f);
+    }
+
+    public static void unloadLevel(ClientLevel clientLevel) {
+        lastBiomeRThunderLevel = -1;
+        lastBiomeRainLevel = -1;
+        updateForPlayerLogin = true;
     }
 
     // public static Boolean hasPrecipitation(Biome biome) {

@@ -90,6 +90,7 @@ public final class ClientEventHandler {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
             MapChecker.clearHeightMap();
             ClientCon.useLevel = null;
+            ClientWeatherChecker.unloadLevel(clientLevel);
         }
     }
 
