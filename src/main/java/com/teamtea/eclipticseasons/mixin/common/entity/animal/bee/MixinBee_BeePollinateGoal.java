@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Bee.BeePollinateGoal.class)
-@SuppressWarnings("")
 public class MixinBee_BeePollinateGoal {
 
     // @Shadow @Final private Bee this$0;

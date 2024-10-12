@@ -30,33 +30,6 @@ public abstract class MixinLevelRender {
     @Nullable
     public ClientLevel level;
 
-    @Shadow
-    private int ticks;
-
-    @Shadow
-    @Final
-    public Minecraft minecraft;
-
-    @Shadow
-    @Final
-    private float[] rainSizeX;
-
-    @Shadow
-    @Final
-    private float[] rainSizeZ;
-
-    @Shadow
-    @Final
-    private static ResourceLocation RAIN_LOCATION;
-
-    @Shadow
-    public static int getLightColor(BlockAndTintGetter p_109542_, BlockPos p_109543_) {
-        return 0;
-    }
-
-    @Shadow
-    @Final
-    private static ResourceLocation SNOW_LOCATION;
 
     // 我们注释这个写法，因为它会让光影模组无法正常渲染
     // @Inject(at = {@At("HEAD")}, method = {"renderSnowAndRain"}, cancellable = true)
@@ -70,15 +43,15 @@ public abstract class MixinLevelRender {
     // }
 
 
-    @WrapOperation(
-            method = "renderSnowAndRain",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getRainLevel(F)F")
-    )
-    private float ecliptic$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
-        // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
-        // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
-        return ClientWeatherChecker.getRainLevel(level, 1.0f);
-    }
+    // @WrapOperation(
+    //         method = "renderSnowAndRain",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getRainLevel(F)F")
+    // )
+    // private float ecliptic$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
+    //     // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
+    //     // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
+    //     return ClientWeatherChecker.getRainLevel(level, 1.0f);
+    // }
 
 
     // ModifyExpressionValue may cost much time than it
@@ -98,29 +71,29 @@ public abstract class MixinLevelRender {
         return WeatherManager.getPrecipitationAt(level,biome,pos);
     }
 
+    //
+    // @Redirect(method = "renderSnowAndRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;getLightColor(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;)I"))
+    // private int ecliptic$getAdjustedLightColorForSnow(BlockAndTintGetter level, BlockPos pos)
+    // {
+    //     final int packedLight = LevelRenderer.getLightColor(level, pos);
+    //     // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
+    //     {
+    //         // Adjusts the light color via a heuristic that mojang uses to make snow appear more white
+    //         // This targets both paths, but since we always use the rain rendering, it's fine.
+    //         final int lightU = packedLight & 0xffff;
+    //         final int lightV = (packedLight >> 16) & 0xffff;
+    //         final int brightLightU = (lightU * 3 + 240) / 4;
+    //         final int brightLightV = (lightV * 3 + 240) / 4;
+    //         return brightLightU | (brightLightV << 16);
+    //     }
+    //     // return packedLight;
+    // }
 
-    @Redirect(method = "renderSnowAndRain", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;getLightColor(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;)I"))
-    private int ecliptic$getAdjustedLightColorForSnow(BlockAndTintGetter level, BlockPos pos)
-    {
-        final int packedLight = LevelRenderer.getLightColor(level, pos);
-        // if (Config.INSTANCE.weatherRenderChanges.getAsBoolean())
-        {
-            // Adjusts the light color via a heuristic that mojang uses to make snow appear more white
-            // This targets both paths, but since we always use the rain rendering, it's fine.
-            final int lightU = packedLight & 0xffff;
-            final int lightV = (packedLight >> 16) & 0xffff;
-            final int brightLightU = (lightU * 3 + 240) / 4;
-            final int brightLightV = (lightV * 3 + 240) / 4;
-            return brightLightU | (brightLightV << 16);
-        }
-        // return packedLight;
-    }
 
-
-    @ModifyConstant(method = "renderSnowAndRain", constant = {@Constant(intValue = 5), @Constant(intValue = 10)})
-    private int ecliptic$ModifySnowAmount(int constant)
-    {
-        // This constant is used to control how much snow is rendered - 5 with default, 10 with fancy graphics. By default, we bump this all the way to 15.
-        return ClientWeatherChecker.ModifySnowAmount(constant);
-    }
+    // @ModifyConstant(method = "renderSnowAndRain", constant = {@Constant(intValue = 5), @Constant(intValue = 10)})
+    // private int ecliptic$ModifySnowAmount(int constant)
+    // {
+    //     // This constant is used to control how much snow is rendered - 5 with default, 10 with fancy graphics. By default, we bump this all the way to 15.
+    //     return ClientWeatherChecker.ModifySnowAmount(constant);
+    // }
 }

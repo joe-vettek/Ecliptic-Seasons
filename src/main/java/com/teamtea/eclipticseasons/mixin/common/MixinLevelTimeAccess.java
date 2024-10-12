@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin({LevelTimeAccess.class})
 public interface MixinLevelTimeAccess extends LevelTimeAccess{
 
-    @Shadow long dayTime();
+    // @Shadow(remap = false) long dayTime();
 
     // @Inject(at = {@At("HEAD")}, method = {"getTimeOfDay"}, cancellable = true)
     // public default void mixin_getTimeOfDay(float p_46943_, CallbackInfoReturnable<Float> cir) {
@@ -24,8 +24,8 @@ public interface MixinLevelTimeAccess extends LevelTimeAccess{
         return SolarAngelHelper.getSeasonCelestialAngle((LevelTimeAccess)(Object)this, dayTime());
     }
 
-    @Override
-    default int getMoonPhase() {
-        return this.dimensionType().moonPhase(this.dayTime());
-    }
+    // @Override
+    // default int getMoonPhase() {
+    //     return this.dimensionType().moonPhase(this.dayTime());
+    // }
 }

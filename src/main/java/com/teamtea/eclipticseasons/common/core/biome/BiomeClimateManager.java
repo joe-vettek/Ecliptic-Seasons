@@ -39,12 +39,12 @@ public class BiomeClimateManager {
                         Math.max(SNOW_LEVEL + 0.001F, BiomeClimateManager.getDefaultTemperature(biome) + SolarTerm.get(solarTermIndex).getTemperatureChange()) :
                         Math.min(SNOW_LEVEL, BiomeClimateManager.getDefaultTemperature(biome) + SolarTerm.get(solarTermIndex).getTemperatureChange());
 
-                var oldClimateSettings = biome.climateSettings;
-                biome.climateSettings = new Biome.ClimateSettings(
-                        oldClimateSettings.hasPrecipitation(),
-                        temperature,
-                        oldClimateSettings.temperatureModifier(),
-                        oldClimateSettings.downfall());
+                // var oldClimateSettings = biome.climateSettings;
+                // biome.climateSettings = new Biome.ClimateSettings(
+                //         oldClimateSettings.hasPrecipitation(),
+                //         temperature,
+                //         oldClimateSettings.temperatureModifier(),
+                //         oldClimateSettings.downfall());
             });
         }
     }

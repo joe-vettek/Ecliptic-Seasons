@@ -38,7 +38,8 @@
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
-    "compat.embeddium.MixinBlockRender2"
+    "compat.embeddium.MixinBlockRender2",
+    "compat.optifine.MixinBlockModelCustomizer"
   ],
   "injectors": {
     "defaultRequire": 1

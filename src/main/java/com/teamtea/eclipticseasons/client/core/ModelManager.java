@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -161,9 +162,10 @@ public class ModelManager {
 
     // TODO:内存更新，双链表+Hash，用LRU
     public static final ArrayList<ChunkHeightMap> RegionList = new ArrayList<>(4);
+    // IdentityHashMap似乎不适合Opt
     public static Map<List<BakedQuad>, List<BakedQuad>> quadMap = new HashMap<>(1024);
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new HashMap<>(1024, 0.5f);
-    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new HashMap<>(128, 0.5f);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_1 = new HashMap<>(1024);
+    public static Map<List<BakedQuad>, List<BakedQuad>> quadMap_GRASS = new HashMap<>(128);
 
     private static boolean updateLock;
 
@@ -183,10 +185,17 @@ public class ModelManager {
             } catch (InterruptedException e) {
             }
         }
-        map = RegionList.stream()
-                .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
-                .findFirst()
-                .orElse(null);
+        for (int i = 0; i < RegionList.size(); i++) {
+            var chunkHeightMap=RegionList.get(i);
+            if( chunkHeightMap.x == x && chunkHeightMap.z == z){
+                map=chunkHeightMap;
+                break;
+            }
+        }
+        // map = RegionList.stream()
+        //         .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
+        //         .findFirst()
+        //         .orElse(null);
         // }
         // catch (Exception e) {
         //     // e.printStackTrace();
@@ -377,7 +386,6 @@ public class ModelManager {
                             int size = list.size();
                             var snowList = snowModel.getQuads(snowState, direction, null);
                             ArrayList<BakedQuad> newList;
-
                             if (flag == FLAG_GRASS) {
                                 newList = new ArrayList<>(snowList);
                             } else if (direction == Direction.UP) {

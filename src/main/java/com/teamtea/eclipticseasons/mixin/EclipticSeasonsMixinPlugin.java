@@ -1,12 +1,15 @@
 package com.teamtea.eclipticseasons.mixin;
 
+import com.teamtea.eclipticseasons.EclipticSeasons;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -16,6 +19,8 @@ import java.util.Set;
 public class EclipticSeasonsMixinPlugin implements IMixinConfigPlugin {
 
     public static final String MIXIN_COMPAT_PACKAGE = "mixin.compat.";
+
+    private static int isOptLoad = 0;
 
     @Override
     public void onLoad(String mixinPackage) {
@@ -29,11 +34,28 @@ public class EclipticSeasonsMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+
+        if (isOptLoad == 0) {
+            try {
+                Class<?> ignored = Class.forName("optifine.Installer");
+                isOptLoad = 1;
+            } catch (Exception ignored) {
+                isOptLoad = 2;
+            }
+        }
+
         int st = mixinClassName.indexOf(MIXIN_COMPAT_PACKAGE);
         if (st > -1) {
             String sub = Arrays.stream(mixinClassName.split(MIXIN_COMPAT_PACKAGE)).toList().get(1);
             String modid = Arrays.stream(sub.split("\\.")).toList().get(0);
-            return FMLLoader.getLoadingModList().getModFileById(modid) != null;
+            return FMLLoader.getLoadingModList().getModFileById(modid) != null
+                    || (Objects.equals(modid, "optifine") && isOptLoad == 1);
+        }
+        if (targetClassName.endsWith("ModelBlockRenderer")
+                && isOptLoad == 1
+        ) {
+
+            return false;
         }
         return true;
     }
