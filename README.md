@@ -15,24 +15,20 @@ Ecliptic Seasons is a Chinese mod about seasons and weather.
 Read the javaDocs in `EclipticSeasonsApi.java`.
 
 ### TODO
-枯萎的花
 
-isRainingAt 要区分下雨和下雪
+更多的四季变化，如四季花开
 
-月相
+生物下雨与下雪判定机制改进。
 
-动态雨量
+节气与月相
 
 更高级的作物生长控制系统（https://zhuanlan.zhihu.com/p/685648430）
 
-未来设计控制降雨和下雨的道具
+更好的tick刷新机制（非时间依赖，在高速tick下容易丢失）
 
-注意如果tick rate 过快的话，会卡住，导致gettime % 这个写法失效
-以及注意每个节气时长及下雨的关系
+动态雨量与更好的节气降雨时长系统
 
-测试了Opt的兼容性，也许需要mixin或者mixin其
-
-也许我们需要一个生云法杖
+生云法杖，设计控制降雨和下雨的道具
 
 ### New
 
