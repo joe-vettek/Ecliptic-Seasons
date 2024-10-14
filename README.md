@@ -2,9 +2,9 @@
 
 ![](https://media.forgecdn.net/avatars/thumbnails/1095/529/64/64/638640712387664433.png)
 
-“节气”是Minecraft的一个中国风模组。
+“节气”是Minecraft的一个中国风模组，在尽量不破坏原版的情况下进行开发，追求最高同时合理的兼容性。
 
-Ecliptic Seasons is a Chinese mod about seasons and weather.
+Ecliptic Seasons is a Chinese mod about seasons and weather. Develop without damaging the original version as much as possible, pursuing the highest and most reasonable compatibility.
 
 ### LICENSE 
 *   For code: BSD-3
@@ -14,27 +14,11 @@ Ecliptic Seasons is a Chinese mod about seasons and weather.
 ### Wiki
 Read the javaDocs in `EclipticSeasonsApi.java`.
 
-### TODO
-
-更多的四季变化，如四季花开
-
-生物下雨与下雪判定机制改进。
-
-节气与月相
-
-更高级的作物生长控制系统（https://zhuanlan.zhihu.com/p/685648430）
-
-更好的tick刷新机制（非时间依赖，在高速tick下容易丢失）
-
-动态雨量与更好的节气降雨时长系统
-
-生云法杖，设计控制降雨和下雨的道具
-
-### New
+### New For 1.21
 
 新增了API构建并重构了目录。
 
-新增了群系缓存查询
+~~新增了群系缓存查询~~
 
 新增了冬季白色地图颜色匹配
 
@@ -44,7 +28,7 @@ Read the javaDocs in `EclipticSeasonsApi.java`.
 
 新增了生存短期除雪方式，如打破方块或者使用扫帚。
 
-### Credit ###
+### Credit
 
 感谢方块小镇作者Coco几何和Xiao2对于蝴蝶模型的特别授权使用，此外蝴蝶在1.21后更改了实现方式，纹理和代码为本模组创作内容。
 
