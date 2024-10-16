@@ -4,6 +4,10 @@
     "minecraft:carrot",
     "minecraft:beetroot",
     "minecraft:potato",
-    "minecraft:pumpkin_seeds"
+    "minecraft:pumpkin_seeds",
+    {
+      "id": "farmersdelight:tomato_seeds",
+      "required": false
+    }
   ]
 }
