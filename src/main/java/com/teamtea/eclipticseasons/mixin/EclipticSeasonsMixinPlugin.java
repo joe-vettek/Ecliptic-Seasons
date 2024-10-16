@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.mixin;
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
+import com.teamtea.eclipticseasons.client.core.ModelManager;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.objectweb.asm.tree.ClassNode;
@@ -22,6 +23,9 @@ public class EclipticSeasonsMixinPlugin implements IMixinConfigPlugin {
 
     private static int isOptLoad = 0;
 
+    public static boolean isOptLoad(){
+        return isOptLoad==1;
+    }
     @Override
     public void onLoad(String mixinPackage) {
 

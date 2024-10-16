@@ -6,6 +6,7 @@ import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityType;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonInfo;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -51,6 +52,21 @@ public final class CropInfoManager
             }
         }
 
+        var blocks = event.getRegistryAccess().registry(Registries.BLOCK);
+        if (blocks.isPresent()) {
+            for (CropHumidityType cropHumidityType : CropHumidityType.values()) {
+                var tagBlocks = blocks.get().getTag(BlockTags.create(cropHumidityType.getRes()));
+                tagBlocks.ifPresent(holders -> holders.stream().toList().forEach(action -> {
+                    registerCropHumidityInfo(action.value(), cropHumidityType, true);
+                }));
+            }
+            for (CropSeasonType cropSeasonType : CropSeasonType.values()) {
+                var tagBlocks = blocks.get().getTag(BlockTags.create(cropSeasonType.getRes()));
+                tagBlocks.ifPresent(holders -> holders.stream().toList().forEach(action -> {
+                    registerCropSeasonInfo(action.value(), cropSeasonType, true);
+                }));
+            }
+        }
         // event.getRegistryAccess().registry(Registries.BLOCK).get().getTagNames().toList();
 
 

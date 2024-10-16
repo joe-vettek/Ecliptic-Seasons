@@ -7,6 +7,7 @@ import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 
+import com.teamtea.eclipticseasons.mixin.EclipticSeasonsMixinPlugin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -98,11 +99,11 @@ public class ModelManager {
     }
 
     public static void clearHeightMap() {
-        updateLock=true;
+        updateLock = true;
         synchronized (ModelManager.RegionList) {
             ModelManager.RegionList.clear();
         }
-        updateLock=false;
+        updateLock = false;
     }
 
     public static class ChunkHeightMap {
@@ -179,29 +180,19 @@ public class ModelManager {
 
         ChunkHeightMap map = null;
         // try{
-        while (updateLock){
+        while (updateLock) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
             }
         }
         for (int i = 0; i < RegionList.size(); i++) {
-            var chunkHeightMap=RegionList.get(i);
-            if( chunkHeightMap.x == x && chunkHeightMap.z == z){
-                map=chunkHeightMap;
+            var chunkHeightMap = RegionList.get(i);
+            if (chunkHeightMap.x == x && chunkHeightMap.z == z) {
+                map = chunkHeightMap;
                 break;
             }
         }
-        // map = RegionList.stream()
-        //         .filter(chunkHeightMap -> chunkHeightMap.x == x && chunkHeightMap.z == z)
-        //         .findFirst()
-        //         .orElse(null);
-        // }
-        // catch (Exception e) {
-        //     // e.printStackTrace();
-        //     EclipticSeasons.logger(1223);
-        //     // SimpleUtil.testTime(()->{});
-        // }
 
 
         int h = 0;
@@ -261,7 +252,6 @@ public class ModelManager {
     public static final int FLAG_FARMLAND = 6;
     public static final List<Block> LowerPlant = List.of(Blocks.GRASS, Blocks.FERN, Blocks.DANDELION);
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
-
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
     public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, long seed, List<BakedQuad> list) {
@@ -343,7 +333,8 @@ public class ModelManager {
                     }
                     // isFlowerAbove=false;
                     var useMap = isFlowerAbove ? quadMap_1 : quadMap;
-                    var cc = useMap.getOrDefault(list, null);
+                    List<BakedQuad> cc =
+                             EclipticSeasonsMixinPlugin.isOptLoad() ? null : useMap.getOrDefault(list, null);
                     if (cc != null) {
                         return cc;
                     } else {
@@ -416,7 +407,9 @@ public class ModelManager {
                                 }
                             }
 
-                            useMap.putIfAbsent(list, newList);
+                            if (! EclipticSeasonsMixinPlugin.isOptLoad())
+                                useMap.putIfAbsent(list, newList);
+
                             list = newList;
 
 
@@ -428,15 +421,16 @@ public class ModelManager {
                 ) {
                     var level = Minecraft.getInstance().level;
                     var solarTerm = SolarTerm.NONE;
-                    int weight=100;
+                    int weight = 100;
                     if (level != null) {
                         solarTerm = SimpleUtil.getNowSolarTerm(level);
-                        weight=Math.abs(solarTerm.ordinal()-3)+1;
+                        weight = Math.abs(solarTerm.ordinal() - 3) + 1;
                     }
                     if (solarTerm.getSeason() == Season.SPRING
-                    &&random.nextInt(weight*4)==0
-                    &&blockAndTintGetter.getBlockState(pos.above()).isAir()) {
-                        var cc = quadMap_GRASS.getOrDefault(list, null);
+                            && random.nextInt(weight * 4) == 0
+                            && blockAndTintGetter.getBlockState(pos.above()).isAir()) {
+                        List<BakedQuad> cc =
+                                 EclipticSeasonsMixinPlugin.isOptLoad() ? null : quadMap_GRASS.getOrDefault(list, null);
                         if (cc != null) {
                             return cc;
                         } else {
@@ -448,7 +442,8 @@ public class ModelManager {
                                 newList = new ArrayList<BakedQuad>(size + snowList.size());
                                 newList.addAll(list);
                                 newList.addAll(snowList);
-                                quadMap_GRASS.putIfAbsent(list, newList);
+                                if (! EclipticSeasonsMixinPlugin.isOptLoad())
+                                    quadMap_GRASS.putIfAbsent(list, newList);
                                 list = newList;
                             }
                         }

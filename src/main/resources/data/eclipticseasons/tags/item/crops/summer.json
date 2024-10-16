@@ -1,0 +1,13 @@
+{
+  "values": [
+    "minecraft:melon_seeds",
+    {
+      "id": "farmersdelight:rice",
+      "required": false
+    },
+    {
+      "id": "farmersdelight:tomato_seeds",
+      "required": false
+    }
+  ]
+}
