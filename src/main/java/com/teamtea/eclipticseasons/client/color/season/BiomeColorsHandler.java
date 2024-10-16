@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.client.color.season;
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
+import com.teamtea.eclipticseasons.api.constant.solar.color.NoneSolarTermColors;
 import com.teamtea.eclipticseasons.api.constant.solar.color.SolarTermColor;
 import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
 import com.teamtea.eclipticseasons.client.core.ColorHelper;
@@ -83,7 +84,10 @@ public class BiomeColorsHandler {
                     int[] grassBuffer = GrassColor.pixels;
 
                     SolarTerm solar = EclipticSeasonsApi.getInstance().getSolarTerm(Minecraft.getInstance().level);
-                    SolarTermColor colorInfo = solar.getSolarTermColor(biomeTagKey);
+                    SolarTermColor colorInfo =
+                            solar == SolarTerm.NONE ?
+                                    NoneSolarTermColors.BEGINNING_OF_SPRING :
+                                    solar.getSolarTermColor(biomeTagKey);
                     for (int i = 0; i < foliageBuffer.length; i++) {
                         int originColor = foliageBuffer[i];
 
