@@ -1,5 +1,7 @@
 # Ecliptic Seasons
 
+![](https://media.forgecdn.net/avatars/thumbnails/1095/529/64/64/638640712387664433.png)
+
 “节气”是Minecraft的一个中国风模组，关于四季。
 
 Ecliptic Seasons is a Chinese mod about seasons and weather.
@@ -8,7 +10,6 @@ Ecliptic Seasons is a Chinese mod about seasons and weather.
 *   For code: BSD-3
 *   For resources: CC BY-NC-SA 4.0
 *   Please do not port arbitrarily, communication can make the community better, and please respect our work.
-
 
 ## 1.What is Ecliptic Seasons?
 
@@ -56,10 +57,12 @@ Since fewer chunk calculations are required at the server level, server resource
 ## 5.What are the future plans for Ecliptic Seasons?
 
 As you can see, although a lot of work has already been done on this mod, there’s still room for improvement beyond just adding more details.
+
 The first priority is compatibility. While we’ve made significant efforts towards compatibility,
 supporting Optifine in 1.20.1 and even mods like Distant Horizons in the development version of 1.21, there is still a long road ahead.
 In terms of seasonal agriculture, the mod comes with built-in data pack support for Farmer's Delight and more, supporting compatibility as a seasonal provider for Dynamic Trees in 1.20.1.
 However, some mods only support Serene Seasons as the sole source of seasonal systems by default, while others require manual configuration.
+
 Next is developer support, where you can check out the API package, which will be expanded in the future. Please note that the API package structure differs between versions 1.20 and 1.21.
 Due to time constraints, the data pack section will be explained in detail later.
 
