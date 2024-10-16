@@ -5,6 +5,9 @@
     "minecraft:beetroot",
     "minecraft:potato",
     "minecraft:pumpkin_seeds",
+    "minecraft:cocoa_beans",
+    "minecraft:kelp",
+    "minecraft:torchflower_seeds",
     {
       "id": "farmersdelight:tomato_seeds",
       "required": false

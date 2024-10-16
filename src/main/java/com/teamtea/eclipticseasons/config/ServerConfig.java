@@ -24,11 +24,15 @@ public class ServerConfig {
 
     public static class Temperature {
         public static ForgeConfigSpec.BooleanValue iceMelt;
+        public static ForgeConfigSpec.BooleanValue heatStroke;
+
 
         private static void load(ForgeConfigSpec.Builder builder) {
             builder.push("Temperature");
             iceMelt = builder.comment("Ice or snow layer will melt in warm place..")
                     .define("IceAndSnowMelt", false);
+            heatStroke = builder.comment("Add heat stroke effect in summer noon while in hot biome.")
+                    .define("HeatStroke", true);
             builder.pop();
         }
     }

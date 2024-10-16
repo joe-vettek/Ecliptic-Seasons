@@ -228,8 +228,10 @@ dependencies {
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
 
+    onlyMainRuntimeOnly fg.deobf("curse.maven:farmers-delight-398521:5051242")
+
     // Examples using mod jars from ./libs
-     implementation "libs:OptiFine:1.20.1_HD_U_I6"
+    compileOnly "libs:OptiFine:1.20.1_HD_U_I6"
 
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

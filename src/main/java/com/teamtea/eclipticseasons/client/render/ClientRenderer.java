@@ -2,6 +2,8 @@ package com.teamtea.eclipticseasons.client.render;
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.client.ClientEventHandler;
+import com.teamtea.eclipticseasons.config.ClientConfig;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -36,7 +38,10 @@ public class ClientRenderer {
         if (player == null) return;
 
 
-        int blurStatus = player.hasEffect(EclipticSeasons.EffectRegistry.HEAT_STROKE) ? ON_BLUR : NONE_BLUR;
+        int blurStatus =
+                ServerConfig.Temperature.heatStroke.get()&&
+                player.hasEffect(EclipticSeasons.EffectRegistry.HEAT_STROKE)
+                ? ON_BLUR : NONE_BLUR;
         if (blurStatus != oldBlurStatus) {
             if (blurStatus == ON_BLUR) {
                 {

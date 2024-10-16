@@ -42,6 +42,8 @@ Blocks will gradually be covered by a thin layer of snow, whether it's dirt, gra
 You won’t find snow in summer plains, and when arriving at your new home in winter, there’s no need to wait for snow to refresh.
 Since fewer chunk calculations are required at the server level, server resource consumption will be greatly reduced, improving performance and avoiding fragmented snowfall experiences.
 
+![A Show](https://github.com/user-attachments/assets/e0d3c694-128c-427f-8d15-34910694f866)
+
 ## 4.What else can Ecliptic Seasons offer me?
 
 * Daylight length changes with the seasons – long winter nights and long summer days.
