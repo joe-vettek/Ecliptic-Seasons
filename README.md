@@ -1,6 +1,6 @@
 # Ecliptic Seasons
 
-![](https://media.forgecdn.net/avatars/thumbnails/1095/529/64/64/638640712387664433.png)
+![Ecliptic Seasons](https://media.forgecdn.net/avatars/thumbnails/1095/529/64/64/638640712387664433.png)
 
 “节气”是Minecraft的一个中国风模组，关于四季。
 
