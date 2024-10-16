@@ -71,6 +71,7 @@ Due to time constraints, the data pack section will be explained in detail later
 ## 6.Quick support for Ecliptic Seasons data packs.
 
 Currently, two types of data packs are supported: biome climate type tags and crop block growth control tags.
+
 For biome climate types, check the existing tags in the data folder.
 * `eclipticseasons:seasonal` indicates that the biome has distinct seasonal changes.
 * `eclipticseasons:monsoonal` indicates that the biome has seasonal wet and dry periods.
