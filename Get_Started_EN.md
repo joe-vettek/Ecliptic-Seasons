@@ -1,16 +1,3 @@
-# [Ecliptic Seasons](https://legacy.curseforge.com/minecraft/mc-mods/ecliptic-seasons) 
-
-![Ecliptic Seasons](https://github.com/user-attachments/assets/549d6626-d78e-4901-8b96-f420a6c2d3ea)
-
-“节气”是Minecraft的一个中国风模组，关于四季。
-
-Ecliptic Seasons is a Chinese mod about seasons and weather.
-
-### LICENSE
-*   For code: BSD-3
-*   For resources: CC BY-NC-SA 4.0
-*   Please do not port arbitrarily, communication can make the community better, and please respect our work.
-
 ## 1.What is Ecliptic Seasons?
 
 As the name suggests, this mod brings a new seasonal experience to Minecraft, also known as "Solar Terms."
@@ -42,8 +29,6 @@ Blocks will gradually be covered by a thin layer of snow, whether it's dirt, gra
 You won’t find snow in summer plains, and when arriving at your new home in winter, there’s no need to wait for snow to refresh.
 Since fewer chunk calculations are required at the server level, server resource consumption will be greatly reduced, improving performance and avoiding fragmented snowfall experiences.
 
-![A Show](https://github.com/user-attachments/assets/e0d3c694-128c-427f-8d15-34910694f866)
-
 ## 4.What else can Ecliptic Seasons offer me?
 
 * Daylight length changes with the seasons – long winter nights and long summer days.
@@ -59,19 +44,16 @@ Since fewer chunk calculations are required at the server level, server resource
 ## 5.What are the future plans for Ecliptic Seasons?
 
 As you can see, although a lot of work has already been done on this mod, there’s still room for improvement beyond just adding more details.
-
 The first priority is compatibility. While we’ve made significant efforts towards compatibility,
 supporting Optifine in 1.20.1 and even mods like Distant Horizons in the development version of 1.21, there is still a long road ahead.
 In terms of seasonal agriculture, the mod comes with built-in data pack support for Farmer's Delight and more, supporting compatibility as a seasonal provider for Dynamic Trees in 1.20.1.
 However, some mods only support Serene Seasons as the sole source of seasonal systems by default, while others require manual configuration.
-
 Next is developer support, where you can check out the API package, which will be expanded in the future. Please note that the API package structure differs between versions 1.20 and 1.21.
 Due to time constraints, the data pack section will be explained in detail later.
 
 ## 6.Quick support for Ecliptic Seasons data packs.
 
 Currently, two types of data packs are supported: biome climate type tags and crop block growth control tags.
-
 For biome climate types, check the existing tags in the data folder.
 * `eclipticseasons:seasonal` indicates that the biome has distinct seasonal changes.
 * `eclipticseasons:monsoonal` indicates that the biome has seasonal wet and dry periods.
