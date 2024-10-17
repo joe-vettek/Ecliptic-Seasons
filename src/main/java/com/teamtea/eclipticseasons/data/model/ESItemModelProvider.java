@@ -6,6 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -29,6 +30,13 @@ public class ESItemModelProvider extends ItemModelProvider {
         addSimple(EclipticSeasonsMod.ModContents.wind_chimes_item.value());
         addSimple(EclipticSeasonsMod.ModContents.paper_wind_chimes_item.value());
         addSimple(EclipticSeasonsMod.ModContents.bamboo_wind_chimes_item.value());
+
+        withExistingParent(itemName(EclipticSeasonsMod.ModContents.paper_wind_mill_item.value()), ResourceLocation.withDefaultNamespace(GENERATED))
+                .texture("layer0", ResourceLocation.withDefaultNamespace("item/"+itemName(Items.STICK)));
+        withExistingParent(itemName(EclipticSeasonsMod.ModContents.broom_item.value()), ResourceLocation.withDefaultNamespace(GENERATED))
+                .texture("layer0", ResourceLocation.withDefaultNamespace("item/"+itemName(Items.STICK)));
+        withExistingParent(itemName(EclipticSeasonsMod.ModContents.snowy_maker_item.value()), ResourceLocation.withDefaultNamespace(GENERATED))
+                .texture("layer0", ResourceLocation.withDefaultNamespace("item/"+itemName(Items.STICK)));
     }
 
     public void addSimple(Item item) {

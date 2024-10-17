@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.api.constant.solar;
 
 import com.teamtea.eclipticseasons.api.constant.climate.*;
-import com.teamtea.eclipticseasons.api.constant.solar.color.*;
+import com.teamtea.eclipticseasons.api.constant.solar.color.base.*;
 import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;

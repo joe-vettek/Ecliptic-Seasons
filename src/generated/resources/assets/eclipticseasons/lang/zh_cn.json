@@ -80,5 +80,7 @@
   "info.eclipticseasons.environment.temperature.over_heat": "酷暑",
   "info.eclipticseasons.environment.temperature.under_freezing": "严寒",
   "info.eclipticseasons.environment.temperature.warm": "温暖",
+  "item.eclipticseasons.broom": "扫帚",
+  "item.eclipticseasons.snowy_maker": "冰晶法杖",
   "itemGroup.eclipticseasons.core": "节气"
 }

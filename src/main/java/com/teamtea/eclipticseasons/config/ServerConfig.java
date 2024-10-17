@@ -50,6 +50,9 @@ public class ServerConfig {
         public static ModConfigSpec.IntValue initialSolarTermIndex;
         public static ModConfigSpec.IntValue rainChanceMultiplier;
         public static ModConfigSpec.IntValue thunderChanceMultiplier;
+        public static ModConfigSpec.BooleanValue enableBreed;
+        public static ModConfigSpec.BooleanValue enableBee;
+        public static ModConfigSpec.BooleanValue enableFishing;
 
 
         private static void load(ModConfigSpec.Builder builder) {
@@ -71,6 +74,14 @@ public class ServerConfig {
             thunderChanceMultiplier = builder.comment("Set the percentage multiplier of the probability of thunder in the rain, the range should be between 0 and 1000.")
                     .defineInRange("ThunderChancePercentMultiplier", 100, 0, 1000);
 
+            enableBreed = builder.comment("Enable seasonal animal breed.")
+                    .define("EnableSeasonalBreed", false);
+
+            enableBee = builder.comment("Enable seasonal bee behavior, bee would like spring and not like winter and cold.")
+                    .define("EnableSeasonalBee", false);
+
+            enableFishing = builder.comment("Enable seasonal fishing behavior, let enjoy summer.")
+                    .define("EnableSeasonalFishing", false);
 
             builder.pop();
         }

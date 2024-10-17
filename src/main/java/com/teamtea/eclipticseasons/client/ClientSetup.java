@@ -27,6 +27,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 
+import java.awt.*;
 import java.util.Map;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -124,11 +125,14 @@ public class ClientSetup {
                 return -1;
             }
         }, Blocks.DANDELION);
+
+        event.register(BiomeColorsHandler::getSpruceColor, Blocks.SPRUCE_LEAVES);
+        event.register(BiomeColorsHandler::getBirchColor, Blocks.BIRCH_LEAVES);
+        event.register(BiomeColorsHandler::getMangroveColor, Blocks.MANGROVE_LEAVES);
     }
 
     @SubscribeEvent
     public static void onRegisterColorHandlersEvent_Item(RegisterColorHandlersEvent.Item event) {
-
     }
 
     @SubscribeEvent

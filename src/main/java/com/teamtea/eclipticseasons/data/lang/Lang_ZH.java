@@ -28,6 +28,9 @@ public class Lang_ZH extends LangHelper {
         add(EclipticSeasonsMod.ModContents.paper_wind_chimes.get(), "纸风铃");
         add(EclipticSeasonsMod.ModContents.bamboo_wind_chimes.get(), "竹风铃");
         add(EclipticSeasonsMod.ModContents.paper_wind_mill.get(), "纸风车");
+        add(EclipticSeasonsMod.ModContents.snowy_maker_item.get(), "冰晶法杖");
+        add(EclipticSeasonsMod.ModContents.broom_item.get(), "扫帚");
+
 
         add("info.eclipticseasons.environment.temperature.under_freezing","严寒");
         add("info.eclipticseasons.environment.temperature.freezing","冰冻");

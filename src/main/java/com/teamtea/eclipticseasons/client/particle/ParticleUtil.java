@@ -9,12 +9,19 @@ import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.awt.*;
@@ -55,7 +62,7 @@ public class ParticleUtil {
                     case AUTUMN -> chanceW = 9;
                     case WINTER -> chanceW = 15;
                 }
-                chanceW *= (int) (ClientConfig.Particle.fallenLeavesDropWeight.get() *0.1f);
+                chanceW *= (int) (ClientConfig.Particle.fallenLeavesDropWeight.get() * 0.4f);
                 // chanceW*=4;
                 if (random.nextInt(chanceW) == 0) {
                     fallenLeaves(clientLevel, blockpos$mutableblockpos, blockstate);
@@ -69,7 +76,7 @@ public class ParticleUtil {
             if (blockstate.is(SeasonalBlockTags.HABITAT_BUTTERFLY)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                     && clientLevel.canSeeSky(blockpos$mutableblockpos)
-                    && random.nextInt(1024 *  (int) (ClientConfig.Particle.butterflySpawnWeight.get() *0.1f)) == 0
+                    && random.nextInt(1024 * (int) (ClientConfig.Particle.butterflySpawnWeight.get() * 0.1f)) == 0
             ) {
                 clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.BUTTERFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
             }
@@ -81,7 +88,7 @@ public class ParticleUtil {
             if (blockstate.is(SeasonalBlockTags.HABITAT_FIREFLY)
                     && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                     && clientLevel.canSeeSky(blockpos$mutableblockpos)
-                    && random.nextInt(160 * (int) (ClientConfig.Particle.fireflySpawnWeight.get() *0.1f)) == 0
+                    && random.nextInt(160 * (int) (ClientConfig.Particle.fireflySpawnWeight.get() * 0.1f)) == 0
             ) {
                 clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.FIREFLY, false, i + 0.5, j + 0.8, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
             }
@@ -94,8 +101,26 @@ public class ParticleUtil {
                 && clientLevel.isEmptyBlock(blockpos$mutableblockpos)
                 && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                 && clientLevel.getBiome(blockpos$mutableblockpos).value().getBaseTemperature() < 0.95f
-                && random.nextInt(2295 * (int) (ClientConfig.Particle.wildGooseSpawnWeight.get() *0.1f)) == 0) {
+                && random.nextInt(2295 * (int) (ClientConfig.Particle.wildGooseSpawnWeight.get() * 0.1f)) == 0) {
             clientLevel.addParticle(EclipticSeasonsMod.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
+        }
+
+        if ( random.nextInt(b)==0&&
+        Minecraft.getInstance().player != null
+                && Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() == EclipticSeasonsMod.ModContents.snowy_maker_item.get()) {
+            var data = clientLevel.getChunkAt(blockpos$mutableblockpos).getData(EclipticSeasonsMod.ModContents.SNOWY_REMOVER);
+
+            if (data.notSnowyAt(blockpos$mutableblockpos)) {
+                j = clientLevel.getHeight(Heightmap.Types.MOTION_BLOCKING,i,k);
+                clientLevel.addParticle(random.nextInt(3)>0?ParticleTypes.SMOKE:ParticleTypes.CLOUD,
+                        false, i + 0.5, j + 0.3, k + 0.5, 0.0D, -0.0001, 0.0D);
+
+                // clientLevel.addParticle(ParticleTypes.SMOKE, false, i + 0.5, j + 0.1, k + 0.5, 0.0D, -0.0001, 0.0D);
+                // clientLevel.addParticle(ParticleTypes.CLOUD, false, i + 0.5, j + 0.5, k + 0.5, 0.0D, 5.0E-4D, 0.0D);
+                // clientLevel.addParticle(new BlockParticleOption(ParticleTypes.BLOCK_MARKER, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL,0)), (double) i + 0.5, (double) j + 0.5, (double) k + 0.5, 0.0, 0.0, 0.0);
+                // Minecraft.getInstance().particleEngine.add(new SnowCleaner(clientLevel,(double) i + 0.5, (double) j + 0.5, (double) k + 0.5, Items.SNOWBALL.getDefaultInstance()));
+
+            }
         }
     }
 

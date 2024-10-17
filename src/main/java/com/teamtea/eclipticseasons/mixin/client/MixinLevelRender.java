@@ -5,6 +5,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
@@ -16,7 +18,11 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -52,6 +58,10 @@ public abstract class MixinLevelRender {
     //     else return original.call(clientLevel, pDelta);
     // }
 
+
+    @Shadow
+    protected static void renderShape(PoseStack pPoseStack, VertexConsumer pConsumer, VoxelShape pShape, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha) {
+    }
 
     // ModifyExpressionValue may cost much time than it
     @WrapOperation(
@@ -128,4 +138,26 @@ public abstract class MixinLevelRender {
             return  ClientWeatherChecker.modifyRainAmount(originalNum);
         } else return originalNum;
     }
+
+    // @Inject(
+    //         method = "renderHitOutline",
+    //         at = @At(value = "HEAD"),
+    //         cancellable = true)
+    // private void ecliptic$renderHitOutline(PoseStack pPoseStack, VertexConsumer pConsumer, Entity pEntity, double pCamX, double pCamY, double pCamZ, BlockPos pPos, BlockState pState, CallbackInfo ci) {
+    //     renderShape(
+    //             pPoseStack,
+    //             pConsumer,
+    //             pState.getShape(this.level, pPos, CollisionContext.of(pEntity)),
+    //             (double)pPos.getX() - pCamX,
+    //             (double)pPos.getY() - pCamY,
+    //             (double)pPos.getZ() - pCamZ,
+    //             0.0F,
+    //             0.0F,
+    //             0.0F,
+    //             0.4F
+    //     );
+    //
+    //     ci.cancel();
+    // }
+
 }

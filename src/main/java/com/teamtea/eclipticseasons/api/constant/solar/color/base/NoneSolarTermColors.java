@@ -1,4 +1,4 @@
-package com.teamtea.eclipticseasons.api.constant.solar.color;
+package com.teamtea.eclipticseasons.api.constant.solar.color.base;
 
 
 public enum NoneSolarTermColors implements SolarTermColor {
@@ -52,8 +52,8 @@ public enum NoneSolarTermColors implements SolarTermColor {
     }
 
     @Override
-    public int getColor() {
-        return TemperateSolarTermColors.get(this.ordinal()).getColor();
+    public int getGrassColor() {
+        return TemperateSolarTermColors.get(this.ordinal()).getGrassColor();
     }
 
     @Override
@@ -62,7 +62,7 @@ public enum NoneSolarTermColors implements SolarTermColor {
     }
 
     @Override
-    public int getBirchColor() {
-        return TemperateSolarTermColors.get(this.ordinal()).getBirchColor();
+    public int getLeaveColor() {
+        return TemperateSolarTermColors.get(this.ordinal()).getLeaveColor();
     }
 }

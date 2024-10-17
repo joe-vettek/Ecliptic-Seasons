@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "calendar",
+  "key": {
+    "x": {
+      "item": "minecraft:paper"
+    },
+    "y": {
+      "item": "minecraft:book"
+    },
+    "z": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "xx",
+    "yz"
+  ],
+  "result": {
+    "count": 1,
+    "id": "eclipticseasons:calendar"
+  }
+}

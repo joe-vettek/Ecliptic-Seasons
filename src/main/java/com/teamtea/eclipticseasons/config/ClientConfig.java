@@ -31,6 +31,9 @@ public class ClientConfig {
 
         public static ModConfigSpec.BooleanValue useVanillaCheck;
         public static ModConfigSpec.BooleanValue snowyWinter;
+        public static ModConfigSpec.BooleanValue realisticSnowyChange;
+
+
         public static ModConfigSpec.BooleanValue flowerOnGrass;
         public static ModConfigSpec.BooleanValue deeperSnow;
         public static ModConfigSpec.IntValue weatherBufferDistance;
@@ -43,14 +46,18 @@ public class ClientConfig {
             enhancementChunkRenderUpdate = builder.comment("Enhanced reload, which will refresh all sections periodically.")
                     .define("EnhancementChunkRenderUpdate", false);
 
-            useVanillaCheck = builder.comment("Determines whether snow is falling based on vanilla lighting checks.")
-                    .define("UseVanillaCheck", false);
-            snowyWinter = builder.comment("If snow falls during cold weather, it will gradually cover all solid blocks and grass.")
-                    .define("SnowyWinter", true);
-            deeperSnow = builder.comment("Occasionally a thicker layer of snow will cover the flowers and grass, especially.")
-                    .define("DeeperSnow", false);
             weatherBufferDistance = builder.comment("Modify the buffer distance for local weather changes.")
                     .defineInRange("WeatherBufferDistance", 16, 1, 80);
+
+            useVanillaCheck = builder.comment("Determines whether snow is falling based on vanilla lighting checks.")
+                    .define("UseVanillaCheck", false);
+            snowyWinter = builder.comment("If snow falls during cold weather in warm biomes, it will gradually cover all solid blocks and grass.")
+                    .define("SnowyWinter", true);
+            realisticSnowyChange = builder.comment("When the block is updated, the snow cover will not refresh immediately, but will be updated after a delay. Please note that this will consume more performance..")
+                    .define("RealisticSnowyChange", true);
+            deeperSnow = builder.comment("Occasionally a thicker layer of snow will cover the flowers and grass, especially.")
+                    .define("DeeperSnow", false);
+
             seasonalGrassColorChange = builder.comment("The colors of the grass and leaves change with the time of year.")
                     .define("SeasonalGrassColorChange", true);
             flowerOnGrass = builder.comment("In spring, grass blocks will occasionally have small flowers on them.")

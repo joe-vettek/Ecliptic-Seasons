@@ -17,6 +17,7 @@ import com.seibel.distanthorizons.core.wrapperInterfaces.world.IBiomeWrapper;
 import com.seibel.distanthorizons.core.wrapperInterfaces.world.IClientLevelWrapper;
 import com.teamtea.eclipticseasons.common.core.map.MapChecker;
 import com.teamtea.eclipticseasons.config.ClientConfig;
+import com.teamtea.eclipticseasons.config.ServerConfig;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import loaderCommon.neoforge.com.seibel.distanthorizons.common.wrappers.McObjectConverter;
 import loaderCommon.neoforge.com.seibel.distanthorizons.common.wrappers.block.BiomeWrapper;
@@ -30,6 +31,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.material.MapColor;
 
 import java.util.HashSet;
@@ -102,6 +104,15 @@ public class DHTool {
                                 int bottomY = FullDataPointUtil.getBottomY(fullData);
                                 int blockHeight = FullDataPointUtil.getHeight(fullData);
                                 int topY = bottomY + blockHeight;
+                                if (ServerConfig.Debug.notSnowyUnderLight.get()
+                                        && iBlockStateWrapper_NowQuery instanceof BlockStateWrapper blockStateWrapper_NowQuery) {
+                                    if (blockStateWrapper_NowQuery.blockState != null &&
+                                            blockStateWrapper_NowQuery.blockState.getBlock() instanceof LightBlock) {
+                                        if (blockStateWrapper_NowQuery.blockState.hasProperty(LightBlock.LEVEL)
+                                                && blockStateWrapper_NowQuery.blockState.getValue(LightBlock.LEVEL) == 0)
+                                            break;
+                                    }
+                                }
                                 if (iBlockStateWrapper_NowQuery instanceof BlockStateWrapper blockStateWrapper_NowQuery
                                         && !iBlockStateWrapper_NowQuery.isAir()
                                         && !blockStatesToIgnore.contains(iBlockStateWrapper_NowQuery)

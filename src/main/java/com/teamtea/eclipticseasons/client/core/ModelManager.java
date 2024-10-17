@@ -98,6 +98,7 @@ public class ModelManager {
         if (level == null) {
             EclipticSeasonsMod.logger("NULLLLLLLL");
         }
+        // if (level != null)return list;
         if (level != null
                 && direction != Direction.DOWN
                 && !list.isEmpty()

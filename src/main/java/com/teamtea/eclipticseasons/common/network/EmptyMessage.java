@@ -18,13 +18,8 @@ public class EmptyMessage implements CustomPacketPayload {
     public EmptyMessage() {
 
     }
-    // public EmptyMessage(FriendlyByteBuf buf) {
-    //
-    // }
-    public void toBytes(FriendlyByteBuf buf) {
-    }
 
-    public static final Type<EmptyMessage> TYPE = new Type<>(EclipticSeasonsMod.rl("empty"));
+    public static final CustomPacketPayload.Type<EmptyMessage> TYPE = new CustomPacketPayload.Type<>(EclipticSeasonsMod.rl("empty"));
 
     // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
     // 'name' will be encoded and decoded as a string
@@ -34,7 +29,7 @@ public class EmptyMessage implements CustomPacketPayload {
             StreamCodec.unit(new EmptyMessage());
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 

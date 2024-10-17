@@ -40,6 +40,11 @@ public final class SimpleNetworkHandler {
                 NetworkdUtil::processBiomeWeatherMessage2
         );
 
+        registrar.playToClient(
+                ChunkUpdateMessage.TYPE,
+                ChunkUpdateMessage.STREAM_CODEC,
+                NetworkdUtil::processChunkUpdateMessage
+        );
     }
 
 

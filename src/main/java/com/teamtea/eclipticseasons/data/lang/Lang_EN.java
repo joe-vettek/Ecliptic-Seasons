@@ -30,6 +30,8 @@ public class Lang_EN extends LangHelper {
         add(EclipticSeasonsMod.ModContents.paper_wind_chimes.get(), "Paper Wind Chimes");
         add(EclipticSeasonsMod.ModContents.bamboo_wind_chimes.get(), "Bamboo Wind Chimes");
         add(EclipticSeasonsMod.ModContents.paper_wind_mill.get(), "paper Wind Mill");
+        add(EclipticSeasonsMod.ModContents.snowy_maker_item.get(), "Ice Wand");
+        add(EclipticSeasonsMod.ModContents.broom_item.get(), "Broom");
 
         add("info.eclipticseasons.environment.temperature.under_freezing","Under Freezing");
         add("info.eclipticseasons.environment.temperature.freezing","Freezing");

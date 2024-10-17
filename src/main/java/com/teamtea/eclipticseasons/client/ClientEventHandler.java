@@ -1,14 +1,13 @@
 package com.teamtea.eclipticseasons.client;
 
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
+import com.teamtea.eclipticseasons.client.core.map.ClientMapFixer;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
-import com.teamtea.eclipticseasons.client.core.ModelManager;
 import com.teamtea.eclipticseasons.client.render.WorldRenderer;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
@@ -27,11 +26,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
@@ -81,7 +78,7 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
-            MapChecker.clearChunk(event.getChunk().getPos());
+            ClientMapFixer.clearChunk(event.getChunk().getPos());
         }
     }
 
@@ -115,12 +112,12 @@ public final class ClientEventHandler {
 
     // 强制区块渲染
     @SubscribeEvent
-    public static void onWorldTick(LevelTickEvent.Post event) {
+    public static void onLevelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ClientLevel clientLevel) {
             // ClientWeatherChecker.updateRainLevel(clientLevel);
             ClientWeatherChecker.updateRainLevel(clientLevel);
             ClientWeatherChecker.updateThunderLevel(clientLevel);
-
+            ClientMapFixer.tick(clientLevel);
             if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
                 if (clientLevel.getGameTime() - lastFreshTime > 80
                         || clientLevel.getGameTime() < lastFreshTime - 1) {
@@ -236,9 +233,9 @@ public final class ClientEventHandler {
 
             var pos = event.getSectionOrigin();
             TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(IClientFluidTypeExtensions.of(Fluids.WATER).getStillTexture());
-            still=Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(EclipticSeasonsMod.rl("block/snow_overlay_2"));
+            still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(EclipticSeasonsMod.rl("block/snow_overlay_2"));
             int color = IClientFluidTypeExtensions.of(Fluids.WATER).getTintColor();
-            color= Color.WHITE.getRGB();
+            color = Color.WHITE.getRGB();
 
             int r = color >> 16 & 0xFF;
             int g = color >> 8 & 0xFF;
@@ -266,15 +263,15 @@ public final class ClientEventHandler {
             // buffer.addVertex(poseStack.last().pose(), 1, 0, 0).setColor(r, g, b, a).setUv(still.getU1(), still.getV1()).setLight(light).setNormal(1.0F, 0, 0);
             // buffer.addVertex(poseStack.last().pose(), 1, 1, 0).setColor(r, g, b, a).setUv(still.getU1(), still.getV0()).setLight(light).setNormal(1.0F, 0, 0);
 
-            if(!context.getRegion().getBlockState(pos).isEmpty())
-            Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(
-                    poseStack.last(),
-                    buffer,
-                    null,
-                    Minecraft.getInstance().getModelManager().getModel(BlockModelShaper.stateToModelLocation(EclipticSeasonsMod.ModContents.snowyLeaves.get().defaultBlockState())),
-                    1,1,1,
-                    light,0, ModelData.EMPTY,RenderType.cutoutMipped()
-            );
+            if (!context.getRegion().getBlockState(pos).isEmpty())
+                Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(
+                        poseStack.last(),
+                        buffer,
+                        null,
+                        Minecraft.getInstance().getModelManager().getModel(BlockModelShaper.stateToModelLocation(EclipticSeasonsMod.ModContents.snowyLeaves.get().defaultBlockState())),
+                        1, 1, 1,
+                        light, 0, ModelData.EMPTY, RenderType.cutoutMipped()
+                );
 
             poseStack.popPose();
 

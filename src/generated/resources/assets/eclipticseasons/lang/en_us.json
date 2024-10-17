@@ -80,5 +80,7 @@
   "info.eclipticseasons.environment.temperature.over_heat": "Over Heat",
   "info.eclipticseasons.environment.temperature.under_freezing": "Under Freezing",
   "info.eclipticseasons.environment.temperature.warm": "Warm",
+  "item.eclipticseasons.broom": "Broom",
+  "item.eclipticseasons.snowy_maker": "Ice Wand",
   "itemGroup.eclipticseasons.core": "Ecliptic Seasons"
 }

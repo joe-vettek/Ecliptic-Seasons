@@ -1,13 +1,27 @@
 package com.teamtea.eclipticseasons.common.network;
 
+import com.teamtea.eclipticseasons.EclipticSeasonsMod;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
+import com.teamtea.eclipticseasons.client.core.map.ClientMapFixer;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
+import com.teamtea.eclipticseasons.common.core.map.MapChecker;
+import com.teamtea.eclipticseasons.common.core.map.SnowyRemover;
+import com.teamtea.eclipticseasons.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkdUtil {
 
@@ -61,5 +75,46 @@ public class NetworkdUtil {
                     context.disconnect(Component.translatable("ecliptic.networking.failed", e.getMessage()));
                     return null;
                 });
+    }
+
+    public static void processChunkUpdateMessage(ChunkUpdateMessage chunkUpdateMessage, IPayloadContext context) {
+        int[][] blocks = new int[16][16];
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                blocks[i][j] = chunkUpdateMessage.snowyArea[i * 16 + j];
+            }
+        }
+        context.enqueueWork(() -> {
+            if(context.player().level() instanceof ClientLevel clientLevel) {
+                if (clientLevel.getChunk(chunkUpdateMessage.x, chunkUpdateMessage.z) instanceof LevelChunk levelChunk) {
+                    var snow= new SnowyRemover(blocks);
+                    levelChunk.setData(EclipticSeasonsMod.ModContents.SNOWY_REMOVER, new SnowyRemover(blocks));
+
+                    for (BlockPos blockPos : chunkUpdateMessage.blockPosList) {
+                        ClientMapFixer.clearBlockPos(blockPos);
+                        MapChecker.updatePosForce(blockPos,
+                                snow.notSnowyAt(blockPos)?
+                                clientLevel.getMaxBuildHeight() + 1:
+                                clientLevel.getHeight(Heightmap.Types.MOTION_BLOCKING,blockPos.getX(),blockPos.getZ())-1
+                                )
+                        ;
+
+                    }
+                    if (Minecraft.getInstance().cameraEntity instanceof Player player) {
+                        // BlockPos pos = player.getOnPos();
+                        // SectionPos sectionPos = SectionPos.of(pos);
+                        // Minecraft.getInstance().levelRenderer.setSectionDirtyWithNeighbors(sectionPos.x(), sectionPos.y(), sectionPos.z());
+                        for (Integer ySection : chunkUpdateMessage.y) {
+                            Minecraft.getInstance().levelRenderer.setSectionDirty(chunkUpdateMessage.x,ySection,chunkUpdateMessage.z);
+                        }
+                    }
+                }
+            }
+
+        }).exceptionally(e -> {
+            // Handle exception
+            context.disconnect(Component.translatable("ecliptic.networking.failed", e.getMessage()));
+            return null;
+        });
     }
 }

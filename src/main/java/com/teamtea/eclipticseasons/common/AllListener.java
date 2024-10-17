@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.common;
 
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
+import com.teamtea.eclipticseasons.client.core.map.ClientMapFixer;
 import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
@@ -13,16 +14,21 @@ import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.level.SleepFinishedTimeEvent;
+import net.neoforged.neoforge.event.level.*;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
+import java.util.List;
 
 @EventBusSubscriber(modid = EclipticSeasonsApi.MODID)
 public class AllListener {
@@ -34,8 +40,8 @@ public class AllListener {
     // 但是这也说不准啊，谁知道谁无聊就搞这个呢
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
-        BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess(),tagsUpdatedEvent.getUpdateCause()== TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
-        WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess(),tagsUpdatedEvent.getUpdateCause()== TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
+        BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess(), tagsUpdatedEvent.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
+        WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess(), tagsUpdatedEvent.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD);
     }
 
 
@@ -87,14 +93,24 @@ public class AllListener {
             {
                 SolarHolders.DATA_MANAGER_MAP.remove(level);
             }
+            ClientMapFixer.clearAll();
         }
 
+    }
+
+    // 如果是客户端，即使是混合型客户端，我们也只应该清理一次，单人世界时只看一次client会更好
+    @SubscribeEvent
+    public static void onChunkUnloadEvent(ChunkEvent.Unload event) {
+        if ((FMLLoader.getDist() == Dist.CLIENT) == event.getLevel().isClientSide()
+        ) {
+            MapChecker.clearChunk(event.getChunk().getPos());
+        }
     }
 
 
     @SubscribeEvent
     public static void onWorldTick(LevelTickEvent.Post event) {
-        if ( ServerConfig.Season.enableInform.get()
+        if (ServerConfig.Season.enableInform.get()
                 && !event.getLevel().isClientSide()
                 && MapChecker.isValidDimension(event.getLevel())) {
             SolarHolders.getSaveDataLazy(event.getLevel()).ifPresent(data ->
@@ -109,26 +125,18 @@ public class AllListener {
 
     }
 
-    // @SubscribeEvent
-    // public static void onAttachCapabilitiesWorld(AttachCapabilitiesEvent<Level> event) {
-    //     if (ServerConfig.Season.enable.get() && event.getObject().dimension() == Level.OVERWORLD) {
-    //         var cc = new SolarProvider();
-    //         provider = LazyOptional.of(() -> cc);
-    //         event.addCapability(new ResourceLocation(Ecliptic.MODID, "world_solar_terms"), cc);
-    //     }
-    // }
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer ) {
-            WeatherManager.onLoggedIn(serverPlayer,true);
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WeatherManager.onLoggedIn(serverPlayer, true);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-          WeatherManager.onLoggedIn(serverPlayer,false);
+            WeatherManager.onLoggedIn(serverPlayer, false);
         }
     }
 
@@ -137,12 +145,22 @@ public class AllListener {
         CropGrowthHandler.beforeCropGrowUp(event);
     }
 
+    @SubscribeEvent
+    public static void onCropGrowUp(BlockGrowFeatureEvent event) {
+        CropGrowthHandler.beforeCropGrowUp(event);
+    }
+
 
     @SubscribeEvent
     public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
-       if(event.getEntity() instanceof ServerPlayer serverPlayer){
-           WeatherManager.tickPlayerSeasonEffecct(serverPlayer);
-           // WeatherManager.tickPlayerForSeasonCheck(serverPlayer);
-       }
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            WeatherManager.tickPlayerSeasonEffecct(serverPlayer);
+            // WeatherManager.tickPlayerForSeasonCheck(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onChunkUpdate(ChunkWatchEvent.Sent event) {
+        MapChecker.updateChunk(event.getChunk(), event.getPos(), event.getPlayer(), List.of(), List.of());
     }
 }

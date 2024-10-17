@@ -13,6 +13,9 @@ import com.teamtea.eclipticseasons.common.block.WindChimesBlock;
 import com.teamtea.eclipticseasons.common.block.blockentity.CalendarBlockEntity;
 import com.teamtea.eclipticseasons.common.block.blockentity.PaperWindmillBlockEntity;
 import com.teamtea.eclipticseasons.common.block.blockentity.WindChimesBlockEntity;
+import com.teamtea.eclipticseasons.common.core.map.SnowyRemover;
+import com.teamtea.eclipticseasons.common.item.BroomItem;
+import com.teamtea.eclipticseasons.common.item.SnowyMakerItem;
 import com.teamtea.eclipticseasons.common.misc.HeatStrokeEffect;
 import com.teamtea.eclipticseasons.compat.CompatModule;
 import com.teamtea.eclipticseasons.config.ClientConfig;
@@ -35,10 +38,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -178,7 +178,7 @@ public class EclipticSeasonsMod {
         public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
         public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
         public static final SimpleParticleType BUTTERFLY = new SimpleParticleType(false);
-        public static final ParticleType<ColorParticleOption> FALLEN_LEAVES = create(false,ColorParticleOption::codec, ColorParticleOption::streamCodec);
+        public static final ParticleType<ColorParticleOption> FALLEN_LEAVES = create(false, ColorParticleOption::codec, ColorParticleOption::streamCodec);
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
@@ -260,6 +260,10 @@ public class EclipticSeasonsMod {
         public static final DeferredHolder<Item, BlockItem> bamboo_wind_chimes_item = ITEM_DEFERRED_REGISTER.register("bamboo_wind_chimes", () -> new BlockItem(bamboo_wind_chimes.get(), (new Item.Properties())));
         public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WindChimesBlockEntity>> wind_chimes_entity_type = BLOCK_ENTITY_TYPE_DEFERRED_REGISTER.register("wind_chimes", () -> BlockEntityType.Builder.of(WindChimesBlockEntity::new, ModContents.wind_chimes.get(), ModContents.paper_wind_chimes.get(), ModContents.bamboo_wind_chimes.get()).build(null));
 
+        public static final DeferredHolder<Item, Item> snowy_maker_item = ITEM_DEFERRED_REGISTER.register("snowy_maker", () -> new SnowyMakerItem(new Item.Properties()));
+        public static final DeferredHolder<Item, Item> broom_item = ITEM_DEFERRED_REGISTER.register("broom", () -> new BroomItem(new Item.Properties().durability(256)));
+
+
         // advancement
         public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_DEFERRED_REGISTER = DeferredRegister.create(Registries.TRIGGER_TYPE, EclipticSeasonsApi.MODID);
         public static final Supplier<SolarTermsCriterion> SOLAR_TERMS = TRIGGER_DEFERRED_REGISTER.register("solar_terms", SolarTermsCriterion::new);
@@ -270,6 +274,9 @@ public class EclipticSeasonsMod {
         public static final Supplier<AttachmentType<SolarTermsRecord>> SOLAR_TERMS_RECORD = ATTACHMENT_TYPES.register(
                 "solar_terms_record",
                 () -> AttachmentType.builder(() -> new SolarTermsRecord(new ArrayList<>())).serialize(SolarTermsRecord.CODEC).build());
+        public static final Supplier<AttachmentType<SnowyRemover>> SNOWY_REMOVER = ATTACHMENT_TYPES.register(
+                "snowy_remover",
+                () -> AttachmentType.builder(() -> new SnowyRemover(new int[16][16])).serialize(SnowyRemover.CODEC).build());
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
