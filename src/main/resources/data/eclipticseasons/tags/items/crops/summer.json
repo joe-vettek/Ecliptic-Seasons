@@ -2,7 +2,7 @@
   "values": [
     "minecraft:melon_seeds",
     "minecraft:cocoa_beans",
-    "minecraft:glow_berries",
+    "minecraft:cactus",
     {
       "id": "farmersdelight:rice",
       "required": false

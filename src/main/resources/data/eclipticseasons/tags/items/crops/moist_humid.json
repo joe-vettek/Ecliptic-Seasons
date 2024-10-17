@@ -1,5 +1,6 @@
 {
   "values": [
+    "minecraft:bamboo",
     {
       "id": "farmersdelight:rice",
       "required": false

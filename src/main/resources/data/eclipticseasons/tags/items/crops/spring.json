@@ -1,5 +1,6 @@
 {
   "values": [
+    "minecraft:bamboo",
     {
       "id": "croptopia:cauliflower_seed",
       "required": false
