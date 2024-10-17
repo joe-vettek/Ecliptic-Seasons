@@ -1,7 +1,7 @@
 {
   "values": [
     "minecraft:potato",
-    "minecraft:beetroot",
+    "minecraft:beetroot_seeds",
     "minecraft:carrot",
     {
       "id": "farmersdelight:cabbage_seeds",
