@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.client;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
 import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.client.particle.WildGooseParticle;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -33,10 +34,10 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void blockRegister(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(EclipticSeasons.ParticleRegistry.FIREFLY, (p_277215_) ->
+        event.register(EclipticSeasons.ParticleRegistry.FIREFLY, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new FireflyParticle(level, x, y, z, p_277215_));
-        event.registerSpriteSet(EclipticSeasons.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
+        event.register(EclipticSeasons.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new WildGooseParticle(level, x, y, z,0.01,0.01,0.01, p_277215_));
     }
@@ -68,7 +69,6 @@ public class ClientSetup {
             // ItemBlockRenderTypes.setRenderLayer(ModContents.fluiddrawer.get(), ClientSetup::isGlassLanternValidLayer);
             // MenuScreens.register(ModContents.containerType.get(), Screen.Slot1::new);
             //
-            ItemBlockRenderTypes.setRenderLayer(Blocks.BAMBOO_BLOCK, RenderType.cutoutMipped());
             // ItemBlockRenderTypes.setRenderLayer(ModContents.RiceSeedlingBlock.get(),RenderType.cutout());
             // fix json file instead
             BiomeColors.GRASS_COLOR_RESOLVER = BiomeColorsHandler.GRASS_COLOR;
@@ -90,7 +90,7 @@ public class ClientSetup {
     // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
 
     @SubscribeEvent
-    public static void onModelBaked(ModelEvent.ModifyBakingResult event) {
+    public static void onModelBaked(ModelEvent.BakingCompleted event) {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
         ModelManager.models = modelRegistry;
         // snowModel.resolve();
@@ -124,7 +124,8 @@ public class ClientSetup {
 
         event.register((state, blockAndTintGetter, pos, i) -> {
             if (i == 1) {
-                return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColor.getDefaultColor();
+
+                return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColor.get(0.5D, 1.0D);
             } else {
                 return -1;
             }

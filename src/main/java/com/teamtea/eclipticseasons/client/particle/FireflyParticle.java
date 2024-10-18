@@ -1,6 +1,8 @@
 package com.teamtea.eclipticseasons.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -13,8 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+
 
 import java.util.List;
 
@@ -45,12 +46,12 @@ public class FireflyParticle extends TextureSheetParticle {
         float f = (float) (Mth.lerp(patialTicks, this.xo, this.x) - vec3.x());
         float f1 = (float) (Mth.lerp(patialTicks, this.yo, this.y) - vec3.y());
         float f2 = (float) (Mth.lerp(patialTicks, this.zo, this.z) - vec3.z());
-        Quaternionf quaternionf;
+        Quaternion quaternionf;
         if (this.roll == 0.0F) {
             quaternionf = camera.rotation();
         } else {
-            quaternionf = new Quaternionf(camera.rotation());
-            quaternionf.rotateZ(Mth.lerp(patialTicks, this.oRoll, this.roll));
+            quaternionf = new Quaternion(camera.rotation());
+            quaternionf.mul(Vector3f.ZP.rotation(Mth.lerp(patialTicks, this.oRoll, this.roll)));
         }
 
         Vector3f[] avector3f = new Vector3f[]{
@@ -62,7 +63,7 @@ public class FireflyParticle extends TextureSheetParticle {
 
         for (int i = 0; i < 4; ++i) {
             Vector3f vector3f = avector3f[i];
-            vector3f.rotate(quaternionf);
+            vector3f.transform(quaternionf);
             vector3f.mul(f3);
             vector3f.add(f, f1, f2);
         }
@@ -112,7 +113,7 @@ public class FireflyParticle extends TextureSheetParticle {
             isBlink = this.age % 8 > 4 && this.age < this.lifetime * 0.8;
             // setSprite(spriteSet.get(isBlink ? 0 : 1, 1));
             var nowPos = new Vec3(x, y, z);
-            var targetPosition = BlockPos.containing(x + xd, y + yd, z + zd);
+            var targetPosition =new BlockPos(x + xd, y + yd, z + zd);
 
             Vec3 vec3 = Entity.collideBoundingBox((Entity) null, new Vec3(xd, yd, zd), this.getBoundingBox(), this.level, List.of());
             if (this.nextPos != null &&
@@ -126,7 +127,7 @@ public class FireflyParticle extends TextureSheetParticle {
                 // this.stoppedByCollision=false;
             }
             if (nextPos == null || nextPos.closerThan(nowPos, 1f) || nextPos.distanceTo(nowPos) > 100) {
-                this.nextPos = findNextPosition().getCenter();
+                this.nextPos = Vec3.atCenterOf(findNextPosition());
                 var re = nextPos.subtract(nowPos).multiply(0.02d, 0.02d, 0.02d);
                 this.xd = re.x;
                 this.yd = re.y;
@@ -138,7 +139,7 @@ public class FireflyParticle extends TextureSheetParticle {
                 this.zd = 0.78 * this.zd + 0.3 * Math.abs(random.nextGaussian()) * re.z;
             }
 
-            var pos = BlockPos.containing(x, y - 0.1f, z);
+            var pos = new BlockPos(x, y - 0.1f, z);
             if (!NaturalSpawner.isValidEmptySpawnBlock(level, pos, level.getBlockState(pos), level.getFluidState(pos), EntityType.BAT)) {
                 this.yd = 0.05f;
             }

@@ -21,8 +21,8 @@ public class WeatherUtil {
     public static boolean isEntityInRain(LivingEntity entity) {
         // return WeatherManager.isRainingAt((ServerLevel) entity.level(), entity.blockPosition());
         BlockPos blockpos = entity.blockPosition();
-        return entity.level().isRainingAt(blockpos)
-                || entity.level().isRainingAt(BlockPos.containing(blockpos.getX(), entity.getBoundingBox().maxY, blockpos.getZ()));
+        return entity.level.isRainingAt(blockpos)
+                || entity.level.isRainingAt(new BlockPos(blockpos.getX(), entity.getBoundingBox().maxY, blockpos.getZ()));
         // return entity.isInWaterOrRain();
     }
 

@@ -38,7 +38,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
     private boolean previousIsDay;
 
     public SeasonalBiomeAmbientSoundsHandler(LocalPlayer localPlayer, SoundManager soundManager, BiomeManager biomeManager) {
-        this.random = localPlayer.level().getRandom();
+        this.random = localPlayer.level.getRandom();
         this.player = localPlayer;
         this.soundManager = soundManager;
         this.biomeManager = biomeManager;
@@ -51,9 +51,9 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
     public void tick() {
         this.loopSounds.values().removeIf(AbstractTickableSoundInstance::isStopped);
 
-        // boolean indoor = (player.level().getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition()) < 12);
-        boolean indoor = (player.level().getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition())) < 11;
-        // EclipticSeasons.logger((player.level().getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition())));
+        // boolean indoor = (player.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition()) < 12);
+        boolean indoor = (player.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition())) < 11;
+        // EclipticSeasons.logger((player.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition())));
 
         var biome = this.biomeManager.getNoiseBiomeAtPosition(this.player.getX(), this.player.getY(), this.player.getZ());
         if (biome.value() != this.previousBiome) {
@@ -61,10 +61,10 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
         }
 
         {
-            var season = SimpleUtil.getNowSolarTerm(player.level()).getSeason();
-            boolean isDayNow = SimpleUtil.isDay(player.level());
+            var season = SimpleUtil.getNowSolarTerm(player.level).getSeason();
+            boolean isDayNow = SimpleUtil.isDay(player.level);
             if (season != this.previousSeason || isDayNow != this.previousIsDay) {
-                this.loopSounds.values().forEach(SeasonalBiomeAmbientSoundsHandler.LoopSoundInstance::fadeOut);
+                this.loopSounds.values().forEach(LoopSoundInstance::fadeOut);
                 {
                     this.previousSeason = season;
                     this.previousIsDay = isDayNow;
@@ -75,12 +75,12 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             SoundEvent soundEvent = null;
             switch (season) {
                 case SPRING -> {
-                    if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS)) && !biome.is(Tags.Biomes.IS_COLD)) {
+                    if (( biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS)) && !biome.is(Tags.Biomes.IS_COLD)) {
                         soundEvent = EclipticSeasons.SoundEventsRegistry.spring_forest;
                     }
                 }
                 case SUMMER -> {
-                    // if (player.level().isNight())
+                    // if (player.level.isNight())
                     // 客户端不计算是否为夜晚
                     if (!isDayNow) {
                         if (!(biome.is(BiomeTags.IS_SAVANNA)
@@ -91,20 +91,20 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.night_river;
                         }
                     } else {
-                        if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_RIVER))) {
+                        if (( biome.is(BiomeTags.IS_FOREST) || biome.is(Tags.Biomes.IS_PLAINS) || biome.is(BiomeTags.IS_RIVER))) {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.garden_wind;
                         }
                     }
 
                 }
                 case AUTUMN -> {
-                    if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST))) {
+                    if (( biome.is(BiomeTags.IS_FOREST))) {
                         soundEvent = EclipticSeasons.SoundEventsRegistry.windy_leave;
                     }
                 }
                 case WINTER -> {
                     if (!biome.is(Tags.Biomes.IS_CAVE)) {
-                        if ((biome.is(Biomes.CHERRY_GROVE) || biome.is(BiomeTags.IS_FOREST) && ClientWeatherChecker.isRain((ClientLevel) player.level()))) {
+                        if (( biome.is(BiomeTags.IS_FOREST) && ClientWeatherChecker.isRain((ClientLevel) player.level))) {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.winter_forest;
                         } else soundEvent = EclipticSeasons.SoundEventsRegistry.winter_cold;
                     }

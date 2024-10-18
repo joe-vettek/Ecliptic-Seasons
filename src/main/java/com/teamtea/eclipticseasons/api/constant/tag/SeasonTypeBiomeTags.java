@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.api.constant.tag;
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
@@ -18,6 +18,6 @@ public class SeasonTypeBiomeTags {
     public static final List<TagKey<Biome>> BIOMES = List.of(SEASONAL, MONSOONAL, RAINLESS, ARID, DROUGHTY, SOFT, RAINY);
 
     private static TagKey<Biome> create(String s) {
-        return TagKey.create(Registries.BIOME, EclipticSeasons.rl(s));
+        return TagKey.create(BuiltinRegistries.BIOME.key(), EclipticSeasons.rl(s));
     }
 }

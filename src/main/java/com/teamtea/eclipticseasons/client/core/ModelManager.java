@@ -322,7 +322,7 @@ public class ModelManager {
                     if ((flag == FLAG_BLOCK) && ClientConfig.Renderer.deeperSnow.get()) {
                         var bl = blockAndTintGetter.getBlockState(pos.above()).getBlock();
                         isFlowerAbove = bl instanceof FlowerBlock
-                                || bl instanceof PinkPetalsBlock
+                                // || bl instanceof PinkPetalsBlock
                                 || bl instanceof DoublePlantBlock
                                 || bl instanceof SaplingBlock;
 

@@ -35,14 +35,15 @@ public final class OverlayEventHandler {
                         // || !FMLEnvironment.production
                 )
                 {
-                    var solar = AllListener.getSaveDataLazy(clientPlayer.level()).orElse(new SolarDataManager(clientPlayer.level())).getSolarTerm();
-                    long dayTime = clientPlayer.level().getDayTime();
-                    float temp = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
-                    Humidity h = Humidity.getHumid(clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);
-                    double env = clientPlayer.level().getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
-                    int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level(), clientPlayer.level().getDayTime());
+                    var solar = AllListener.getSaveDataLazy(clientPlayer.level).orElse(new SolarDataManager(clientPlayer.level)).getSolarTerm();
+                    long dayTime = clientPlayer.level.getDayTime();
+                    float temp = clientPlayer.level.getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
+                    Humidity h = Humidity.getHumid(clientPlayer.level.getBiome(clientPlayer.getOnPos()).get().getModifiedClimateSettings().downfall(), temp);
+                    double env = clientPlayer.level.getBiome(clientPlayer.getOnPos()).get().getTemperature(clientPlayer.getOnPos());
+                    int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level, clientPlayer.level.getDayTime());
 
-                    BAR_4.renderStatusBar(event.getGuiGraphics(), event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),level,clientPlayer, solar, dayTime, env, solarTime);
+
+                    BAR_4.renderStatusBar(event.getPoseStack(), event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight(),level,clientPlayer, solar, dayTime, env, solarTime);
                 }
             }
         }

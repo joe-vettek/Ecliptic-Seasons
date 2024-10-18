@@ -4,7 +4,7 @@ import com.teamtea.eclipticseasons.api.util.EclipticTagTool;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
@@ -16,7 +16,7 @@ public class BiomeClimateManager {
 
     public static void resetBiomeTemps(RegistryAccess registryAccess) {
         BIOME_DEFAULT_TEMPERATURE_MAP.clear();
-        var biomes = registryAccess.registry(Registries.BIOME);
+        var biomes = registryAccess.registry(BuiltinRegistries.BIOME.key());
         biomes.ifPresent(biomeRegistry -> biomeRegistry.forEach(biome ->
         {
             BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.getModifiedClimateSettings().temperature());
@@ -31,7 +31,7 @@ public class BiomeClimateManager {
     public static final float FROZEN_OCEAN_MELT_LEVEL = 0.1F;
 
     public static void updateTemperature(Level level, int solarTermIndex) {
-        var biomes = level.registryAccess().registry(Registries.BIOME);
+        var biomes = level.registryAccess().registry(BuiltinRegistries.BIOME.key());
         if (biomes.isPresent()) {
             biomes.get().forEach(biome ->
             {

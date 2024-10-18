@@ -1,27 +1,23 @@
 package com.teamtea.eclipticseasons.data.tag;
 
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
 
 public class TagsDataProvider extends TagsProvider<Biome> {
 
 
-    public TagsDataProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, Registries.BIOME, lookupProvider, modId, existingFileHelper);
+    public TagsDataProvider(DataGenerator generator, String modid, ExistingFileHelper helper) {
+        super(generator, BuiltinRegistries.BIOME, modid, helper);
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
+    protected void addTags() {
         this.tag(SeasonTypeBiomeTags.SEASONAL).addTags(BiomeTags.IS_OVERWORLD);
         this.tag(SeasonTypeBiomeTags.MONSOONAL).addTags(BiomeTags.IS_SAVANNA);
         this.tag(SeasonTypeBiomeTags.RAINLESS).addTags(Tags.Biomes.IS_CAVE);

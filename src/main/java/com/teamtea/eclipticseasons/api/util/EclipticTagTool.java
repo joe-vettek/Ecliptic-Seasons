@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.api.util;
 
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
@@ -25,7 +25,7 @@ public class EclipticTagTool {
         var bt = BIOME_TAG_KEY_MAP.getOrDefault(biome, null);
 
         if (bt == null && level != null) {
-            var biomes = level.registryAccess().registry(Registries.BIOME);
+            var biomes = level.registryAccess().registry(BuiltinRegistries.BIOME.key());
             if (biomes.isPresent()) {
                 for (Map.Entry<ResourceKey<Biome>, Biome> resourceKeyBiomeEntry : biomes.get().entrySet()) {
                     if (resourceKeyBiomeEntry.getValue() == biome) {

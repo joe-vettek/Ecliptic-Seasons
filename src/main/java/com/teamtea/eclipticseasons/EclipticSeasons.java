@@ -8,8 +8,8 @@ import com.teamtea.eclipticseasons.config.ClientConfig;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.data.start;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
@@ -129,17 +129,17 @@ public class EclipticSeasons {
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class SoundEventsRegistry {
-        public final static SoundEvent spring_forest = SoundEvent.createVariableRangeEvent(rl("ambient.spring_forest"));
-        public final static SoundEvent garden_wind = SoundEvent.createVariableRangeEvent(rl("ambient.garden_wind"));
-        public final static SoundEvent night_river = SoundEvent.createVariableRangeEvent(rl("ambient.night_river"));
-        public final static SoundEvent windy_leave = SoundEvent.createVariableRangeEvent(rl("ambient.windy_leave"));
-        public final static SoundEvent winter_forest = SoundEvent.createVariableRangeEvent(rl("ambient.winter_forest"));
-        public final static SoundEvent winter_cold = SoundEvent.createVariableRangeEvent(rl("ambient.winter_cold"));
+        public final static SoundEvent spring_forest = new SoundEvent(rl("ambient.spring_forest"));
+        public final static SoundEvent garden_wind = new SoundEvent(rl("ambient.garden_wind"));
+        public final static SoundEvent night_river = new SoundEvent(rl("ambient.night_river"));
+        public final static SoundEvent windy_leave = new SoundEvent(rl("ambient.windy_leave"));
+        public final static SoundEvent winter_forest = new SoundEvent(rl("ambient.winter_forest"));
+        public final static SoundEvent winter_cold = new SoundEvent(rl("ambient.winter_cold"));
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
             // MultiPackResourceManager
-            event.register(Registries.SOUND_EVENT, soundEventRegisterHelper -> {
+            event.register(Registry.SOUND_EVENT.key(), soundEventRegisterHelper -> {
                 soundEventRegisterHelper.register(spring_forest.getLocation(), spring_forest);
                 soundEventRegisterHelper.register(garden_wind.getLocation(), garden_wind);
                 soundEventRegisterHelper.register(night_river.getLocation(), night_river);
@@ -156,7 +156,7 @@ public class EclipticSeasons {
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
-            event.register(Registries.MOB_EFFECT, soundEventRegisterHelper -> {
+            event.register(Registry.MOB_EFFECT.key(), soundEventRegisterHelper -> {
                 soundEventRegisterHelper.register(rl("heat_stroke"), HEAT_STROKE);
             });
 
@@ -173,7 +173,7 @@ public class EclipticSeasons {
 
         @SubscribeEvent
         public static void blockRegister(RegisterEvent event) {
-            event.register(Registries.PARTICLE_TYPE, particleTypeRegisterHelper -> {
+            event.register(Registry.PARTICLE_TYPE.key(), particleTypeRegisterHelper -> {
                 particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
                 particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
             });

@@ -16,7 +16,7 @@ public class LeavesTerrainParticle extends TerrainParticle {
     private final float spinAcceleration;
 
     public LeavesTerrainParticle(ClientLevel clientLevel, double p_108283_, double p_108284_, double p_108285_, double p_108286_, double p_108287_, double p_108288_, BlockState p_108289_) {
-        this(clientLevel, p_108283_, p_108284_, p_108285_, p_108286_, p_108287_, p_108288_, p_108289_, BlockPos.containing(p_108283_, p_108284_, p_108285_));
+        this(clientLevel, p_108283_, p_108284_, p_108285_, p_108286_, p_108287_, p_108288_, p_108289_,new BlockPos(p_108283_, p_108284_, p_108285_));
     }
 
     public LeavesTerrainParticle(ClientLevel clientLevel, double p_172452_, double p_172453_, double p_172454_, double p_172455_, double p_172456_, double p_172457_, BlockState state, BlockPos pos) {

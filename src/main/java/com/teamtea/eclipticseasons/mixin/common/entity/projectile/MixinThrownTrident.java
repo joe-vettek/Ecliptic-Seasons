@@ -19,6 +19,6 @@ public class MixinThrownTrident {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
     private boolean ecliptic$isDarkEnoughToSpawn_isThundering(Level instance, Operation<Boolean> original) {
-        return WeatherManager.isThunderAt((ServerLevel) ((ThrownTrident)(Object)this).level(), ((ThrownTrident)(Object)this).blockPosition());
+        return WeatherManager.isThunderAt((ServerLevel) ((ThrownTrident)(Object)this).level, ((ThrownTrident)(Object)this).blockPosition());
     }
 }

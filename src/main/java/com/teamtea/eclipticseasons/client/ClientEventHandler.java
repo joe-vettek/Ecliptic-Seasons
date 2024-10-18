@@ -117,7 +117,7 @@ public final class ClientEventHandler {
         if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
             if (event.phase.equals(TickEvent.Phase.END)
                     && event.level.isClientSide()
-                    && ((ClientLevel) event.level).getGameTime() >> 8 == 0) {
+                    && event.level.getGameTime() %100  == 0) {
                 var lr = Minecraft.getInstance().levelRenderer;
                 if (lr != null) {
                     //
@@ -178,7 +178,8 @@ public final class ClientEventHandler {
 
 
                                 var blockpos4 = blockpos$mutableblockpos;
-                                Vec3 vec3c = blockpos4.getCenter().add(-0.5f, -0.5f + 0.25f, -0.5f);
+
+                                Vec3 vec3c = Vec3.atCenterOf(blockpos4).add(-0.5f, -0.5f + 0.25f, -0.5f);
                                 vec3c.add(blockstate.getOffset(level, blockpos$mutableblockpos));
 
                                 var state = Blocks.CAMPFIRE.defaultBlockState();

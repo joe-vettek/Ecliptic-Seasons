@@ -1,11 +1,12 @@
 package com.teamtea.eclipticseasons.client.debug;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -14,15 +15,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import org.lwjgl.opengl.GL11;
 
-public final class DebugInfoRenderer {
+public final class DebugInfoRenderer extends Gui {
     private final Minecraft mc;
 
     public DebugInfoRenderer(Minecraft mc) {
+        super(mc,mc.getItemRenderer());
 
         this.mc = mc;
     }
 
-    public void renderStatusBar(GuiGraphics matrixStack, int screenWidth, int screenHeight,ClientLevel clientLevel, LocalPlayer player, SolarTerm solar, long dayTime, double env, int solarTime) {
+    public void renderStatusBar(PoseStack matrixStack, int screenWidth, int screenHeight, ClientLevel clientLevel, LocalPlayer player, SolarTerm solar, long dayTime, double env, int solarTime) {
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // RenderSystem.enableAlphaTest();
@@ -83,8 +85,8 @@ public final class DebugInfoRenderer {
 
     }
 
-    private void drawInfo(GuiGraphics matrixStack, int screenWidth, int screenHeight, String s, int index) {
-        matrixStack.drawString(mc.font, s, screenWidth / 2 - mc.font.width(s) / 2, index * 9 + 3, 0xFFFFFF);
+    private void drawInfo(PoseStack matrixStack, int screenWidth, int screenHeight, String s, int index) {
+        drawString(matrixStack,mc.font, s, screenWidth / 2 - mc.font.width(s) / 2, index * 9 + 3, 0xFFFFFF);
     }
 
 }

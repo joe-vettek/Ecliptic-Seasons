@@ -11,7 +11,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundChunksBiomesPacket;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -148,26 +147,5 @@ public class SolarDataManager extends SavedData {
     }
 
 
-    public void resendBiomesForChunks(ServerLevel serverLevel, ChunkMap chunkMap, List<ChunkAccess> chunkAccessList) {
-        Map<ServerPlayer, List<LevelChunk>> map = new HashMap<>();
-
-        for(ChunkAccess chunkaccess : chunkAccessList) {
-            ChunkPos chunkpos = chunkaccess.getPos();
-            LevelChunk levelchunk;
-            if (chunkaccess instanceof LevelChunk levelchunk1) {
-                levelchunk = levelchunk1;
-            } else {
-                levelchunk = serverLevel.getChunk(chunkpos.x, chunkpos.z);
-            }
-
-            for(ServerPlayer serverplayer : chunkMap.getPlayers(chunkpos, false)) {
-                map.computeIfAbsent(serverplayer, (p_274834_) -> new ArrayList<>()).add(levelchunk);
-            }
-        }
-
-        map.forEach((player, levelChunks) -> {
-            player.connection.send(ClientboundChunksBiomesPacket.forChunks(levelChunks));
-        });
-    }
 
 }
