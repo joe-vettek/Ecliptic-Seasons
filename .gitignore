@@ -27,4 +27,4 @@ runs
 forge*changelog.txt
 
 .cache
-libs/OptiFine-1.20.1_HD_U_I6.jar
+libs/OptiFine-*.jar
