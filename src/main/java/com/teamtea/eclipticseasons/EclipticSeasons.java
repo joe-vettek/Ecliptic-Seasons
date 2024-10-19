@@ -1,38 +1,35 @@
 package com.teamtea.eclipticseasons;
 
 
-import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.common.misc.HeatStrokeEffect;
+import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.compat.CompatModule;
 import com.teamtea.eclipticseasons.config.ClientConfig;
-import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.data.start;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -137,16 +134,29 @@ public class EclipticSeasons {
         public final static SoundEvent winter_cold = new SoundEvent(rl("ambient.winter_cold"));
 
         @SubscribeEvent
-        public static void blockRegister(RegisterEvent event) {
+        public static void blockRegister(RegistryEvent.Register<SoundEvent> event) {
             // MultiPackResourceManager
-            event.register(Registry.SOUND_EVENT.key(), soundEventRegisterHelper -> {
-                soundEventRegisterHelper.register(spring_forest.getLocation(), spring_forest);
-                soundEventRegisterHelper.register(garden_wind.getLocation(), garden_wind);
-                soundEventRegisterHelper.register(night_river.getLocation(), night_river);
-                soundEventRegisterHelper.register(windy_leave.getLocation(), windy_leave);
-                soundEventRegisterHelper.register(winter_forest.getLocation(), winter_forest);
-                soundEventRegisterHelper.register(winter_cold.getLocation(), winter_cold);
-            });
+            // event.register(Registry.SOUND_EVENT.key(), soundEventRegisterHelper -> {
+            //     soundEventRegisterHelper.register(spring_forest.getLocation(), spring_forest);
+            //     soundEventRegisterHelper.register(garden_wind.getLocation(), garden_wind);
+            //     soundEventRegisterHelper.register(night_river.getLocation(), night_river);
+            //     soundEventRegisterHelper.register(windy_leave.getLocation(), windy_leave);
+            //     soundEventRegisterHelper.register(winter_forest.getLocation(), winter_forest);
+            //     soundEventRegisterHelper.register(winter_cold.getLocation(), winter_cold);
+            // });
+            spring_forest.setRegistryName(rl("spring_forest"));
+            garden_wind.setRegistryName(rl("garden_wind"));
+            night_river.setRegistryName(rl("night_river"));
+            windy_leave.setRegistryName(rl("windy_leave"));
+            winter_forest.setRegistryName(rl("winter_forest"));
+            winter_cold.setRegistryName(rl("winter_cold"));
+            event.getRegistry().registerAll(spring_forest,
+                    garden_wind,
+                    night_river,
+                    windy_leave,
+                    winter_forest,
+                    winter_cold
+            );
         }
     }
 
@@ -155,12 +165,12 @@ public class EclipticSeasons {
         public static final MobEffect HEAT_STROKE = new HeatStrokeEffect(MobEffectCategory.NEUTRAL, 0xf9d27d);
 
         @SubscribeEvent
-        public static void blockRegister(RegisterEvent event) {
-            event.register(Registry.MOB_EFFECT.key(), soundEventRegisterHelper -> {
-                soundEventRegisterHelper.register(rl("heat_stroke"), HEAT_STROKE);
-            });
-
-
+        public static void blockRegister(RegistryEvent.Register<MobEffect> event) {
+            // event.register(Registry.MOB_EFFECT.key(), soundEventRegisterHelper -> {
+            //     soundEventRegisterHelper.register(rl("heat_stroke"), HEAT_STROKE);
+            // });
+            HEAT_STROKE.setRegistryName(rl("heat_stroke"));
+            event.getRegistry().register(HEAT_STROKE);
         }
 
 
@@ -172,13 +182,18 @@ public class EclipticSeasons {
         public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
 
         @SubscribeEvent
-        public static void blockRegister(RegisterEvent event) {
-            event.register(Registry.PARTICLE_TYPE.key(), particleTypeRegisterHelper -> {
-                particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
-                particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
-            });
-        }
+        public static void blockRegister(RegistryEvent.Register<ParticleType<?>> event) {
 
+            // event.getRegistry().register(Registry.PARTICLE_TYPE.key(), particleTypeRegisterHelper -> {
+            //     particleTypeRegisterHelper.register(rl("firefly"), FIREFLY);
+            //     particleTypeRegisterHelper.register(rl("wild_goose"), WILD_GOOSE);
+            // });
+            FIREFLY.setRegistryName(rl("firefly"));
+            WILD_GOOSE.setRegistryName(rl("wild_goose"));
+            event.getRegistry().registerAll(
+                    FIREFLY,WILD_GOOSE
+            );
+        }
 
 
     }

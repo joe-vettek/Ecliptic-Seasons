@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.api.constant.biome;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public enum Humidity {
     ARID(ChatFormatting.RED, 0.9F),
@@ -28,7 +29,7 @@ public enum Humidity {
     }
 
     public Component getTranslation() {
-        return Component.translatable("info.silveroak.environment.humidity." + getName()).withStyle(color);
+        return new TranslatableComponent("info.silveroak.environment.humidity." + getName()).withStyle(color);
     }
 
     public float getCoefficient() {

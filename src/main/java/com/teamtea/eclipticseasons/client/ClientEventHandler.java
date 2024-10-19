@@ -21,7 +21,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Blocks;
@@ -29,17 +28,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = EclipticSeasons.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
@@ -59,15 +57,15 @@ public final class ClientEventHandler {
     public static float g = 0.0f;
     public static float b = 0.0f;
 
-    @SubscribeEvent
-    public static void onFogEvent(ViewportEvent.ComputeFogColor event) {
-        ClientRenderer.renderFogColors(event.getCamera(), (float) event.getPartialTick(), event);
-    }
-
-    @SubscribeEvent
-    public static void onFogEvent(ViewportEvent.RenderFog event) {
-        ClientRenderer.renderFogDensity(event.getCamera(), event);
-    }
+    // @SubscribeEvent
+    // public static void onFogEvent(ViewportEvent.ComputeFogColor event) {
+    //     ClientRenderer.renderFogColors(event.getCamera(), (float) event.getPartialTick(), event);
+    // }
+    //
+    // @SubscribeEvent
+    // public static void onFogEvent(ViewportEvent.RenderFog event) {
+    //     ClientRenderer.renderFogDensity(event.getCamera(), event);
+    // }
 
     @SubscribeEvent
     public static void addTooltips(ItemTooltipEvent event) {
@@ -88,15 +86,15 @@ public final class ClientEventHandler {
 
 
     @SubscribeEvent
-    public static void onLevelUnloadEvent(LevelEvent.Unload event) {
-        if (event.getLevel() instanceof ClientLevel clientLevel) {
+    public static void onLevelUnloadEvent(WorldEvent.Unload event) {
+        if (event.getWorld() instanceof ClientLevel clientLevel) {
             ModelManager.clearHeightMap();
         }
     }
 
     @SubscribeEvent
-    public static void onLevelEventLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ClientLevel clientLevel) {
+    public static void onLevelEventLoad(WorldEvent.Load event) {
+        if (event.getWorld() instanceof ClientLevel clientLevel) {
             // synchronized (ModelManager.RegionList) {
             //     ModelManager.RegionList.clear();
             // }
@@ -113,11 +111,11 @@ public final class ClientEventHandler {
 
     // 强制区块渲染
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.LevelTickEvent event) {
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
         if (ClientConfig.Renderer.forceChunkRenderUpdate.get()) {
             if (event.phase.equals(TickEvent.Phase.END)
-                    && event.level.isClientSide()
-                    && event.level.getGameTime() %100  == 0) {
+                    && event.world.isClientSide()
+                    && event.world.getGameTime() %100  == 0) {
                 var lr = Minecraft.getInstance().levelRenderer;
                 if (lr != null) {
                     //
@@ -160,7 +158,7 @@ public final class ClientEventHandler {
             var blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
             var random = level.getRandom();
             int b = 32;
-            random = RandomSource.create();
+            random=new Random();
             for (int i = 0; i < 20; ++i)
                 for (int j = 0; j < 20; ++j)
                     for (int k = 0; k < 20; ++k)

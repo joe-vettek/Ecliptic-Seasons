@@ -24,7 +24,7 @@ public final class CustomRandomTickHandler {
     private static final CustomRandomTick SNOW_MELT = (state, world, pos) ->
     {
         BlockPos blockpos = new BlockPos(pos.getX(), world.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
-        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).get().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
+        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).value().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
             BlockState topState = world.getBlockState(blockpos);
             if (topState.getBlock().equals(Blocks.SNOW)) {
                 world.setBlockAndUpdate(blockpos, Blocks.AIR.defaultBlockState());
@@ -37,9 +37,9 @@ public final class CustomRandomTickHandler {
         }
     };
 
-    public static void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Temperature.iceMelt.get() && !event.level.isClientSide()) {
-            ServerLevel level = (ServerLevel) event.level;
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Temperature.iceMelt.get() && !event.world.isClientSide()) {
+            ServerLevel level = (ServerLevel) event.world;
             int randomTickSpeed = level.getGameRules().getInt(GameRules.RULE_RANDOMTICKING);
             if (randomTickSpeed > 0) {
                 List<ChunkHolder> list = Lists.newArrayList(((ServerLevel) level).getChunkSource().chunkMap.getChunks());

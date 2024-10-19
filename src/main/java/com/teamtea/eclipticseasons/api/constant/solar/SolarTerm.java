@@ -6,9 +6,11 @@ import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.common.Tags;
 
 public enum SolarTerm {
     // Spring Solar Terms
@@ -58,11 +60,11 @@ public enum SolarTerm {
     }
 
     public Component getTranslation() {
-        return Component.translatable("info.teastory.environment.solar_term." + getName());
+        return new TranslatableComponent("info.teastory.environment.solar_term." + getName());
     }
 
     public Component getAlternationText() {
-        return Component.translatable("info.teastory.environment.solar_term.alternation." + getName()).withStyle(getSeason().getColor());
+        return new TranslatableComponent("info.teastory.environment.solar_term.alternation." + getName()).withStyle(getSeason().getColor());
     }
 
     public static SolarTerm get(int index) {
@@ -108,7 +110,7 @@ public enum SolarTerm {
 
 
     public BiomeRain getBiomeRain(Holder<Biome> biomeHolder) {
-        if (!biomeHolder.is(BiomeTags.IS_OVERWORLD) || biomeHolder.is(SeasonTypeBiomeTags.RAINLESS)) {
+        if (!biomeHolder.is(Tags.Biomes.IS_OVERWORLD) || biomeHolder.is(SeasonTypeBiomeTags.RAINLESS)) {
             return FlatRain.RAINLESS;
         } else if (biomeHolder.is(SeasonTypeBiomeTags.ARID)) {
             return FlatRain.ARID;

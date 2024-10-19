@@ -9,10 +9,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.Random;
 
 public class ParticleUtil {
     public static void createParticle(ClientLevel clientLevel, int x, int y, int z) {
@@ -50,7 +51,7 @@ public class ParticleUtil {
     }
 
     // can refer TerrainParticle
-    private static void doAnimateTick(ClientLevel clientLevel, int x, int y, int z, int b, RandomSource random, BlockPos.MutableBlockPos blockpos$mutableblockpos) {
+    private static void doAnimateTick(ClientLevel clientLevel, int x, int y, int z, int b, Random random, BlockPos.MutableBlockPos blockpos$mutableblockpos) {
         int i = x + random.nextInt(b) - random.nextInt(b);
         int j = y + random.nextInt(b) - random.nextInt(b);
         int k = z + random.nextInt(b) - random.nextInt(b);

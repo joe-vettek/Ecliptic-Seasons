@@ -6,7 +6,6 @@ import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.ProfilePublicKey;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinServerPlayer extends Player {
 
 
-    public MixinServerPlayer(Level pLevel, BlockPos pPos, float pYRot, GameProfile pGameProfile, @Nullable ProfilePublicKey pProfilePublicKey) {
-        super(pLevel, pPos, pYRot, pGameProfile, pProfilePublicKey);
+    public MixinServerPlayer(Level pLevel, BlockPos pPos, float pYRot, GameProfile pGameProfile) {
+        super(pLevel, pPos, pYRot, pGameProfile);
     }
 
     @Inject(at = {@At("RETURN")}, method = {"tick"})

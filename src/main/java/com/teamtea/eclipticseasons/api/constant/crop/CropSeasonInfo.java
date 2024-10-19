@@ -5,6 +5,7 @@ package com.teamtea.eclipticseasons.api.constant.crop;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class CropSeasonInfo
     public List<Component> getTooltip()
     {
         List<Component> list = new ArrayList<>();
-        list.add(Component.translatable("info.teastory.environment.season").withStyle(ChatFormatting.GRAY));
+        list.add(new TranslatableComponent("info.teastory.environment.season").withStyle(ChatFormatting.GRAY));
         boolean spring = (season & 1) == 1;
         boolean summer = (season & 2) == 2;
         boolean autumn = (season & 4) == 4;

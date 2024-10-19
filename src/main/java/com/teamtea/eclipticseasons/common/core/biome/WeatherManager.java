@@ -13,18 +13,20 @@ import com.teamtea.eclipticseasons.common.network.EmptyMessage;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,16 +34,19 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WritableLevelData;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.*;
+
 
 public class WeatherManager {
 
@@ -49,7 +54,10 @@ public class WeatherManager {
     public static Map<Level, Integer> NEXT_CHECK_BIOME_MAP = new HashMap<>();
 
     public static ArrayList<BiomeWeather> getBiomeList(Level level) {
-        if (level == null) return BIOME_WEATHER_LIST.entrySet().stream().findFirst().get().getValue();
+        if (level == null) {
+            var aa= BIOME_WEATHER_LIST.entrySet().stream().findFirst();
+            return aa.map(Map.Entry::getValue).orElse(null);
+        }
         return BIOME_WEATHER_LIST.get(level);
     }
 
@@ -132,7 +140,7 @@ public class WeatherManager {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {
-                if (biome == biomeWeather.biomeHolder.get()) {
+                if (biome == biomeWeather.biomeHolder.value()) {
                     return biomeWeather.shouldThunder();
                 }
             }
@@ -152,7 +160,7 @@ public class WeatherManager {
             return false;
         }
         var biome = serverLevel.getBiome(pos);
-        return isThunderAtBiome(serverLevel, biome.get());
+        return isThunderAtBiome(serverLevel, biome.value());
     }
 
     public static Boolean isRainingAt(ServerLevel serverLevel, BlockPos pos) {
@@ -168,14 +176,14 @@ public class WeatherManager {
             return false;
         }
         var biome = serverLevel.getBiome(pos);
-        return isRainingAtBiome(serverLevel, biome.get());
+        return isRainingAtBiome(serverLevel, biome.value());
     }
 
     public static Boolean isRainingAtBiome(ServerLevel serverLevel, Biome biome) {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {
-                if (biome == biomeWeather.biomeHolder.get()) {
+                if (biome == biomeWeather.biomeHolder.value()) {
                     return biomeWeather.shouldRain();
                 }
             }
@@ -187,7 +195,7 @@ public class WeatherManager {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {
-                if (biome == biomeWeather.biomeHolder.get()) {
+                if (biome == biomeWeather.biomeHolder.value()) {
                     return biomeWeather.snowDepth;
                 }
             }
@@ -310,7 +318,8 @@ public class WeatherManager {
                                 Item item = itemstack.getItem();
                                 if (item instanceof ArmorItem armorItem) {
                                     if (armorItem.getSlot() == EquipmentSlot.HEAD) {
-                                        if (armorItem.getEnchantmentLevel(itemstack, Enchantments.FIRE_PROTECTION) > 0) {
+
+                                        if ( EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_PROTECTION,itemstack) > 0) {
                                             isColdHe = true;
                                         }
                                     }
@@ -331,7 +340,7 @@ public class WeatherManager {
     public static final IntProvider THUNDER_DURATION = UniformInt.of(3600, 15600);
 
 
-    public static void runWeather(ServerLevel level, BiomeWeather biomeWeather, RandomSource random, int size) {
+    public static void runWeather(ServerLevel level, BiomeWeather biomeWeather, Random random, int size) {
 
         if (biomeWeather.shouldClear()) {
             biomeWeather.clearTime--;
@@ -347,8 +356,8 @@ public class WeatherManager {
                 }
             } else {
                 BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-                float downfall = biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall();
-                if (biomeWeather.biomeHolder.is(BiomeTags.IS_SAVANNA)) {
+                float downfall = biomeWeather.biomeHolder.value().getDownfall();
+                if (biomeWeather.biomeHolder.is(Tags.Biomes.IS_SAVANNA)) {
                     downfall += 0.2f;
                 }
                 float weight = biomeRain.getRainChane()
@@ -368,14 +377,14 @@ public class WeatherManager {
         }
         // if (biomeWeather.biomeHolder.is(Biomes.JUNGLE)) {
         //     // BiomeRain biomeRain = AllListener.getSaveData(level).getSolarTerm().getBiomeRain(biomeWeather.biomeHolder);
-        //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.get().getModifiedClimateSettings().downfall());
+        //     // float weight = biomeRain.getRainChane() * Math.max(0.01f, biomeWeather.biomeHolder.value().getModifiedClimateSettings().downfall());
         //     //
         //     // Ecliptic.logger(biomeWeather,weight) ;
         // }
 
 
         if (biomeWeather.shouldRain() || level.getRandom().nextInt(5) > 1) {
-            var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.get(), null);
+            var snow = WeatherManager.getSnowStatus(level, biomeWeather.biomeHolder.value(), null);
             if (snow == SnowRenderStatus.SNOW) {
                 biomeWeather.snowDepth = (byte) Math.min(100, biomeWeather.snowDepth + 1);
             } else if (snow == SnowRenderStatus.SNOW_MELT) {
@@ -414,7 +423,7 @@ public class WeatherManager {
                 if (isLogged
 
                         && t.getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
-                    serverPlayer.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()), false);
+                    serverPlayer.sendMessage(new TranslatableComponent("info.teastory.environment.solar_term.message", SolarTerm.get(t.getSolarTermIndex()).getAlternationText()),  Util.NIL_UUID);
                 }
             });
 
@@ -490,7 +499,7 @@ public class WeatherManager {
         return true;
     }
 
-    public static boolean agentAdvanceWeatherCycle(ServerLevel level, ServerLevelData serverLevelData, WritableLevelData levelData, RandomSource random) {
+    public static boolean agentAdvanceWeatherCycle(ServerLevel level, ServerLevelData serverLevelData, WritableLevelData levelData, Random random) {
 
         if (!level.dimensionType().natural()) {
             return true;

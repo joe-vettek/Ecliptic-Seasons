@@ -38,24 +38,24 @@ public final class CropInfoManager
         CROP_HUMIDITY_INFO.clear();
         CROP_SEASON_INFO.clear();
 
-        var items= event.getRegistryAccess().registry(ForgeRegistries.ITEMS.getRegistryKey());
+        var items= event.getTagManager().registry(ForgeRegistries.ITEMS.getRegistryKey());
         if (items.isPresent()){
             for (CropHumidityType cropHumidityType : CropHumidityType.values()) {
                var tagItems= items.get().getTag(ItemTags.create(cropHumidityType.getRes()));
                 tagItems.ifPresent(holders -> holders.stream().toList().forEach(action -> {
-                    registerCropHumidityInfo(action.get(), cropHumidityType);
+                    registerCropHumidityInfo(action.value(), cropHumidityType);
                 }));
             }
             for (CropSeasonType cropSeasonType : CropSeasonType.values()) {
                 var tagItems= items.get().getTag(ItemTags.create(cropSeasonType.getRes()));
                 tagItems.ifPresent(holders -> holders.stream().toList().forEach(action -> {
-                    registerCropSeasonInfo(action.get(), cropSeasonType);
+                    registerCropSeasonInfo(action.value(), cropSeasonType);
                 }));
             }
         }
 
         // Registry.BLOCK.
-        var blocks = event.getRegistryAccess().registry(ForgeRegistries.BLOCKS.getRegistryKey());
+        var blocks = event.getTagManager().registry(ForgeRegistries.BLOCKS.getRegistryKey());
 
         if (blocks.isPresent()) {
             for (CropHumidityType cropHumidityType : CropHumidityType.values()) {

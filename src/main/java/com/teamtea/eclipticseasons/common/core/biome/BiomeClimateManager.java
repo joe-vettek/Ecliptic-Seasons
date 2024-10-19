@@ -19,7 +19,7 @@ public class BiomeClimateManager {
         var biomes = registryAccess.registry(BuiltinRegistries.BIOME.key());
         biomes.ifPresent(biomeRegistry -> biomeRegistry.forEach(biome ->
         {
-            BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.getModifiedClimateSettings().temperature());
+            BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.climateSettings.temperature);
         }));
     }
 

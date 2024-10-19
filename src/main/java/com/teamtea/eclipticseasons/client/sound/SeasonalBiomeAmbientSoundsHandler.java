@@ -13,7 +13,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -22,6 +21,7 @@ import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Random;
 
 public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
     private static final int LOOP_SOUND_CROSS_FADE_TIME = 40;
@@ -29,7 +29,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
     private final LocalPlayer player;
     private final SoundManager soundManager;
     private final BiomeManager biomeManager;
-    private final RandomSource random;
+    private final Random random;
     private final Object2ObjectArrayMap<Biome, LoopSoundInstance> loopSounds = new Object2ObjectArrayMap<>();
     private float moodiness;
     @Nullable
@@ -83,9 +83,8 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                     // if (player.level.isNight())
                     // 客户端不计算是否为夜晚
                     if (!isDayNow) {
-                        if (!(biome.is(BiomeTags.IS_SAVANNA)
-                                && !biome.is(Tags.Biomes.IS_CAVE)
-                                && !biome.is(Tags.Biomes.IS_DESERT)
+                        if (!(biome.is(Tags.Biomes.IS_SAVANNA)
+                                && !biome.is(BiomeTags.HAS_DESERT_PYRAMID)
                                 && !biome.is(BiomeTags.IS_BADLANDS)
                                 && !biome.is(Tags.Biomes.IS_PEAK))) {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.night_river;
@@ -103,7 +102,8 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
                     }
                 }
                 case WINTER -> {
-                    if (!biome.is(Tags.Biomes.IS_CAVE)) {
+                    // if (!biome.is(Tags.Biomes.IS_CAVE))
+                    {
                         if (( biome.is(BiomeTags.IS_FOREST) && ClientWeatherChecker.isRain((ClientLevel) player.level))) {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.winter_forest;
                         } else soundEvent = EclipticSeasons.SoundEventsRegistry.winter_cold;
@@ -114,7 +114,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
             }
             if (soundEvent != null) {
                 SoundEvent finalSoundEvent = soundEvent;
-                this.loopSounds.compute(biome.get(), (biome1, loopSoundInstance) -> {
+                this.loopSounds.compute(biome.value(), (biome1, loopSoundInstance) -> {
                     if (loopSoundInstance == null) {
                         loopSoundInstance = new LoopSoundInstance(finalSoundEvent);
                         this.soundManager.play(loopSoundInstance);
@@ -131,7 +131,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
 
                 for (Map.Entry<Biome, LoopSoundInstance> entry : this.loopSounds.entrySet()) {
                     var loopSoundInstance = entry.getValue();
-                    if (indoor||entry.getKey() != biome.get())
+                    if (indoor||entry.getKey() != biome.value())
                         loopSoundInstance.fadeOut();
                     else
                         loopSoundInstance.fadeIn();
@@ -145,7 +145,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements AmbientSoundHandler {
         private int fade;
 
         public LoopSoundInstance(SoundEvent p_119658_) {
-            super(p_119658_, SoundSource.AMBIENT, SoundInstance.createUnseededRandom());
+            super(p_119658_, SoundSource.AMBIENT);
             this.looping = true;
             this.delay = 0;
             this.volume = 0.5F;

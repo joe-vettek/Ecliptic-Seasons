@@ -1,9 +1,6 @@
 package com.teamtea.eclipticseasons.mixin;
 
-import com.teamtea.eclipticseasons.EclipticSeasons;
-import com.teamtea.eclipticseasons.client.core.ModelManager;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;

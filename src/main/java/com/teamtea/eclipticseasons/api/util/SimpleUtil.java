@@ -24,7 +24,7 @@ public class SimpleUtil {
     }
 
     public static boolean isDay(Level level) {
-        long dayTime = level.dimensionType().fixedTime().orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
+        long dayTime = level.dimensionType().fixedTime.orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
         long termTime = getNowSolarTerm(level).getDayTime();
         long halfTermTime = termTime / 2;
         if (termTime <= 12000) {
@@ -42,13 +42,13 @@ public class SimpleUtil {
     }
 
     public static boolean isNoon(Level level) {
-        long dayTime = level.dimensionType().fixedTime().orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
+        long dayTime = level.dimensionType().fixedTime.orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
         long termTime = getNowSolarTerm(level).getDayTime();
         return 6000 - (termTime / 6) < dayTime && dayTime < 6000 + (termTime / 4);
     }
 
     public static boolean isEvening(Level level) {
-        long dayTime = level.dimensionType().fixedTime().orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
+        long dayTime = level.dimensionType().fixedTime.orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
         long termTime = getNowSolarTerm(level).getDayTime();
         return 6000 + (termTime  *2 / 5) < dayTime && dayTime < 6000 + ( termTime/2 ) +(24000-termTime)*3/4;
     }

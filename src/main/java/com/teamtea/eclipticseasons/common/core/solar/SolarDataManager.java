@@ -7,10 +7,12 @@ import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -141,7 +143,7 @@ public class SolarDataManager extends SavedData {
         for (ServerPlayer player : world.players()) {
             SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(this.getSolarTermsDay()));
             if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
-                player.sendSystemMessage(Component.translatable("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()), false);
+                player.sendMessage(new TranslatableComponent("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()),  Util.NIL_UUID);
             }
         }
     }

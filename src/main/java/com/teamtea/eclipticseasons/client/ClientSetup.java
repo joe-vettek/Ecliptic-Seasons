@@ -3,7 +3,9 @@ package com.teamtea.eclipticseasons.client;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
 import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.client.particle.WildGooseParticle;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -13,9 +15,11 @@ import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+
+import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.model.ForgeModelBakery;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -33,33 +37,34 @@ public class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void blockRegister(RegisterParticleProvidersEvent event) {
-        event.register(EclipticSeasons.ParticleRegistry.FIREFLY, (p_277215_) ->
+    public static void blockRegister(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particleEngine.register(EclipticSeasons.ParticleRegistry.FIREFLY, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new FireflyParticle(level, x, y, z, p_277215_));
-        event.register(EclipticSeasons.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
+        Minecraft.getInstance().particleEngine.register(EclipticSeasons.ParticleRegistry.WILD_GOOSE, (p_277215_) ->
                 (particleType, level, x, y, z, p_277222_, p_277223_, p_277224_) ->
                         new WildGooseParticle(level, x, y, z,0.01,0.01,0.01, p_277215_));
     }
 
     @SubscribeEvent
-    public static void registerExtraModels(ModelEvent.RegisterAdditional event) {
-        event.register(ModelManager.snowy_fern);
-        event.register(ModelManager.snowy_grass);
-        event.register(ModelManager.snowy_tall_grass_top);
-        event.register(ModelManager.snowy_tall_grass_bottom);
-        event.register(ModelManager.snowy_large_fern_top);
+    public static void registerExtraModels(ModelRegistryEvent event) {
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_fern);
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_grass);
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_tall_grass_top);
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_tall_grass_bottom);
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_large_fern_top);
         // 注意这里使用地址和model地址效果不同，后者需要写blockstate
-        event.register(ModelManager.snowy_large_fern_bottom);
-        event.register(ModelManager.snowy_dandelion);
-        event.register(ModelManager.dandelion_top);
-        event.register(ModelManager.overlay_2);
-        event.register(ModelManager.snow_height2);
-        event.register(ModelManager.snow_height2_top);
-        event.register(ModelManager.grass_flower);
-        event.register(ModelManager.butterfly1);
-        event.register(ModelManager.butterfly2);
-        event.register(ModelManager.butterfly3);
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_large_fern_bottom);
+        ForgeModelBakery.addSpecialModel(ModelManager.snowy_dandelion);
+        ForgeModelBakery.addSpecialModel(ModelManager.dandelion_top);
+        ForgeModelBakery.addSpecialModel(ModelManager.overlay_2);
+        ForgeModelBakery.addSpecialModel(ModelManager.snow_height2);
+        ForgeModelBakery.addSpecialModel(ModelManager.snow_height2_top);
+        ForgeModelBakery.addSpecialModel(ModelManager.grass_flower);
+        ForgeModelBakery.addSpecialModel(ModelManager.butterfly1);
+        ForgeModelBakery.addSpecialModel(ModelManager.butterfly2);
+        ForgeModelBakery.addSpecialModel(ModelManager.butterfly3);
+
     }
 
     @SubscribeEvent
@@ -73,7 +78,25 @@ public class ClientSetup {
             // fix json file instead
             BiomeColors.GRASS_COLOR_RESOLVER = BiomeColorsHandler.GRASS_COLOR;
             BiomeColors.FOLIAGE_COLOR_RESOLVER = BiomeColorsHandler.FOLIAGE_COLOR;
+            Minecraft.getInstance().getBlockColors().register((state, blockAndTintGetter, pos, i) -> {
+                if (i == 1) {
 
+                    return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColor.get(0.5D, 1.0D);
+                } else {
+                    return -1;
+                }
+            }, Blocks.DANDELION);
+
+            // Map<ResourceLocation, BakedModel> modelRegistry =Minecraft.getInstance().getModelManager().;
+            // ModelManager.models = modelRegistry;
+            // snowModel.resolve();
+            // ModelManager.snowySlabBottom.resolve();
+            // ModelManager.snowOverlayLeaves.resolve();
+            // var test = ModelManager.snowOverlayBlock.resolve().get();
+            // EclipticSeasons.logger(test);
+
+            ModelManager.quadMap.clear();
+            ModelManager.quadMap_1.clear();
         });
     }
 
@@ -90,17 +113,9 @@ public class ClientSetup {
     // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
 
     @SubscribeEvent
-    public static void onModelBaked(ModelEvent.BakingCompleted event) {
-        Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
-        ModelManager.models = modelRegistry;
-        // snowModel.resolve();
-        ModelManager.snowySlabBottom.resolve();
-        ModelManager.snowOverlayLeaves.resolve();
-        var test = ModelManager.snowOverlayBlock.resolve().get();
-        EclipticSeasons.logger(test);
+    public static void onModelBaked(ModelBakeEvent event) {
+        ModelManager.models=event.getModelRegistry();
 
-        ModelManager.quadMap.clear();
-        ModelManager.quadMap_1.clear();
         // net.minecraft.client.resources.model.ModelManager.reload
         // p_251134_.listPacks().toList().get(0).getResource(PackType.CLIENT_RESOURCES, completablefuture.get().entrySet().stream().toList().get(0).getKey()).get().readAllBytes()
         // p_251134_.listPacks().toList().get(1).getResource(PackType.CLIENT_RESOURCES, Ecliptic.rl("textures/block/icon.png")).get().readAllBytes()
@@ -116,24 +131,4 @@ public class ClientSetup {
 
     }
 
-    @SubscribeEvent
-    public static void onRegisterColorHandlersEvent_Block(RegisterColorHandlersEvent.Block event) {
-        // BlockState birchLeaves = Blocks.BIRCH_LEAVES.defaultBlockState();
-        // BlockColors blockColors = event.getBlockColors();
-
-
-        event.register((state, blockAndTintGetter, pos, i) -> {
-            if (i == 1) {
-
-                return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColor.get(0.5D, 1.0D);
-            } else {
-                return -1;
-            }
-        }, Blocks.DANDELION);
-    }
-
-    @SubscribeEvent
-    public static void onRegisterColorHandlersEvent_Item(RegisterColorHandlersEvent.Item event) {
-
-    }
 }

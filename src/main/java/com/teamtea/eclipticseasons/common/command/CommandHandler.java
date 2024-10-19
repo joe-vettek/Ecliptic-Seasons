@@ -17,6 +17,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.LocateCommand;
@@ -55,7 +57,7 @@ public class CommandHandler {
                         .then(Commands.literal("get")
                                 .executes(commandContext -> {
                                     var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
-                                    commandContext.getSource().sendSuccess(Component.literal("" + solar), true);
+                                    commandContext.getSource().sendSuccess(new TextComponent("" + solar), true);
                                     return 0;
                                 })
                         )
@@ -92,19 +94,15 @@ public class CommandHandler {
                         .requires((source) -> source.hasPermission(2))
                         .then(Commands.argument("biome", ResourceOrTagLocationArgument.resourceOrTag(Registry.BIOME_REGISTRY))
                                 .then(Commands.literal("rain")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getRegistryType(commandContext, "biome", Registry.BIOME_REGISTRY, ERROR_BIOME_INVALID), true, false)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getBiome(commandContext, "biome"), true, false)))
                                 .then(Commands.literal("thunder")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getRegistryType(commandContext, "biome",  Registry.BIOME_REGISTRY, ERROR_BIOME_INVALID), true, true)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getBiome(commandContext, "biome"), true, true)))
                                 .then(Commands.literal("clear")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getRegistryType(commandContext, "biome",  Registry.BIOME_REGISTRY, ERROR_BIOME_INVALID), false, false)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getBiome(commandContext, "biome"), false, false)))
                         )
                 )
         );
     }
-
-    private static final DynamicCommandExceptionType ERROR_BIOME_INVALID = new DynamicCommandExceptionType((p_214512_) -> {
-        return Component.translatable("commands.locate.biome.invalid", p_214512_);
-    });
 
     public static int setBiomeRain(CommandSourceStack sourceStack, ResourceOrTagLocationArgument.Result<Biome> result, boolean setRain, boolean isThunder) throws CommandSyntaxException {
         var levelBiomeWeather = WeatherManager.getBiomeList(sourceStack.getLevel());
@@ -142,7 +140,7 @@ public class CommandHandler {
             });
         }
 
-        source.sendSuccess(Component.translatable("commands.teastory.solar.set", day), true);
+        source.sendSuccess(new TranslatableComponent("commands.teastory.solar.set", day), true);
         return getDay(source.getLevel());
     }
 
@@ -152,7 +150,7 @@ public class CommandHandler {
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);
                 data.sendUpdateMessage(ServerLevel);
-                source.sendSuccess( Component.translatable("commands.teastory.solar.set", data.getSolarTermsDay()), true);
+                source.sendSuccess( new TranslatableComponent("commands.teastory.solar.set", data.getSolarTermsDay()), true);
             });
         }
         return getDay(source.getLevel());

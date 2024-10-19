@@ -20,7 +20,7 @@ public class MixinLightningRodBlock {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
     )
     private boolean mixin$onProjectileHit_isThundering(Level instance, Operation<Boolean> original, @Local(ordinal = 0) BlockHitResult blockHitResult) {
-        return WeatherManager.isThunderAtBiome((ServerLevel) instance, instance.getBiome(blockHitResult.getBlockPos()).get());
+        return WeatherManager.isThunderAtBiome((ServerLevel) instance, instance.getBiome(blockHitResult.getBlockPos()).value());
     }
 
 

@@ -17,10 +17,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.SleepFinishedTimeEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -52,8 +52,8 @@ public class AllListener {
     // 但是这也说不准啊，谁知道谁无聊就搞这个呢
     @SubscribeEvent
     public static void onTagsUpdatedEvent(TagsUpdatedEvent tagsUpdatedEvent) {
-        BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getRegistryAccess());
-        WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getRegistryAccess());
+        BiomeClimateManager.resetBiomeTemps(tagsUpdatedEvent.getTagManager());
+        WeatherManager.informUpdateBiomes(tagsUpdatedEvent.getTagManager());
         EclipticTagTool.BIOME_TAG_KEY_MAP.clear();
     }
 
@@ -73,9 +73,9 @@ public class AllListener {
 
     @SubscribeEvent
     public static void onSleepFinishedTimeEvent(SleepFinishedTimeEvent event) {
-        if (event.getLevel() instanceof ServerLevel level) {
+        if (event.getWorld() instanceof ServerLevel level) {
 
-            long newTime = event.getNewTime(), oldDayTime = ((Level) event.getLevel()).getDayTime();
+            long newTime = event.getNewTime(), oldDayTime = (level).getDayTime();
             WeatherManager.updateAfterSleep(level, newTime, oldDayTime);
             // // TODO: 根据季节更新概率
             // if (!serverLevel.isRaining() && serverLevel.getRandom().nextFloat() > 0.8) {
@@ -89,8 +89,8 @@ public class AllListener {
 
 
     @SubscribeEvent
-    public static void onLevelEventLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
+    public static void onLevelEventLoad(WorldEvent.Load event) {
+        if (event.getWorld() instanceof ServerLevel serverLevel) {
             WeatherManager.createLevelBiomeWeatherList(serverLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
@@ -99,8 +99,8 @@ public class AllListener {
     }
 
     @SubscribeEvent
-    public static void onLevelUnloadEvent(LevelEvent.Unload event) {
-        if (event.getLevel() instanceof Level level) {
+    public static void onLevelUnloadEvent(WorldEvent.Unload event) {
+        if (event.getWorld() instanceof Level level) {
             WeatherManager.BIOME_WEATHER_LIST.remove(level);
             // if (level instanceof ServerLevel serverLevel)
             {
@@ -112,12 +112,12 @@ public class AllListener {
 
 
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Season.enableInform.get() && !event.level.isClientSide() && event.level.dimension() == Level.OVERWORLD) {
-            getSaveDataLazy(event.level).ifPresent(data ->
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Season.enableInform.get() && !event.world.isClientSide() && event.world.dimension() == Level.OVERWORLD) {
+            getSaveDataLazy(event.world).ifPresent(data ->
             {
-                if (!event.level.players().isEmpty()) {
-                    data.updateTicks((ServerLevel) event.level);
+                if (!event.world.players().isEmpty()) {
+                    data.updateTicks((ServerLevel) event.world);
                 }
             });
         }

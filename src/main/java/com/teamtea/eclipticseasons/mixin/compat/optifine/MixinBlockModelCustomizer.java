@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.optifine.model.BlockModelCustomizer;
@@ -17,12 +16,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Random;
 
 @Mixin(BlockModelCustomizer.class)
 public abstract class MixinBlockModelCustomizer {
 
 
-    private static RandomSource randomSource = RandomSource.createThreadSafe();
+    private static Random randomSource = new Random();
 
     // 这里不知道要不要ordinal=1
     // 但是opt这里要处理的是那个jar文件得移动移动一下，不能直接用

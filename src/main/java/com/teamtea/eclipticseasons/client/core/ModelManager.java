@@ -1,6 +1,6 @@
 package com.teamtea.eclipticseasons.client.core;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
@@ -16,8 +16,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LightLayer;
@@ -27,11 +25,8 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.LegacyRandomSource;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.loading.FMLLoader;
-import com.teamtea.eclipticseasons.EclipticSeasons;
+
 
 import java.util.*;
 
@@ -90,7 +85,7 @@ public class ModelManager {
             var onBlock = state.getBlock();
             if (!(onBlock instanceof FenceBlock)) {
                 if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
-                        || onBlock.isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, BlockPos.ZERO)) {
+                        || Block.isShapeFullBlock(state.getOcclusionShape(Minecraft.getInstance().level, BlockPos.ZERO))) {
                     return true;
                 }
             }
@@ -254,7 +249,7 @@ public class ModelManager {
     public static final List<Block> LARGE_GRASS = List.of(Blocks.TALL_GRASS, Blocks.LARGE_FERN);
 
     // 实际上这里之所以太慢还有个问题就是会一个方块访问七次
-    public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, RandomSource random, long seed, List<BakedQuad> list) {
+    public static List<BakedQuad> appendOverlay(BlockAndTintGetter blockAndTintGetter, BlockState state, BlockPos pos, Direction direction, Random random, long seed, List<BakedQuad> list) {
         // Minecraft.getInstance().level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING,pos);
         // 不处理空列表，这代表着不处理这个方向
         // if (state.is(BlockTags.LEAVES) && !list.isEmpty()) {
@@ -457,11 +452,11 @@ public class ModelManager {
     }
 
     // TODO:感觉用随机表性能更高
-    public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, RandomSource random, long seed) {
+    public static boolean shouldSnowAt(BlockAndTintGetter blockAndTintGetter, BlockPos pos, BlockState state, Random random, long seed) {
         // Ecliptic.logger(SolarClientUtil.getSnowLayer() * 100, (seed&99));
         // Minecraft.getInstance().level.getBiome(pos);
         var biome = Minecraft.getInstance().level.getBiome(pos);
-        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.get()) > Math.abs(seed % 100)) {
+        if (WeatherManager.getSnowDepthAtBiome(Minecraft.getInstance().level, biome.value()) > Math.abs(seed % 100)) {
             return true;
         }
 

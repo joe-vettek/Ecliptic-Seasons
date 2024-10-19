@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.api.constant.biome;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public enum Rainfall
 {
@@ -46,7 +47,7 @@ public enum Rainfall
 
     public Component getTranslation()
     {
-        return Component.translatable("info.silveroak.environment.rainfall." + getName());
+        return new TranslatableComponent("info.silveroak.environment.rainfall." + getName());
     }
 
     public static Rainfall getRainfallLevel(float rainfall)

@@ -19,7 +19,7 @@ public final class DebugInfoRenderer extends Gui {
     private final Minecraft mc;
 
     public DebugInfoRenderer(Minecraft mc) {
-        super(mc,mc.getItemRenderer());
+        super(mc);
 
         this.mc = mc;
     }
@@ -52,7 +52,7 @@ public final class DebugInfoRenderer extends Gui {
                             var solarTerm = AllListener.getSaveData(level).getSolarTerm();
                             String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
                             String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
-                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.get());
+                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.value());
                             drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);

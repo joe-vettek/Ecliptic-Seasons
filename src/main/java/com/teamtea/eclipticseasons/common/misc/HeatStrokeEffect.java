@@ -5,7 +5,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 
-public class HeatStrokeEffect extends MobEffect {
+public class HeatStrokeEffect extends MobEffect  {
 
 
     public HeatStrokeEffect(MobEffectCategory neutral, int i) {
@@ -27,6 +27,8 @@ public class HeatStrokeEffect extends MobEffect {
             // entityLivingBaseIn.hurt(entityLivingBaseIn.damageSources().generic(), Math.min(entityLivingBaseIn.getHealth() * 0.025f,0.1f) + 0.001f);
         }
     }
+
+
 
 
 }

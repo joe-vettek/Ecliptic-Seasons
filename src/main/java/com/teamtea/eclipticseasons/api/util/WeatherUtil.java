@@ -29,21 +29,21 @@ public class WeatherUtil {
 
     public static float getTempAt(Level level, BlockPos pos) {
         var biome = level.getBiome(pos);
-        float bt = biome.value().getModifiedClimateSettings().temperature();
+        float bt = biome.value().getBaseTemperature();
         bt += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
         return bt;
     }
 
     public static float getBiomeDownFall(Level level, BlockPos pos) {
         var biome = level.getBiome(pos);
-        float bt = biome.value().getModifiedClimateSettings().downfall();
+        float bt = biome.value().getDownfall();
         return bt;
     }
 
     public static float getHumidityAt(Level level, BlockPos pos) {
         var biome = level.getBiome(pos);
-        float bt = biome.value().getModifiedClimateSettings().downfall();
-        float bt2 = biome.value().getModifiedClimateSettings().temperature();
+        float bt = biome.value().getDownfall();
+        float bt2 = biome.value().getBaseTemperature();
         bt2 += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
         return Mth.clamp(bt, 0.0F, 1.0F) * Mth.clamp(bt2, 0.0F, 1.0F);
     }
