@@ -52,7 +52,7 @@ public abstract class MixinLevelRender {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z")
     )
     private boolean ecliptic$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        return biome.getPrecipitation() == Biome.Precipitation.RAIN;
+        return WeatherManager.getPrecipitationAt(level,biome,BlockPos.ZERO)== Biome.Precipitation.RAIN;
     }
 
     @WrapOperation(
@@ -60,7 +60,7 @@ public abstract class MixinLevelRender {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z")
     )
     private boolean ecliptic$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        return biome.getPrecipitation() == Biome.Precipitation.RAIN;
+        return WeatherManager.getPrecipitationAt(level,biome,BlockPos.ZERO)== Biome.Precipitation.RAIN;
     }
 
     //
