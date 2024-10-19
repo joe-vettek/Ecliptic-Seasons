@@ -5,6 +5,8 @@ import com.teamtea.eclipticseasons.api.constant.climate.BiomeRain;
 import com.teamtea.eclipticseasons.api.constant.climate.FlatRain;
 import com.teamtea.eclipticseasons.api.constant.climate.SnowTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
+import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
+import com.teamtea.eclipticseasons.api.util.EclipticTagClientTool;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.handler.SolarUtil;
@@ -209,16 +211,21 @@ public class WeatherManager {
         var level = levelNull != null ? levelNull : getMainServerLevel();
         var provider = SolarUtil.getProvider(level);
         var weathers = getBiomeList(level);
+
+        if (EclipticTagClientTool.getTag(biome).equals(SeasonTypeBiomeTags.RAINLESS)){
+            return Biome.Precipitation.NONE;
+        }
+
         if (provider != null && weathers != null) {
             var solarTerm = provider.getSolarTerm();
             var snowTerm = SolarTerm.getSnowTerm(biome);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             var biomes = level.registryAccess().registry(Registries.BIOME).get();
-            var loc=biomes.getKey(biome);
+            var loc = biomes.getKey(biome);
             for (BiomeWeather biomeWeather : weathers) {
                 if (biomeWeather.location.equals(loc)) {
-                    if (biomeWeather.shouldClear())
-                        return Biome.Precipitation.NONE;
+                    // if (biomeWeather.shouldClear())
+                    //     return Biome.Precipitation.NONE;
 
                     return flag_cold
                             || BiomeClimateManager.getDefaultTemperature(biome) <= BiomeClimateManager.SNOW_LEVEL ?
@@ -226,7 +233,6 @@ public class WeatherManager {
                 }
             }
         }
-
         return Biome.Precipitation.NONE;
     }
 
@@ -293,7 +299,7 @@ public class WeatherManager {
     public static void tickPlayerSeasonEffecct(ServerPlayer player) {
         var level = player.level();
         if (ServerConfig.Temperature.heatStroke.get()
-                &&level.getRandom().nextInt(150) == 0)
+                && level.getRandom().nextInt(150) == 0)
             AllListener.getSaveDataLazy(level).ifPresent(solarDataManager -> {
                 if (SimpleUtil.getNowSolarTerm(level).isInTerms(SolarTerm.BEGINNING_OF_SUMMER, SolarTerm.BEGINNING_OF_AUTUMN)) {
                     var b = level.getBiome(player.blockPosition()).value();
@@ -412,7 +418,6 @@ public class WeatherManager {
         }
         WeatherManager.sendBiomePacket(WeatherManager.getBiomeList(serverPlayer.level()), List.of(serverPlayer));
     }
-
 
 
     public static class BiomeWeather implements INBTSerializable<CompoundTag> {

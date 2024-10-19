@@ -27,6 +27,6 @@ public abstract class MixinClientBiome {
     @Inject(at = {@At("HEAD")}, method = {"hasPrecipitation"}, cancellable = true)
     public void ecliptic$hasPrecipitation(CallbackInfoReturnable<Boolean > cir) {
         if (FMLLoader.getDist()== Dist.CLIENT)
-            cir.setReturnValue(! EclipticTagClientTool.getTag((Biome)(Object)this).equals(SeasonTypeBiomeTags.RAINLESS));
+            cir.setReturnValue(WeatherManager.getPrecipitationAt(Minecraft.getInstance().level,(Biome) (Object) this,BlockPos.ZERO)!= Biome.Precipitation.NONE);
     }
 }
