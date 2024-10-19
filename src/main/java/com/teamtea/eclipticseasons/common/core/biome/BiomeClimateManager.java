@@ -2,6 +2,7 @@ package com.teamtea.eclipticseasons.common.core.biome;
 
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -80,7 +81,8 @@ public class BiomeClimateManager {
     }
 
     public static Boolean agent$hasPrecipitation(Biome biome) {
-        return !getTag(biome).equals(ClimateTypeBiomeTags.RAINLESS);
+        // return !getTag(biome).equals(ClimateTypeBiomeTags.RAINLESS);
+        return WeatherManager.getPrecipitationAt(biome, BlockPos.ZERO)!= Biome.Precipitation.NONE;
     }
 
 

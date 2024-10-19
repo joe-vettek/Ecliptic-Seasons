@@ -6,6 +6,7 @@ import com.teamtea.eclipticseasons.api.constant.climate.BiomeRain;
 import com.teamtea.eclipticseasons.api.constant.climate.FlatRain;
 import com.teamtea.eclipticseasons.api.constant.climate.SnowTerm;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
+import com.teamtea.eclipticseasons.api.constant.tag.ClimateTypeBiomeTags;
 import com.teamtea.eclipticseasons.api.util.EclipticUtil;
 import com.teamtea.eclipticseasons.client.ClientCon;
 import com.teamtea.eclipticseasons.common.advancement.SolarTermsRecord;
@@ -178,10 +179,11 @@ public class WeatherManager {
         // Thread.currentThread().getStackTrace()
         // var biome = serverLevel.getBiome(pos);
         var biome = MapChecker.getSurfaceBiome(serverLevel, pos);
-        return isRainingAtBiome(serverLevel, biome);
+        return isRainingOrSnowAtBiome(serverLevel, biome)
+                && getPrecipitationAt(serverLevel,biome.value(),pos)== Biome.Precipitation.RAIN;
     }
 
-    public static Boolean isRainingAtBiome(ServerLevel serverLevel, Holder<Biome> biome) {
+    public static Boolean isRainingOrSnowAtBiome(Level serverLevel, Holder<Biome> biome) {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {
@@ -231,10 +233,18 @@ public class WeatherManager {
             biome = MapChecker.getSurfaceBiome(level, pos).value();
         }
 
+        // check if it has predication
+        if (BiomeClimateManager.getTag(biome).equals(ClimateTypeBiomeTags.RAINLESS)){
+            return Biome.Precipitation.NONE;
+        }
+
         var provider = SolarUtil.getProvider(level);
         var weathers = getBiomeList(level);
 
-        if (biome.hasPrecipitation() && provider != null && weathers != null) {
+        // Not add 'has' check because we have checked it
+        if (
+                // biome.hasPrecipitation() &&
+                        provider != null && weathers != null) {
             var solarTerm = provider.getSolarTerm();
             var snowTerm = SolarTerm.getSnowTerm(biome, levelNull instanceof ServerLevel);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
@@ -243,8 +253,8 @@ public class WeatherManager {
 
             for (BiomeWeather biomeWeather : weathers) {
                 if (biomeWeather.location.equals(loc)) {
-                    if (biomeWeather.shouldClear())
-                        return Biome.Precipitation.NONE;
+                    // if (biomeWeather.shouldClear())
+                    //     return Biome.Precipitation.NONE;
 
                     return flag_cold
                             || BiomeClimateManager.getDefaultTemperature(biome, levelNull instanceof ServerLevel) <= BiomeClimateManager.SNOW_LEVEL ?
@@ -433,7 +443,7 @@ public class WeatherManager {
                 }
             }
         } else {
-            VanillaWeather.runvanillaSnowyWeather(level, biomeWeather, random, size);
+            VanillaWeather.runVanillaSnowyWeather(level, biomeWeather, random, size);
         }
     }
 
@@ -641,11 +651,11 @@ public class WeatherManager {
             var snowTerm = SolarTerm.getSnowTerm(biome.value(), level instanceof ServerLevel);
             boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             if (flag_cold) {
-                if (isRainingAtBiome(level, biome)) {
+                if (isRainingOrSnowAtBiome(level, biome)) {
                     status = SnowRenderStatus.SNOW;
                 }
             } else {
-                status = level.getRandom().nextBoolean() | isRainingAtBiome(level, biome) ?
+                status = level.getRandom().nextBoolean() | isRainingOrSnowAtBiome(level, biome) ?
                         SnowRenderStatus.SNOW_MELT : SnowRenderStatus.NONE;
             }
 

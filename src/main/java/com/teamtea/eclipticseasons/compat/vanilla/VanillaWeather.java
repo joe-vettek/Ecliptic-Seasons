@@ -3,6 +3,7 @@ package com.teamtea.eclipticseasons.compat.vanilla;
 
 import com.teamtea.eclipticseasons.api.EclipticSeasonsApi;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
+import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.handler.SolarUtil;
@@ -26,7 +27,7 @@ public class VanillaWeather {
         return EclipticSeasonsApi.getInstance().getSolarTerm(level).getSeason() == Season.SUMMER;
     }
 
-    public static void runvanillaSnowyWeather(ServerLevel level, WeatherManager.BiomeWeather biomeWeather, RandomSource random, int size) {
+    public static void runVanillaSnowyWeather(ServerLevel level, WeatherManager.BiomeWeather biomeWeather, RandomSource random, int size) {
         boolean isRaining = level.isRaining();
         if ((isRaining || level.getRandom().nextInt(5) > 1)) {
             var snow = getSnowStatus(level, biomeWeather.biomeHolder, null);
@@ -57,12 +58,15 @@ public class VanillaWeather {
 
     public static Biome.Precipitation replacePrecipitationIfNeed(Level level, Biome biome, Biome.Precipitation pre) {
         if (!ServerConfig.Debug.useSolarWeather.get()) {
+            var solarTerm = EclipticSeasonsApi.getInstance().getSolarTerm(level);
+            var snowTerm = SolarTerm.getSnowTerm(biome);
+            boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             if (pre == Biome.Precipitation.RAIN) {
-                if (isInWinter(level)) {
+                if (flag_cold) {
                     pre = Biome.Precipitation.SNOW;
                 }
             } else {
-                if (isInSummer(level)) {
+                if (!flag_cold) {
                     pre = Biome.Precipitation.RAIN;
                 }
             }
@@ -76,12 +80,18 @@ public class VanillaWeather {
 
         if (biome.hasPrecipitation()) {
             pre = biome.coldEnoughToSnow(pos) ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN;
+            var solarTerm = EclipticSeasonsApi.getInstance().getSolarTerm(level);
+            var snowTerm = SolarTerm.getSnowTerm(biome);
+            boolean flag_cold = solarTerm.isInTerms(snowTerm.getStart(), snowTerm.getEnd());
             if (pre == Biome.Precipitation.RAIN) {
-                if (isInWinter(level)) {
+                if (flag_cold)
+                // if (isInWinter(level))
+                {
                     pre = Biome.Precipitation.SNOW;
                 }
             } else {
-                if (isInSummer(level)) {
+                // if (isInSummer(level))
+                if (!flag_cold) {
                     pre = Biome.Precipitation.RAIN;
                 }
             }
@@ -147,7 +157,7 @@ public class VanillaWeather {
                 return Mth.clamp(call - 10000, 0, ServerLevel.RAIN_DELAY.getMaxValue());
             }
             case AUTUMN -> {
-                return Mth.clamp(call + 5000, 0, ServerLevel.RAIN_DELAY.getMaxValue() );
+                return Mth.clamp(call + 5000, 0, ServerLevel.RAIN_DELAY.getMaxValue());
             }
             case WINTER -> {
                 return Mth.clamp(call + 20000, 0, ServerLevel.RAIN_DELAY.getMaxValue() + 20000);

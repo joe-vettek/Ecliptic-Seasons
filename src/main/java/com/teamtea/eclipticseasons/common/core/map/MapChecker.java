@@ -270,9 +270,12 @@ public class MapChecker {
         while (isSmallBiome(biome)) {
             i += 1;
             for (Direction direction : Direction.Plane.HORIZONTAL) {
-                biome = level.getBiome(pos.relative(direction, i));
-                if (!isSmallBiome(biome)) {
-                    break;
+                // if (level.isLoaded(pos.relative(direction, i)))
+                {
+                    biome = level.getBiome(pos.relative(direction, i));
+                    if (!isSmallBiome(biome)) {
+                        break;
+                    }
                 }
             }
         }

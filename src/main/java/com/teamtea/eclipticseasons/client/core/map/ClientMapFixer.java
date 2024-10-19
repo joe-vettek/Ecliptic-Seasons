@@ -53,15 +53,18 @@ public class ClientMapFixer {
     }
 
     public static boolean isHereSunny(Level level, BlockPos pos) {
-        return WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) == Biome.Precipitation.NONE;
+        return WeatherManager.isRainingOrSnowAtBiome(level, MapChecker.getSurfaceBiome(level, pos))
+                && WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) == Biome.Precipitation.NONE;
     }
 
     public static boolean isHereRainy(Level level, BlockPos pos) {
-        return WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) == Biome.Precipitation.RAIN;
+        return WeatherManager.isRainingOrSnowAtBiome(level, MapChecker.getSurfaceBiome(level, pos))
+                && WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) == Biome.Precipitation.RAIN;
     }
 
     public static boolean isHereSnowy(Level level, BlockPos pos) {
-        return WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) == Biome.Precipitation.SNOW;
+        return WeatherManager.isRainingOrSnowAtBiome(level, MapChecker.getSurfaceBiome(level, pos))
+                && WeatherManager.getPrecipitationAt(level, MapChecker.getSurfaceBiome(level, pos).value(), pos) == Biome.Precipitation.SNOW;
     }
 
 
@@ -102,9 +105,9 @@ public class ClientMapFixer {
                             var updatePos = new BlockPos.MutableBlockPos(xzPos.x(), xzPos.startY(), xzPos.z());
                             if (
                                     !isHereSnowy(level, updatePos)
-                                    // (isHereSunny(level, updatePos))
-                                    // || isHereRainy(level, updatePos)
-                                    && isHereWithSnow(level, updatePos)
+                                            // (isHereSunny(level, updatePos))
+                                            // || isHereRainy(level, updatePos)
+                                            && isHereWithSnow(level, updatePos)
                             ) {
                                 xzPos = new XZPos(xzPos.x(), xzPos.z(), level.getGameTime() - 50, level.getMaxBuildHeight() + 1);
                                 xzPosList.set(i, xzPos);

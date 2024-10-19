@@ -214,7 +214,8 @@ public class ClientWeatherChecker {
             return false;
         }
         return WeatherManager.getPrecipitationAt(clientLevel, MapChecker.getSurfaceBiome(clientLevel, blockPos).value(), blockPos)
-                == Biome.Precipitation.RAIN;
+                == Biome.Precipitation.RAIN
+                && WeatherManager.isRainingOrSnowAtBiome(clientLevel, MapChecker.getSurfaceBiome(clientLevel, blockPos));
     }
 
     public static boolean isThunderAt(ClientLevel clientLevel, BlockPos blockPos) {
