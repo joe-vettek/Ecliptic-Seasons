@@ -1,18 +1,22 @@
 package com.teamtea.eclipticseasons.api.util;
 
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.server.ServerWorld;
+
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WeatherUtil {
-    public static boolean isBlockInRain(Level level, BlockPos blockPos) {
-        for (BlockPos pos : List.of(blockPos.above(), blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west())) {
-            if (WeatherManager.isRainingAt((ServerLevel) level, pos))
+    public static boolean isBlockInRain(World level, BlockPos blockPos) {
+        for (BlockPos pos : Stream.of(blockPos.above(), blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west()).collect(Collectors.toList())) {
+            if (WeatherManager.isRainingAt((ServerWorld) level, pos))
                 return true;
         }
         return false;
@@ -27,24 +31,24 @@ public class WeatherUtil {
     }
 
 
-    public static float getTempAt(Level level, BlockPos pos) {
-        var biome = level.getBiome(pos);
-        float bt = biome.value().getBaseTemperature();
+    public static float getTempAt(World level, BlockPos pos) {
+        Biome biome = level.getBiome(pos);
+        float bt = biome.getBaseTemperature();
         bt += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
         return bt;
     }
 
-    public static float getBiomeDownFall(Level level, BlockPos pos) {
-        var biome = level.getBiome(pos);
-        float bt = biome.value().getDownfall();
+    public static float getBiomeDownFall(World level, BlockPos pos) {
+        Biome biome = level.getBiome(pos);
+        float bt = biome.getDownfall();
         return bt;
     }
 
-    public static float getHumidityAt(Level level, BlockPos pos) {
-        var biome = level.getBiome(pos);
-        float bt = biome.value().getDownfall();
-        float bt2 = biome.value().getBaseTemperature();
+    public static float getHumidityAt(World level, BlockPos pos) {
+        Biome biome = level.getBiome(pos);
+        float bt = biome.getDownfall();
+        float bt2 = biome.getBaseTemperature();
         bt2 += SimpleUtil.getNowSolarTerm(level).getTemperatureChange();
-        return Mth.clamp(bt, 0.0F, 1.0F) * Mth.clamp(bt2, 0.0F, 1.0F);
+        return MathHelper.clamp(bt, 0.0F, 1.0F) * MathHelper.clamp(bt2, 0.0F, 1.0F);
     }
 }

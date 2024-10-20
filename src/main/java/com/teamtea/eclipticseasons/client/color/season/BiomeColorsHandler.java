@@ -8,12 +8,19 @@ import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.client.core.ColorHelper;
 import com.teamtea.eclipticseasons.common.AllListener;
 import net.minecraft.client.Minecraft;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
+
+import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.FoliageColors;
+import net.minecraft.world.GrassColors;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeColors;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.FoliageColor;
-import net.minecraft.world.level.GrassColor;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,15 +28,15 @@ import java.util.Map;
 public class BiomeColorsHandler {
     // public static int[] newFoliageBuffer = new int[65536];
     // public static int[] newGrassBuffer = new int[65536];
-    public static Map<TagKey<Biome>, int[]> newFoliageBufferMap = new HashMap<>();
-    public static Map<TagKey<Biome>, int[]> newGrassBufferMap = new HashMap<>();
+    public static Map<BiomeDictionary.Type, int[]> newFoliageBufferMap = new HashMap<>();
+    public static Map<BiomeDictionary.Type, int[]> newGrassBufferMap = new HashMap<>();
 
     public static boolean needRefresh = false;
 
     public static final ColorResolver GRASS_COLOR = (biome, posX, posZ) ->
     {
         // if(true)return 9680335;
-        var clientLevel = Minecraft.getInstance().level;
+        ClientWorld clientLevel = Minecraft.getInstance().level;
         if (clientLevel != null) {
             int originColor = biome.getGrassColor(posX, posZ);
             return AllListener.getSaveDataLazy(clientLevel).map(data ->
@@ -38,14 +45,14 @@ public class BiomeColorsHandler {
                     reloadColors();
                 }
                 // 由于基本温度被更改
-                double temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
-                double humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
+                double temperature = MathHelper.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
+                double humidity = MathHelper.clamp(biome.getDownfall(), 0.0F, 1.0F);
                 humidity = humidity * temperature;
                 int i = (int) ((1.0D - temperature) * 255.0D);
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
 
-                int[] newGrassBuffer = newGrassBufferMap.getOrDefault(EclipticTagClientTool.getTag(biome), GrassColor.pixels);
+                int[] newGrassBuffer = newGrassBufferMap.getOrDefault(EclipticTagClientTool.getTag(biome), GrassColors.pixels);
                 return k > newGrassBuffer.length ? -65281 : newGrassBuffer[k];
             }).orElse(originColor);
         } else return -1;
@@ -53,7 +60,7 @@ public class BiomeColorsHandler {
 
     public static final ColorResolver FOLIAGE_COLOR = (biome, posX, posZ) ->
     {
-        var clientLevel = Minecraft.getInstance().level;
+        ClientWorld clientLevel = Minecraft.getInstance().level;
 
         if (clientLevel != null) {
             int originColor = biome.getFoliageColor();
@@ -62,14 +69,14 @@ public class BiomeColorsHandler {
                 if (needRefresh) {
                     reloadColors();
                 }
-                double temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
-                double humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
+                double temperature = MathHelper.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
+                double humidity = MathHelper.clamp(biome.getDownfall(), 0.0F, 1.0F);
                 humidity = humidity * temperature;
                 int i = (int) ((1.0D - temperature) * 255.0D);
                 int j = (int) ((1.0D - humidity) * 255.0D);
                 int k = j << 8 | i;
                 
-                int[] newFoliageBuffer = newFoliageBufferMap.getOrDefault(EclipticTagClientTool.getTag(biome), FoliageColor.pixels);
+                int[] newFoliageBuffer = newFoliageBufferMap.getOrDefault(EclipticTagClientTool.getTag(biome), FoliageColors.pixels);
                 return k > newFoliageBuffer.length ? originColor : newFoliageBuffer[k];
             }).orElse(originColor);
         } else return biome.getFoliageColor();
@@ -77,15 +84,15 @@ public class BiomeColorsHandler {
 
     public static void reloadColors() {
         {
-            var clientLevel = Minecraft.getInstance().level;
+            ClientWorld clientLevel = Minecraft.getInstance().level;
             if (clientLevel != null) {
                 AllListener.getSaveDataLazy(clientLevel).ifPresent(data ->
                 {
-                    for (TagKey<Biome> biomeTagKey : SeasonTypeBiomeTags.BIOMES) {
+                    for (BiomeDictionary.Type biomeTagKey : SeasonTypeBiomeTags.BIOMES) {
                         int[] newFoliageBuffer = new int[65536];
                         int[] newGrassBuffer = new int[65536];
-                        int[] foliageBuffer = FoliageColor.pixels;
-                        int[] grassBuffer = GrassColor.pixels;
+                        int[] foliageBuffer = FoliageColors.pixels;
+                        int[] grassBuffer = GrassColors.pixels;
 
                         SolarTerm solar = SolarTerm.get(data.getSolarTermIndex());
                         SolarTermColor colorInfo = solar.getSolarTermColor(biomeTagKey);

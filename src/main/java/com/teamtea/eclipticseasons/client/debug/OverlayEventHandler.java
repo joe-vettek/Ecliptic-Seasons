@@ -1,6 +1,7 @@
 package com.teamtea.eclipticseasons.client.debug;
 
 
+import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.teamtea.eclipticseasons.config.ClientConfig;
@@ -8,8 +9,10 @@ import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
 import com.teamtea.eclipticseasons.api.constant.biome.Humidity;
 import net.minecraft.client.Minecraft;
 
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,8 +28,8 @@ public final class OverlayEventHandler {
     public static void onEvent(RenderGameOverlayEvent.Pre event) {
         if (BAR_4 == null) BAR_4 = new DebugInfoRenderer(Minecraft.getInstance());
 
-        LocalPlayer clientPlayer = Minecraft.getInstance().player;
-        var level = Minecraft.getInstance().level;
+        ClientPlayerEntity clientPlayer = Minecraft.getInstance().player;
+        ClientWorld level = Minecraft.getInstance().level;
         if (clientPlayer != null && level != null) {
             // if (event.getType() == RenderGameOverlayEvent.ElementType.ALL)
             // if(event.getOverlay().id().getPath().equals("all"))
@@ -34,11 +37,11 @@ public final class OverlayEventHandler {
                 if (ClientConfig.GUI.debugInfo.get()
                     // || !FMLEnvironment.production
                 ) {
-                    var solar = AllListener.getSaveDataLazy(clientPlayer.level).orElse(new SolarDataManager(clientPlayer.level)).getSolarTerm();
+                    SolarTerm solar = AllListener.getSaveDataLazy(clientPlayer.level).orElse(new SolarDataManager(clientPlayer.level)).getSolarTerm();
                     long dayTime = clientPlayer.level.getDayTime();
-                    float temp = clientPlayer.level.getBiome(clientPlayer.getOnPos()).value().getTemperature(clientPlayer.getOnPos());
-                    Humidity h = Humidity.getHumid(clientPlayer.level.getBiome(clientPlayer.getOnPos()).value().getDownfall(), temp);
-                    double env = clientPlayer.level.getBiome(clientPlayer.getOnPos()).value().getTemperature(clientPlayer.getOnPos());
+                    float temp = clientPlayer.level.getBiome(clientPlayer.blockPosition()).getTemperature(clientPlayer.blockPosition());
+                    Humidity h = Humidity.getHumid(clientPlayer.level.getBiome(clientPlayer.blockPosition()).getDownfall(), temp);
+                    double env = clientPlayer.level.getBiome(clientPlayer.blockPosition()).getTemperature(clientPlayer.blockPosition());
                     int solarTime = SolarAngelHelper.getSolarAngelTime(clientPlayer.level, clientPlayer.level.getDayTime());
 
 

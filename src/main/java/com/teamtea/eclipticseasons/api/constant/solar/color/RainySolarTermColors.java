@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.api.constant.solar.color;
 
 import com.teamtea.eclipticseasons.client.core.ColorHelper;
-import net.minecraft.world.level.FoliageColor;
+import net.minecraft.world.FoliageColors;
 
 
 public enum RainySolarTermColors implements SolarTermColor {
@@ -45,20 +45,20 @@ public enum RainySolarTermColors implements SolarTermColor {
     RainySolarTermColors(int rainyColorIn, float rainyMixIn, int birchColorIn, float birchAlphaIn) {
         this.rainyColor = rainyColorIn;
         this.rainyMix = rainyMixIn;
-        this.birchColor = ColorHelper.simplyMixColor(birchColorIn, birchAlphaIn, FoliageColor.getBirchColor(), 1.0F - birchAlphaIn);
+        this.birchColor = ColorHelper.simplyMixColor(birchColorIn, birchAlphaIn, FoliageColors.getBirchColor(), 1.0F - birchAlphaIn);
     }
 
     RainySolarTermColors(int rainyColorIn, float rainyMixIn) {
         this.rainyColor = rainyColorIn;
         this.rainyMix = rainyMixIn;
-        this.birchColor = FoliageColor.getBirchColor();
+        this.birchColor = FoliageColors.getBirchColor();
     }
 
     RainySolarTermColors() {
 
         this.rainyColor = 0;
         this.rainyMix = 0;
-        this.birchColor = FoliageColor.getBirchColor();
+        this.birchColor = FoliageColors.getBirchColor();
     }
 
 

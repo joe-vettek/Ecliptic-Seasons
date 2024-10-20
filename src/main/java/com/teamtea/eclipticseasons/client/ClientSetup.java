@@ -3,23 +3,20 @@ package com.teamtea.eclipticseasons.client;
 import com.teamtea.eclipticseasons.client.color.season.BiomeColorsHandler;
 import com.teamtea.eclipticseasons.client.particle.FireflyParticle;
 import com.teamtea.eclipticseasons.client.particle.WildGooseParticle;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
+
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.GrassColor;
-import net.minecraft.world.level.block.*;
+
+import net.minecraft.world.GrassColors;
+import net.minecraft.world.biome.BiomeColors;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+
 
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.model.ForgeModelBakery;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -48,22 +45,22 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerExtraModels(ModelRegistryEvent event) {
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_fern);
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_grass);
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_tall_grass_top);
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_tall_grass_bottom);
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_large_fern_top);
+        ModelLoader.addSpecialModel(ModelManager.snowy_fern);
+        ModelLoader.addSpecialModel(ModelManager.snowy_grass);
+        ModelLoader.addSpecialModel(ModelManager.snowy_tall_grass_top);
+        ModelLoader.addSpecialModel(ModelManager.snowy_tall_grass_bottom);
+        ModelLoader.addSpecialModel(ModelManager.snowy_large_fern_top);
         // 注意这里使用地址和model地址效果不同，后者需要写blockstate
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_large_fern_bottom);
-        ForgeModelBakery.addSpecialModel(ModelManager.snowy_dandelion);
-        ForgeModelBakery.addSpecialModel(ModelManager.dandelion_top);
-        ForgeModelBakery.addSpecialModel(ModelManager.overlay_2);
-        ForgeModelBakery.addSpecialModel(ModelManager.snow_height2);
-        ForgeModelBakery.addSpecialModel(ModelManager.snow_height2_top);
-        ForgeModelBakery.addSpecialModel(ModelManager.grass_flower);
-        ForgeModelBakery.addSpecialModel(ModelManager.butterfly1);
-        ForgeModelBakery.addSpecialModel(ModelManager.butterfly2);
-        ForgeModelBakery.addSpecialModel(ModelManager.butterfly3);
+        ModelLoader.addSpecialModel(ModelManager.snowy_large_fern_bottom);
+        ModelLoader.addSpecialModel(ModelManager.snowy_dandelion);
+        ModelLoader.addSpecialModel(ModelManager.dandelion_top);
+        ModelLoader.addSpecialModel(ModelManager.overlay_2);
+        ModelLoader.addSpecialModel(ModelManager.snow_height2);
+        ModelLoader.addSpecialModel(ModelManager.snow_height2_top);
+        ModelLoader.addSpecialModel(ModelManager.grass_flower);
+        ModelLoader.addSpecialModel(ModelManager.butterfly1);
+        ModelLoader.addSpecialModel(ModelManager.butterfly2);
+        ModelLoader.addSpecialModel(ModelManager.butterfly3);
 
     }
 
@@ -81,7 +78,7 @@ public class ClientSetup {
             Minecraft.getInstance().getBlockColors().register((state, blockAndTintGetter, pos, i) -> {
                 if (i == 1) {
 
-                    return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColor.get(0.5D, 1.0D);
+                    return blockAndTintGetter != null && pos != null ? BiomeColors.getAverageGrassColor(blockAndTintGetter, pos) : GrassColors.get(0.5D, 1.0D);
                 } else {
                     return -1;
                 }
@@ -100,17 +97,7 @@ public class ClientSetup {
         });
     }
 
-    //    注意static是单次，比如启动类，没有比如右击事件
-    @SubscribeEvent
-    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // FluidDrawersLegacyMod.logger("Register Renderer");
-        // ModContents.DRBlockEntities.getEntries().forEach((reg) -> {
-        //     event.registerBlockEntityRenderer((BlockEntityType<BlockEntityFluidDrawer>)reg.get(),
-        //             TESRFluidDrawer::new);
-        // });
-    }
 
-    // public static Map<ResourceLocation, BakedModel> BakedSnowModels=new HashMap<>();
 
     @SubscribeEvent
     public static void onModelBaked(ModelBakeEvent event) {

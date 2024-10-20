@@ -4,23 +4,23 @@ package com.teamtea.eclipticseasons.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 import javax.annotation.Nullable;
 
-@Mixin(LevelRenderer.class)
+@Mixin(WorldRenderer.class)
 public abstract class MixinLevelRender {
 
 
     @Shadow
     @Nullable
-    public ClientLevel level;
+    public ClientWorld level;
 
 
     // 我们注释这个写法，因为它会让光影模组无法正常渲染
@@ -49,18 +49,18 @@ public abstract class MixinLevelRender {
     // ModifyExpressionValue may cost much time than it
     @WrapOperation(
             method = "renderSnowAndRain",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation()Lnet/minecraft/world/biome/Biome$RainType;")
     )
-    private boolean ecliptic$renderSnowAndRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        return biome.getPrecipitation() == Biome.Precipitation.RAIN;
+    private Biome.RainType ecliptic$renderSnowAndRain_getPrecipitationAt(Biome instance, Operation<Biome.RainType> original) {
+        return WeatherManager.getPrecipitationAt(level,instance,BlockPos.ZERO);
     }
 
     @WrapOperation(
             method = "tickRain",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;warmEnoughToRain(Lnet/minecraft/core/BlockPos;)Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation()Lnet/minecraft/world/biome/Biome$RainType;")
     )
-    private boolean ecliptic$tickRain_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        return biome.getPrecipitation() == Biome.Precipitation.RAIN;
+    private Biome.RainType ecliptic$tickRain_getPrecipitationAt(Biome instance, Operation<Biome.RainType> original) {
+        return WeatherManager.getPrecipitationAt(level,instance,BlockPos.ZERO);
     }
 
     //

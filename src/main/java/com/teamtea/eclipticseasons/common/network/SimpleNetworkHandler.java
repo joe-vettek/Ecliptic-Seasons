@@ -2,12 +2,13 @@ package com.teamtea.eclipticseasons.common.network;
 
 
 import com.teamtea.eclipticseasons.EclipticSeasons;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+
 
 import java.util.List;
 
@@ -23,14 +24,14 @@ public final class SimpleNetworkHandler {
         int id = 0;
         // registerMessage(id++, SolarTermsMessage.class, SolarTermsMessage::new);
         // registerMessage(id++, BiomeWeatherMessage.class, BiomeWeatherMessage::new);
-        var a = CHANNEL.messageBuilder(SolarTermsMessage.class, id++)
+        SimpleChannel.MessageBuilder<SolarTermsMessage> a = CHANNEL.messageBuilder(SolarTermsMessage.class, id++)
                 .encoder(SolarTermsMessage::toBytes)
                 .decoder(SolarTermsMessage::new);
         if (FMLLoader.getDist() == Dist.CLIENT)
             a.consumer(NetworkdUtil::processSolarTermsMessage);
         a.add();
-        
-        var c = CHANNEL.messageBuilder(BiomeWeatherMessage.class, id++)
+
+        SimpleChannel.MessageBuilder<BiomeWeatherMessage> c = CHANNEL.messageBuilder(BiomeWeatherMessage.class, id++)
                 .encoder(BiomeWeatherMessage::toBytes)
                 .decoder(BiomeWeatherMessage::new);
         if (FMLLoader.getDist() == Dist.CLIENT)
@@ -38,7 +39,7 @@ public final class SimpleNetworkHandler {
         c.add();
 
 
-        var d = CHANNEL.messageBuilder(EmptyMessage.class, id++)
+        SimpleChannel.MessageBuilder<EmptyMessage> d = CHANNEL.messageBuilder(EmptyMessage.class, id++)
                 .encoder(EmptyMessage::toBytes)
                 .decoder(EmptyMessage::new);
         if (FMLLoader.getDist() == Dist.CLIENT)
@@ -60,11 +61,11 @@ public final class SimpleNetworkHandler {
     // }
 
 
-    public static <MSG> void send(ServerPlayer player, MSG msg) {
+    public static <MSG> void send(ServerPlayerEntity player, MSG msg) {
         SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
 
-    public static <MSG> void send(List<ServerPlayer> players, MSG msg) {
+    public static <MSG> void send(List<ServerPlayerEntity> players, MSG msg) {
         players.forEach(player -> {
             // if (player instanceof ServerPlayer serverPlayer)
             {

@@ -1,8 +1,8 @@
 package com.teamtea.eclipticseasons.api.constant.crop;
 
 
-import net.minecraft.resources.ResourceLocation;
 import com.teamtea.eclipticseasons.EclipticSeasons;
+import net.minecraft.util.ResourceLocation;
 
 public enum CropSeasonType
 {

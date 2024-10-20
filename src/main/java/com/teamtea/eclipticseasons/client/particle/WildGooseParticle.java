@@ -1,15 +1,17 @@
 package com.teamtea.eclipticseasons.client.particle;
 
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.AshParticle;
+import net.minecraft.client.particle.IAnimatedSprite;
+import net.minecraft.client.particle.IParticleRenderType;
 import net.minecraft.client.particle.RisingParticle;
-import net.minecraft.client.particle.SpriteSet;
 
-public class WildGooseParticle extends RisingParticle {
-    private final SpriteSet spriteSet;
+import net.minecraft.client.world.ClientWorld;
 
-    public WildGooseParticle(ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet spriteSet) {
-        super(world, x, y, z, xSpeed, ySpeed, zSpeed);
+public class WildGooseParticle extends AshParticle {
+    private final IAnimatedSprite spriteSet;
+
+    public WildGooseParticle(ClientWorld world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, IAnimatedSprite spriteSet) {
+        super(world, x, y, z, xSpeed, ySpeed, zSpeed,1,spriteSet);
         this.spriteSet = spriteSet;
         this.scale(2.8F);
         this.lifetime = 200;
@@ -17,13 +19,13 @@ public class WildGooseParticle extends RisingParticle {
         this.gravity = 1E-4f;
         this.alpha = 1f;
         this.setSpriteFromAge(spriteSet);
-        this.setParticleSpeed(0, 0, 0);
+        // this.setParticleSpeed(0, 0, 0);
     }
 
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public IParticleRenderType getRenderType() {
+        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @Override

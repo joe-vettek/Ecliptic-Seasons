@@ -5,15 +5,17 @@ import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.BiomeClimateManager;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
 
+
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public class NetworkdUtil {
 
-    public static ClientLevel getClient() {
+    public static ClientWorld getClient() {
         return Minecraft.getInstance().level;
     }
 
@@ -48,7 +50,7 @@ public class NetworkdUtil {
         {
 
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                var lists = WeatherManager.getBiomeList(NetworkdUtil.getClient());
+                ArrayList<WeatherManager.BiomeWeather> lists = WeatherManager.getBiomeList(NetworkdUtil.getClient());
                 if (lists != null) {
                     for (WeatherManager.BiomeWeather biomeWeather : lists) {
                         biomeWeather.rainTime = biomeWeatherMessage.rain[biomeWeather.id] * 10000;

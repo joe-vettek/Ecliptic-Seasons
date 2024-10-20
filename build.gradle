@@ -27,7 +27,7 @@ group = "${mod_base_package}" // http://maven.apache.org/guides/mini/guide-namin
 archivesBaseName = mod_name_s
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
@@ -188,25 +188,25 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.0"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.0")) {
-        jarJar.ranged(it, "[0.4.0,)")
-    }
+//    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
+//    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {
+//        jarJar.ranged(it, "[0.2.0,)")
+//    }
 
-    compileOnly fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.18.2:1.0.4")
-    compileOnly fg.deobf("curse.maven:embeddium-908741:5322305")
-    compileOnly fg.deobf("curse.maven:oculus-581495:4578744")
+    compileOnly fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.16.5:0.10.5")
+    compileOnly fg.deobf("curse.maven:embeddium-908741:5322311")
+    compileOnly fg.deobf("curse.maven:oculus-581495:5194273")
 
-    runtimeOnly fg.deobf("curse.maven:embeddium-908741:5322305")
-//    runtimeOnly fg.deobf("curse.maven:oculus-581495:4578744")
+    runtimeOnly fg.deobf("curse.maven:embeddium-908741:5322311")
+//    runtimeOnly fg.deobf("curse.maven:oculus-581495:5194273")
 
-    compileOnly "libs:OptiFine:1.18.2_HD_U_H9"
+    compileOnly "libs:OptiFine:1.16.5_HD_U_G8"
 
-    implementation fg.deobf("curse.maven:jei-238222:4593548")
-    implementation fg.deobf("curse.maven:jade-324717:5079263")
+    implementation fg.deobf("curse.maven:jei-238222:4371666")
+    implementation fg.deobf("curse.maven:jade-324717:3910873")
 
 //    runtimeOnly fg.deobf("curse.maven:journeymap-32274:5208370")
-    runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:4679315")
+    runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3765350")
 
 }
 
@@ -273,4 +273,10 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xmaxerrs" << "1000000"
+    }
 }

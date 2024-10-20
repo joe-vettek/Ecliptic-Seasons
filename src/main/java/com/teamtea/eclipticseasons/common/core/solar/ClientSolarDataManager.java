@@ -4,34 +4,35 @@ import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.DimensionDataStorage;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
+import net.minecraftforge.common.util.Constants;
+import oculus.org.antlr.v4.runtime.misc.NotNull;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 
 public class ClientSolarDataManager extends SolarDataManager {
 
-    public ClientSolarDataManager(Level level) {
+    public ClientSolarDataManager(World level) {
         super(level);
         this.levelWeakReference = new WeakReference<>(level);
     }
 
-    public ClientSolarDataManager(Level level, CompoundTag nbt) {
+    public ClientSolarDataManager(World level, CompoundNBT nbt) {
         this(level);
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
-        var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
+        ListNBT listTag = nbt.getList("biomes", Constants.NBT.TAG_COMPOUND);
         if (this.levelWeakReference.get() != null) {
-            var biomeWeathers = WeatherManager.getBiomeList(this.levelWeakReference.get());
+            ArrayList<WeatherManager.BiomeWeather> biomeWeathers = WeatherManager.getBiomeList(this.levelWeakReference.get());
             for (int i = 0; i < listTag.size(); i++) {
-                var location = listTag.getCompound(i).getString("biome");
+                String location = listTag.getCompound(i).getString("biome");
                 for (WeatherManager.BiomeWeather biomeWeather : biomeWeathers) {
                     if (location.equals(biomeWeather.location.toString())) {
                         biomeWeather.deserializeNBT(listTag.getCompound(i));
@@ -43,12 +44,12 @@ public class ClientSolarDataManager extends SolarDataManager {
     }
 
     @Override
-    public @NotNull CompoundTag save(CompoundTag compound) {
+    public @NotNull CompoundNBT save(CompoundNBT compound) {
         compound.putInt("SolarTermsDay", getSolarTermsDay());
         compound.putInt("SolarTermsTicks", getSolarTermsTicks());
-        ListTag listTag = new ListTag();
+        ListNBT listTag = new ListNBT();
         if (levelWeakReference.get() != null) {
-            var list = WeatherManager.getBiomeList(levelWeakReference.get());
+            ArrayList<WeatherManager.BiomeWeather> list = WeatherManager.getBiomeList(levelWeakReference.get());
             for (WeatherManager.BiomeWeather biomeWeather : list) {
                 listTag.add(biomeWeather.serializeNBT());
             }
@@ -57,25 +58,24 @@ public class ClientSolarDataManager extends SolarDataManager {
         return compound;
     }
 
-    public static ClientSolarDataManager get(Level level) {
-        if (level instanceof ServerLevel serverLevel) {
-            return get(serverLevel);
+    public static ClientSolarDataManager get(World level) {
+        if (level instanceof ServerWorld ) {
+            return get((ServerWorld)level);
         }
-        if (level instanceof ClientLevel clientLevel) {
-            return get(clientLevel);
+        if (level instanceof ClientWorld ) {
+            return get((ClientWorld) level);
         }
         return null;
     }
 
 
-    public static ClientSolarDataManager get(ServerLevel serverLevel) {
-        DimensionDataStorage storage = serverLevel.getDataStorage();
-        return storage.computeIfAbsent((compoundTag) -> new ClientSolarDataManager(serverLevel, compoundTag),
-                () -> new ClientSolarDataManager(serverLevel), EclipticSeasons.MODID);
+    public static ClientSolarDataManager get(ServerWorld serverLevel) {
+        DimensionSavedDataManager storage = serverLevel.getDataStorage();
+        return storage.computeIfAbsent(() -> new ClientSolarDataManager(serverLevel), EclipticSeasons.MODID);
     }
 
 
-    public static ClientSolarDataManager get(ClientLevel clientLevel) {
+    public static ClientSolarDataManager get(ClientWorld clientLevel) {
         return new ClientSolarDataManager(clientLevel);
     }
 

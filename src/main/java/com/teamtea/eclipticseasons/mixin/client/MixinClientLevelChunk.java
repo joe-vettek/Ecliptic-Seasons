@@ -1,11 +1,11 @@
 package com.teamtea.eclipticseasons.mixin.client;
 
 
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,18 +15,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
 
-@Mixin({LevelChunk.class})
+@Mixin({Chunk.class})
 public abstract class MixinClientLevelChunk {
-    @Shadow @Final private Level level;
+    @Shadow @Final private World level;
 
     // 目前还不能发现动态树叶的更新
     @Inject(
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/Heightmap;update(IIILnet/minecraft/world/level/block/state/BlockState;)Z", ordinal = 1),
-            method = "setBlockState", locals = LocalCapture.CAPTURE_FAILEXCEPTION
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/Heightmap;update(IIILnet/minecraft/block/BlockState;)Z", ordinal = 1),
+            method = "setBlockState"
     )
-    public void ecliptic$setBlockState(BlockPos p_62865_, BlockState p_62866_, boolean p_62867_, CallbackInfoReturnable<BlockState> cir) {
-        if (level instanceof ClientLevel clientLevel ){
-            ModelManager.getHeightOrUpdate(p_62865_,true);
+    public void ecliptic$setBlockState(BlockPos p_177436_1_, BlockState p_177436_2_, boolean p_177436_3_, CallbackInfoReturnable<BlockState> cir) {
+        if (level instanceof ClientWorld  ){
+            ModelManager.getHeightOrUpdate(p_177436_1_,true);
         }
     }
 }

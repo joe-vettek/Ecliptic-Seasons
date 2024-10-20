@@ -5,21 +5,30 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.teamtea.eclipticseasons.api.util.WeatherUtil;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+
+import net.minecraft.tileentity.BeehiveTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(BeehiveBlockEntity.class)
-public class MixinBeehiveBlockEntity {
+@Mixin(BeehiveTileEntity.class)
+public abstract class MixinBeehiveBlockEntity extends TileEntity {
+
+    public MixinBeehiveBlockEntity(TileEntityType<?> p_i48289_1_) {
+        super(p_i48289_1_);
+    }
 
     @WrapOperation(
             method = "releaseOccupant",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isRaining()Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isRaining()Z")
     )
-    private static boolean mixin$releaseOccupantCheckRain(Level level, Operation<Boolean> original,  @Local(ordinal = 0) BlockPos blockPos  ) {
-        return WeatherUtil.isBlockInRain(level,blockPos);
+    private boolean mixin$releaseOccupantCheckRain(World level, Operation<Boolean> original) {
+        return WeatherUtil.isBlockInRain(level, getBlockPos());
     }
 
 

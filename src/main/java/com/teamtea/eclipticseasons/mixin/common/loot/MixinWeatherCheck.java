@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.mixin.common.loot;
 
 
-import net.minecraft.world.level.storage.loot.predicates.WeatherCheck;
+import net.minecraft.loot.conditions.WeatherCheck;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(WeatherCheck.class)

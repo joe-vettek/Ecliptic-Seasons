@@ -2,8 +2,8 @@ package com.teamtea.eclipticseasons.api.constant.crop;
 
 
 import com.teamtea.eclipticseasons.api.constant.biome.Humidity;
-import net.minecraft.resources.ResourceLocation;
 import com.teamtea.eclipticseasons.EclipticSeasons;
+import net.minecraft.util.ResourceLocation;
 
 public enum CropHumidityType
 {

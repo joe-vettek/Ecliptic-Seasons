@@ -4,22 +4,24 @@ import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.config.ClientConfig;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
+
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.LeavesBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.VoxelShape;
+
 
 import java.util.Random;
 
 public class ParticleUtil {
-    public static void createParticle(ClientLevel clientLevel, int x, int y, int z) {
+    public static void createParticle(ClientWorld clientLevel, int x, int y, int z) {
         if (!ClientConfig.Renderer.particle.get()) return;
 
-        var pos = new BlockPos(x, y, z);
+        BlockPos pos = new BlockPos(x, y, z);
         // clientLevel.addParticle(ParticleTypes.CHERRY_LEAVES, (double) pos.getX(), (double) pos.getY() - 0.5f, (double) pos.getZ(), 0.0D, 0.0D, 0.0D);
         // if (clientLevel.getGameTime() % 10 == 0) {
         //     if (Minecraft.getInstance().cameraEntity instanceof AbstractClientPlayer player) {
@@ -31,14 +33,26 @@ public class ParticleUtil {
         // }
         // if (SimpleUtil.getNowSolarTerm(clientLevel).getSeason() == Season.AUTUMN)
         {
-            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-            var sd = SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
+            BlockPos.Mutable blockpos$mutableblockpos = new BlockPos.Mutable();
+            Season sd = SimpleUtil.getNowSolarTerm(clientLevel).getSeason();
             int chanceW = 19;
             switch (sd) {
-                case SPRING -> chanceW = 17;
-                case SUMMER -> chanceW = 27;
-                case AUTUMN -> chanceW = 9;
-                case WINTER -> chanceW = 15;
+                case SPRING: {
+                    chanceW = 17;
+                    break;
+                }
+                case SUMMER: {
+                    chanceW = 27;
+                    break;
+                }
+                case AUTUMN: {
+                    chanceW = 9;
+                    break;
+                }
+                case WINTER: {
+                    chanceW = 15;
+                    break;
+                }
             }
 
             for (int j = 0; j < 667; ++j) {
@@ -51,7 +65,7 @@ public class ParticleUtil {
     }
 
     // can refer TerrainParticle
-    private static void doAnimateTick(ClientLevel clientLevel, int x, int y, int z, int b, Random random, BlockPos.MutableBlockPos blockpos$mutableblockpos) {
+    private static void doAnimateTick(ClientWorld clientLevel, int x, int y, int z, int b, Random random, BlockPos.Mutable blockpos$mutableblockpos) {
         int i = x + random.nextInt(b) - random.nextInt(b);
         int j = y + random.nextInt(b) - random.nextInt(b);
         int k = z + random.nextInt(b) - random.nextInt(b);
@@ -77,11 +91,11 @@ public class ParticleUtil {
                 && clientLevel.isEmptyBlock(blockpos$mutableblockpos)
                 && !clientLevel.isRainingAt(blockpos$mutableblockpos)
                 && random.nextInt(255) == 0) {
-            clientLevel.addParticle(EclipticSeasons.ParticleRegistry.WILD_GOOSE, false, x + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), y + random.nextInt(15, 16 * 2), z + random.nextInt(16, 16 * 2) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
+            clientLevel.addParticle(EclipticSeasons.ParticleRegistry.WILD_GOOSE, false, x + (random.nextInt(16)+16) * (random.nextBoolean() ? -1 : 1), y + (random.nextInt(16)+16), z + (random.nextInt(16)+16) * (random.nextBoolean() ? -1 : 1), 0.0D, 5.0E-4D, 0.0D);
         }
     }
 
-    public static void fallenLeaves(ClientLevel level, BlockPos pos, BlockState state) {
+    public static void fallenLeaves(ClientWorld level, BlockPos pos, BlockState state) {
         if (!state.isAir()) {
             VoxelShape voxelshape = state.getShape(level, pos);
             double d0 = 0.25D;
@@ -89,9 +103,9 @@ public class ParticleUtil {
                 double x = Math.min(1.0D, x1 - x0);
                 double y = Math.min(1.0D, y1 - y0);
                 double z = Math.min(1.0D, z1 - z0);
-                int aX = Math.min(1, Mth.ceil(x / 0.25D));
-                int aY = Math.min(1, Mth.ceil(y / 0.25D));
-                int aZ = Math.min(1, Mth.ceil(z / 0.25D));
+                int aX = Math.min(1, MathHelper.ceil(x / 0.25D));
+                int aY = Math.min(1, MathHelper.ceil(y / 0.25D));
+                int aZ = Math.min(1, MathHelper.ceil(z / 0.25D));
 
                 for (int pX = 0; pX < aX; ++pX) {
                     for (int pY = -aY; pY < 0; ++pY) {

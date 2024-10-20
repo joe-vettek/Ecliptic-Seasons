@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.client;
 
 
-import com.mojang.blaze3d.shaders.Shader;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.teamtea.eclipticseasons.api.constant.solar.Season;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
 import com.teamtea.eclipticseasons.client.core.ModelManager;
@@ -14,20 +14,25 @@ import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.common.core.crop.CropInfoManager;
 import com.teamtea.eclipticseasons.api.constant.crop.CropSeasonInfo;
 import com.teamtea.eclipticseasons.api.constant.crop.CropHumidityInfo;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
+
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
+
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+
+import net.minecraft.util.math.SectionPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -87,21 +92,21 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onLevelUnloadEvent(WorldEvent.Unload event) {
-        if (event.getWorld() instanceof ClientLevel clientLevel) {
+        if (event.getWorld() instanceof ClientWorld ) {
             ModelManager.clearHeightMap();
         }
     }
 
     @SubscribeEvent
     public static void onLevelEventLoad(WorldEvent.Load event) {
-        if (event.getWorld() instanceof ClientLevel clientLevel) {
+        if (event.getWorld() instanceof ClientWorld ) {
             // synchronized (ModelManager.RegionList) {
             //     ModelManager.RegionList.clear();
             // }
 
             // ModelManager.quadMap.clear();
             // ModelManager.quadMap_1.clear();
-
+            ClientWorld clientLevel=(ClientWorld)event.getWorld();
             WeatherManager.createLevelBiomeWeatherList(clientLevel);
             // 这里需要恢复一下数据
             // 客户端登录时同步天气数据，此处先放入
@@ -116,12 +121,13 @@ public final class ClientEventHandler {
             if (event.phase.equals(TickEvent.Phase.END)
                     && event.world.isClientSide()
                     && event.world.getGameTime() %100  == 0) {
-                var lr = Minecraft.getInstance().levelRenderer;
+                WorldRenderer lr = Minecraft.getInstance().levelRenderer;
                 if (lr != null) {
                     //
                     // ((ClientChunkCache) event.level.getChunkSource()).storage.
-                    if (Minecraft.getInstance().cameraEntity instanceof Player player) {
-                        BlockPos pos = player.getOnPos();
+                    if (Minecraft.getInstance().player != null) {
+
+                        BlockPos pos = Minecraft.getInstance().player.blockPosition().below();
                         SectionPos sectionPos = SectionPos.of(pos);
                         // lr.setSectionDirtyWithNeighbors(sectionPos.x(),sectionPos.y(),sectionPos.z());
                         int x = sectionPos.x();
@@ -142,21 +148,23 @@ public final class ClientEventHandler {
 
 
     @SubscribeEvent
-    public static void onRenderLevelStageEvent(RenderLevelStageEvent event) {
-        var level = Minecraft.getInstance().level;
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS
+    public static void onRenderLevelStageEvent(RenderWorldLastEvent event) {
+        ClientWorld level = Minecraft.getInstance().level;
+        if (
+                // event.getStage() == RenderWorldLastEvent.Stage.AFTER_CUTOUT_BLOCKS
+                Minecraft.getInstance().getEntityRenderDispatcher().camera!=null
                 && level != null
                 && SimpleUtil.getNowSolarTerm(level).getSeason() == Season.SPRING
                 && SimpleUtil.isDay(level)) {
-            var multiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            IRenderTypeBuffer.Impl multiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             // var itr = Minecraft.getInstance().getItemRenderer();
             // var mds = itr.getItemModelShaper();
             // var stack = Items.ACACIA_BOAT.getDefaultInstance();
 
-            var cameraEntity = Minecraft.getInstance().cameraEntity;
+            Entity cameraEntity = Minecraft.getInstance().cameraEntity;
             // var blockpos4 = Minecraft.getInstance().cameraEntity.blockPosition();
-            var blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-            var random = level.getRandom();
+            BlockPos.Mutable blockpos$mutableblockpos = new BlockPos.Mutable();
+            Random random = level.getRandom();
             int b = 32;
             random=new Random();
             for (int i = 0; i < 20; ++i)
@@ -170,30 +178,30 @@ public final class ClientEventHandler {
                                 cameraEntity.zo - 10 + k);
                         random.setSeed(blockpos$mutableblockpos.asLong());
                         if (random.nextInt(63) == 0) {
-                            BlockState blockstate = event.getLevelRenderer().level.getBlockState(blockpos$mutableblockpos);
+                            BlockState blockstate = Minecraft.getInstance().level.getBlockState(blockpos$mutableblockpos);
 
                             if (blockstate.is(BlockTags.FLOWERS)) {
 
 
-                                var blockpos4 = blockpos$mutableblockpos;
+                                BlockPos.Mutable blockpos4 = blockpos$mutableblockpos;
 
-                                Vec3 vec3c = Vec3.atCenterOf(blockpos4).add(-0.5f, -0.5f + 0.25f, -0.5f);
+                                Vector3d vec3c = Vector3d.atCenterOf(blockpos4).add(-0.5f, -0.5f + 0.25f, -0.5f);
                                 vec3c.add(blockstate.getOffset(level, blockpos$mutableblockpos));
 
-                                var state = Blocks.CAMPFIRE.defaultBlockState();
-                                Vec3 vec3 = event.getCamera().getPosition();
+                                BlockState state = Blocks.CAMPFIRE.defaultBlockState();
+                                Vector3d vec3 = Minecraft.getInstance().getEntityRenderDispatcher().camera.getPosition();
                                 double d0 = vec3.x();
                                 double d1 = vec3.y();
                                 double d2 = vec3.z();
 
-                                var poseStack = event.getPoseStack();
+                                MatrixStack poseStack = event.getMatrixStack();
                                 poseStack.pushPose();
                                 // poseStack.scale(0.25f, 0.25f, 0.25f);
                                 poseStack.translate((double) vec3c.x() - d0, (double) vec3c.y() - d1, (double) vec3c.z() - d2);
                                 // poseStack.scale(0.25f, 0.25f, 0.25f);
                                 // poseStack.translate(2f, (double) vec3c.y() - d1, 2f);
                                 // ((ModelPart)Minecraft.getInstance().getEntityModels().roots.entrySet().toArray()[9].value.bakeRoot()).render();
-                                var rs = ModelManager.butterfly1;
+                                ResourceLocation rs = ModelManager.butterfly1;
                                 if (random.nextBoolean()) {
                                     rs = ModelManager.butterfly2;
                                 } else if (random.nextBoolean()) {
@@ -202,12 +210,12 @@ public final class ClientEventHandler {
 
                                 int ii;
                                 if (level != null) {
-                                    ii = LevelRenderer.getLightColor(level, blockpos$mutableblockpos);
+                                    ii = WorldRenderer.getLightColor(level, blockpos$mutableblockpos);
                                 } else {
                                     ii = 15728880;
                                 }
                                 Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(
-                                        event.getPoseStack().last(),
+                                        event.getMatrixStack().last(),
                                         multiBufferSource.getBuffer(RenderType.cutoutMipped()), (BlockState) null,
                                         Minecraft.getInstance().getModelManager().getModel(rs),
                                         1f, 1f, 1f, ii, OverlayTexture.NO_OVERLAY

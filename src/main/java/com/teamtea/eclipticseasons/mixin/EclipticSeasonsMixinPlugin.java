@@ -5,10 +5,9 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Non-critical mixin config plugin, just disables mixins if Distant Horizons isn't present,
@@ -47,8 +46,8 @@ public class EclipticSeasonsMixinPlugin implements IMixinConfigPlugin {
 
         int st = mixinClassName.indexOf(MIXIN_COMPAT_PACKAGE);
         if (st > -1) {
-            String sub = Arrays.stream(mixinClassName.split(MIXIN_COMPAT_PACKAGE)).toList().get(1);
-            String modid = Arrays.stream(sub.split("\\.")).toList().get(0);
+            String sub = Arrays.stream(mixinClassName.split(MIXIN_COMPAT_PACKAGE)).collect(Collectors.toCollection(ArrayList::new)).get(1);
+            String modid = Arrays.stream(sub.split("\\.")).collect(Collectors.toCollection(ArrayList::new)).get(0);
             return FMLLoader.getLoadingModList().getModFileById(modid) != null
                     || (Objects.equals(modid, "optifine") && isOptLoad == 1);
         }

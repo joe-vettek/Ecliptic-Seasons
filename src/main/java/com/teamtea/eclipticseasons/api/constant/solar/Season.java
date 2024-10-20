@@ -1,21 +1,21 @@
 package com.teamtea.eclipticseasons.api.constant.solar;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public enum Season
 {
-    SPRING(ChatFormatting.DARK_GREEN),
-    SUMMER(ChatFormatting.RED),
-    AUTUMN(ChatFormatting.GOLD),
-    WINTER(ChatFormatting.BLUE),
-    NONE(ChatFormatting.DARK_AQUA);
+    SPRING(TextFormatting.DARK_GREEN),
+    SUMMER(TextFormatting.RED),
+    AUTUMN(TextFormatting.GOLD),
+    WINTER(TextFormatting.BLUE),
+    NONE(TextFormatting.DARK_AQUA);
 
-    private final ChatFormatting color;
+    private final TextFormatting color;
 
-    Season(ChatFormatting color)
+    Season(TextFormatting color)
     {
         this.color = color;
     }
@@ -25,12 +25,12 @@ public enum Season
         return this.toString().toLowerCase();
     }
 
-    public Component getTranslation()
+    public ITextComponent getTranslation()
     {
-        return new TranslatableComponent("info.teastory.environment.season." + getName()).withStyle(color);
+        return new TranslationTextComponent("info.teastory.environment.season." + getName()).withStyle(color);
     }
 
-    public ChatFormatting getColor()
+    public TextFormatting getColor()
     {
         return color;
     }

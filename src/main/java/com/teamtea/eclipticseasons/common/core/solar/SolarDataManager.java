@@ -7,23 +7,18 @@ import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.common.network.SolarTermsMessage;
 import com.teamtea.eclipticseasons.config.ServerConfig;
-import net.minecraft.Util;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.storage.DimensionDataStorage;
-import net.minecraftforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
+import net.minecraft.world.storage.WorldSavedData;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.PacketDistributor;
+import oculus.org.antlr.v4.runtime.misc.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -32,26 +27,27 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SolarDataManager extends SavedData {
+public class SolarDataManager extends WorldSavedData {
 
     protected int solarTermsDay = (ServerConfig.Season.initialSolarTermIndex.get() - 1) * ServerConfig.Season.lastingDaysOfEachTerm.get();
     protected int solarTermsTicks = 0;
 
-    protected WeakReference<Level> levelWeakReference;
+    protected WeakReference<World> levelWeakReference;
 
-    public SolarDataManager(Level level) {
+    public SolarDataManager(World level) {
+        super(EclipticSeasons.MODID);
         levelWeakReference = new WeakReference<>(level);
     }
 
-    public SolarDataManager(Level level, CompoundTag nbt) {
+    public SolarDataManager(World level, CompoundNBT nbt) {
         this(level);
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
-        var listTag = nbt.getList("biomes", Tag.TAG_COMPOUND);
+        ListNBT listTag = nbt.getList("biomes", Constants.NBT.TAG_COMPOUND);
         if (levelWeakReference.get() != null) {
-            var biomeWeathers =WeatherManager.getBiomeList(levelWeakReference.get());
+            ArrayList<WeatherManager.BiomeWeather> biomeWeathers =WeatherManager.getBiomeList(levelWeakReference.get());
             for (int i = 0; i < listTag.size(); i++) {
-                var location = listTag.getCompound(i).getString("biome");
+                String location = listTag.getCompound(i).getString("biome");
                 for (WeatherManager.BiomeWeather biomeWeather : biomeWeathers) {
                     if (location.equals(biomeWeather.location.toString()))
                     {
@@ -64,12 +60,17 @@ public class SolarDataManager extends SavedData {
     }
 
     @Override
-    public @NotNull CompoundTag save(CompoundTag compound) {
+    public void load(CompoundNBT p_76184_1_) {
+
+    }
+
+    @Override
+    public @NotNull CompoundNBT save(CompoundNBT compound) {
         compound.putInt("SolarTermsDay", getSolarTermsDay());
         compound.putInt("SolarTermsTicks", getSolarTermsTicks());
-        ListTag listTag = new ListTag();
+        ListNBT listTag = new ListNBT();
         if (levelWeakReference.get() != null) {
-            var list = WeatherManager.getBiomeList(levelWeakReference.get());
+            ArrayList<WeatherManager.BiomeWeather> list = WeatherManager.getBiomeList(levelWeakReference.get());
             for (WeatherManager.BiomeWeather biomeWeather : list) {
                 listTag.add(biomeWeather.serializeNBT());
             }
@@ -78,14 +79,13 @@ public class SolarDataManager extends SavedData {
         return compound;
     }
     
-    public static SolarDataManager get(ServerLevel serverLevel) {
-        DimensionDataStorage storage = serverLevel.getDataStorage();
-        return storage.computeIfAbsent((compoundTag) -> new SolarDataManager(serverLevel, compoundTag),
-                () -> new SolarDataManager(serverLevel), EclipticSeasons.MODID);
+    public static SolarDataManager get(ServerWorld serverLevel) {
+        DimensionSavedDataManager storage = serverLevel.getDataStorage();
+        return storage.computeIfAbsent(() -> new SolarDataManager(serverLevel), EclipticSeasons.MODID);
     }
 
 
-    public void updateTicks(ServerLevel world) {
+    public void updateTicks(ServerWorld world) {
         solarTermsTicks++;
         int dayTime = Math.toIntExact(world.getDayTime() % 24000);
         if (solarTermsTicks > dayTime + 100) {
@@ -139,11 +139,11 @@ public class SolarDataManager extends SavedData {
         setDirty();
     }
 
-    public void sendUpdateMessage(ServerLevel world) {
-        for (ServerPlayer player : world.players()) {
+    public void sendUpdateMessage(ServerWorld world) {
+        for (ServerPlayerEntity player : world.players()) {
             SimpleNetworkHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SolarTermsMessage(this.getSolarTermsDay()));
             if (getSolarTermsDay() % ServerConfig.Season.lastingDaysOfEachTerm.get() == 0) {
-                player.sendMessage(new TranslatableComponent("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()),  Util.NIL_UUID);
+                player.sendMessage(new TranslationTextComponent("info.teastory.environment.solar_term.message", SolarTerm.get(getSolarTermIndex()).getAlternationText()),  Util.NIL_UUID);
             }
         }
     }

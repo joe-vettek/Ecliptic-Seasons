@@ -3,9 +3,11 @@ package com.teamtea.eclipticseasons.client.render;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.PostPass;
+import net.minecraft.client.shader.Shader;
+import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.client.shader.ShaderUniform;
 
 public class ClientRenderer {
     public static long reMainTick = 0;
@@ -21,7 +23,7 @@ public class ClientRenderer {
 
     public static int oldBlurStatus = NONE_BLUR;
 
-    public static void applyEffect(GameRenderer gameRenderer, LocalPlayer player) {
+    public static void applyEffect(GameRenderer gameRenderer, ClientPlayerEntity player) {
         if (player == null) return;
 
 
@@ -59,10 +61,10 @@ public class ClientRenderer {
     }
 
     public static void updateUniform(String name, float value) {
-        var postChain = Minecraft.getInstance().gameRenderer.currentEffect();
+        ShaderGroup postChain = Minecraft.getInstance().gameRenderer.currentEffect();
         if (postChain != null)
-            for (PostPass postPass : postChain.passes) {
-                var uniform = postPass.getEffect().getUniform(name);
+            for (Shader postPass : postChain.passes) {
+                ShaderUniform uniform = postPass.getEffect().getUniform(name);
                 if (uniform != null) {
                     uniform.set(value);
                 }

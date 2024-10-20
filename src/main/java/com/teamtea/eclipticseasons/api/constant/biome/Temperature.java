@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.api.constant.biome;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public enum Temperature
 {
@@ -51,9 +51,9 @@ public enum Temperature
         return max - min;
     }
 
-    public Component getTranslation()
+    public ITextComponent getTranslation()
     {
-        return new TranslatableComponent("info.silveroak.environment.temperature." + getName());
+        return new TranslationTextComponent("info.silveroak.environment.temperature." + getName());
     }
 
     public static Temperature getTemperatureLevel(float temp)

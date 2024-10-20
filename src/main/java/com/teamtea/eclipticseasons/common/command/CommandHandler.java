@@ -1,8 +1,8 @@
 package com.teamtea.eclipticseasons.common.command;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Either;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.api.util.SimpleUtil;
@@ -10,27 +10,23 @@ import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ResourceOrTagLocationArgument;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.commands.LocateCommand;
-import net.minecraft.server.commands.TimeCommand;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.ResourceLocationArgument;
+import net.minecraft.command.impl.LocateBiomeCommand;
+import net.minecraft.command.impl.TimeCommand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.teamtea.eclipticseasons.EclipticSeasons;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -39,13 +35,13 @@ import java.util.Optional;
 public class CommandHandler {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
-        var dispatcher = event.getDispatcher();
-        
+        CommandDispatcher<CommandSource> dispatcher = event.getDispatcher();
+
         // Reset time command
         dispatcher.register(Commands.literal("time").requires((sourceStack) -> sourceStack.hasPermission(2))
                 .then(Commands.literal("set")
-                .then(Commands.literal("night")
-                        .executes((source) -> TimeCommand.setTime(source.getSource(),  SimpleUtil.getNightTime(source.getSource().getLevel()))))));
+                        .then(Commands.literal("night")
+                                .executes((source) -> TimeCommand.setTime(source.getSource(), SimpleUtil.getNightTime(source.getSource().getLevel()))))));
 
 
         dispatcher.register(Commands.literal(EclipticSeasons.SMODID).
@@ -56,8 +52,8 @@ public class CommandHandler {
                                         .executes(commandContext -> setDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day")))))
                         .then(Commands.literal("get")
                                 .executes(commandContext -> {
-                                    var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
-                                    commandContext.getSource().sendSuccess(new TextComponent("" + solar), true);
+                                    int solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTermsDay();
+                                    commandContext.getSource().sendSuccess(new StringTextComponent("" + solar), true);
                                     return 0;
                                 })
                         )
@@ -83,7 +79,7 @@ public class CommandHandler {
                                         })))
                         .then(Commands.literal("getTerm")
                                 .executes(commandContext -> {
-                                    var solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
+                                    SolarTerm solar = AllListener.getSaveData(commandContext.getSource().getLevel()).getSolarTerm();
                                     commandContext.getSource().sendSuccess(solar.getTranslation(), true);
                                     return 0;
                                 })
@@ -92,30 +88,33 @@ public class CommandHandler {
                                 .then(Commands.argument("day", IntegerArgumentType.integer()).executes(commandContext -> addDay(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "day"))))))
                 .then(Commands.literal("weather")
                         .requires((source) -> source.hasPermission(2))
-                        .then(Commands.argument("biome", ResourceOrTagLocationArgument.resourceOrTag(Registry.BIOME_REGISTRY))
+                        .then(Commands.argument("biome", ResourceLocationArgument.id())
                                 .then(Commands.literal("rain")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getBiome(commandContext, "biome"), true, false)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), commandContext.getArgument("biome", ResourceLocation.class), true, false)))
                                 .then(Commands.literal("thunder")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getBiome(commandContext, "biome"), true, true)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), commandContext.getArgument("biome", ResourceLocation.class), true, true)))
                                 .then(Commands.literal("clear")
-                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), ResourceOrTagLocationArgument.getBiome(commandContext, "biome"), false, false)))
+                                        .executes((commandContext) -> setBiomeRain(commandContext.getSource(), commandContext.getArgument("biome", ResourceLocation.class), false, false)))
                         )
                 )
         );
     }
 
-    public static int setBiomeRain(CommandSourceStack sourceStack, ResourceOrTagLocationArgument.Result<Biome> result, boolean setRain, boolean isThunder) throws CommandSyntaxException {
-        var levelBiomeWeather = WeatherManager.getBiomeList(sourceStack.getLevel());
+    public static int setBiomeRain(CommandSource sourceStack, ResourceLocation result, boolean setRain, boolean isThunder) throws CommandSyntaxException {
+        Biome biome = sourceStack.getServer().registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getOptional(result).orElseThrow(() -> {
+            return LocateBiomeCommand.ERROR_INVALID_BIOME.create(sourceStack);
+        });
+        ArrayList<WeatherManager.BiomeWeather> levelBiomeWeather = WeatherManager.getBiomeList(sourceStack.getLevel());
         if (levelBiomeWeather != null) {
             boolean found = false;
             int size = levelBiomeWeather.size();
             for (WeatherManager.BiomeWeather biomeWeather : levelBiomeWeather) {
-                if (result.test(biomeWeather.biomeHolder)) {
+                if (biome.equals(biomeWeather.biomeHolder)) {
 
-                    biomeWeather.rainTime = setRain ? WeatherManager.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size : 0;
-                    biomeWeather.clearTime = setRain ? 0 : WeatherManager.RAIN_DURATION.sample(sourceStack.getLevel().getRandom()) / size;
+                    biomeWeather.rainTime = setRain ? (sourceStack.getLevel().getRandom().nextInt(12000)+12000)/ size : 0;
+                    biomeWeather.clearTime = setRain ? 0 : (sourceStack.getLevel().getRandom().nextInt(12000)+12000) / size;
 
-                    biomeWeather.thunderTime = isThunder ? WeatherManager.THUNDER_DURATION.sample(sourceStack.getLevel().getRandom()) / size : 0;
+                    biomeWeather.thunderTime = isThunder ? (sourceStack.getLevel().getRandom().nextInt(12000)+3600) / size : 0;
 
                     found = true;
                 }
@@ -127,56 +126,38 @@ public class CommandHandler {
         return 0;
     }
 
-    private static int getDay(ServerLevel worldIn) {
+    private static int getDay(ServerWorld worldIn) {
         return AllListener.getSaveDataLazy(worldIn).map(SolarDataManager::getSolarTermsDay).orElse(0);
     }
 
-    public static int setDay(CommandSourceStack source, int day) {
-        for (ServerLevel ServerLevel : List.of(source.getLevel())) {
-            AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
+    public static int setDay(CommandSource source, int day) {
+        // for (var ServerLevel : List.of(source.getLevel()))
+        {
+            AllListener.getSaveDataLazy(source.getLevel()).ifPresent(data ->
             {
                 data.setSolarTermsDay(day);
-                data.sendUpdateMessage(ServerLevel);
+                data.sendUpdateMessage(source.getLevel());
             });
         }
 
-        source.sendSuccess(new TranslatableComponent("commands.teastory.solar.set", day), true);
+        source.sendSuccess(new TranslationTextComponent("commands.teastory.solar.set", day), true);
         return getDay(source.getLevel());
     }
 
-    public static int addDay(CommandSourceStack source, int add) {
-        for (ServerLevel ServerLevel : List.of(source.getLevel())) {
-            AllListener.getSaveDataLazy(ServerLevel).ifPresent(data ->
+    public static int addDay(CommandSource source, int add) {
+        // for (var ServerLevel : List.of(source.getLevel()))
+        {
+            AllListener.getSaveDataLazy(source.getLevel()).ifPresent(data ->
             {
                 data.setSolarTermsDay(data.getSolarTermsDay() + add);
-                data.sendUpdateMessage(ServerLevel);
-                source.sendSuccess( new TranslatableComponent("commands.teastory.solar.set", data.getSolarTermsDay()), true);
+                data.sendUpdateMessage(source.getLevel());
+                source.sendSuccess(new TranslationTextComponent("commands.teastory.solar.set", data.getSolarTermsDay()), true);
             });
         }
         return getDay(source.getLevel());
     }
 
 
-    public static final ResourceOrTagLocationArgument.Result<Biome> ALL_BIOME_RESULT = new ResourceOrTagLocationArgument.Result<Biome>() {
-        @Override
-        public boolean test(Holder<Biome> biomeHolder) {
-            return true;
-        }
 
 
-        @Override
-        public Either<ResourceKey<Biome>, TagKey<Biome>> unwrap() {
-            return null;
-        }
-
-        @Override
-        public <E> Optional<ResourceOrTagLocationArgument.Result<E>> cast(ResourceKey<? extends Registry<E>> p_249572_) {
-            return Optional.empty();
-        }
-
-        @Override
-        public String asPrintable() {
-            return null;
-        }
-    };
 }

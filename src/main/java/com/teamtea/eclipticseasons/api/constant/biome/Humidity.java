@@ -1,21 +1,22 @@
 package com.teamtea.eclipticseasons.api.constant.biome;
 
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public enum Humidity {
-    ARID(ChatFormatting.RED, 0.9F),
-    DRY(ChatFormatting.GOLD, 0.95F),
-    AVERAGE(ChatFormatting.WHITE, 1.0F),
-    MOIST(ChatFormatting.BLUE, 1.1F),
-    HUMID(ChatFormatting.DARK_GREEN, 1.2F);
+    ARID(TextFormatting.RED, 0.9F),
+    DRY(TextFormatting.GOLD, 0.95F),
+    AVERAGE(TextFormatting.WHITE, 1.0F),
+    MOIST(TextFormatting.BLUE, 1.1F),
+    HUMID(TextFormatting.DARK_GREEN, 1.2F);
 
-    private final ChatFormatting color;
+    private final TextFormatting color;
     private final float tempCoefficient;
 
-    Humidity(ChatFormatting color, float tempCoefficient) {
+    Humidity(TextFormatting color, float tempCoefficient) {
         this.color = color;
         this.tempCoefficient = tempCoefficient;
     }
@@ -28,8 +29,8 @@ public enum Humidity {
         return this.toString().toLowerCase();
     }
 
-    public Component getTranslation() {
-        return new TranslatableComponent("info.silveroak.environment.humidity." + getName()).withStyle(color);
+    public ITextComponent getTranslation() {
+        return new TranslationTextComponent("info.silveroak.environment.humidity." + getName()).withStyle(color);
     }
 
     public float getCoefficient() {

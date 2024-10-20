@@ -1,32 +1,36 @@
 package com.teamtea.eclipticseasons.client.particle;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.NaturalSpawner;
-import net.minecraft.world.phys.Vec3;
+
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.particle.IAnimatedSprite;
+import net.minecraft.client.particle.IParticleRenderType;
+import net.minecraft.client.particle.SpriteTexturedParticle;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.util.ReuseableStream;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.world.spawner.WorldEntitySpawner;
 
 
 import java.util.List;
+import java.util.stream.Stream;
 
-public class FireflyParticle extends TextureSheetParticle {
+public class FireflyParticle extends SpriteTexturedParticle {
 
 
-    private final SpriteSet spriteSet;
+    private final IAnimatedSprite spriteSet;
     private boolean isBlink;
-    private Vec3 nextPos;
+    private Vector3d nextPos;
 
-    public FireflyParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet) {
+    public FireflyParticle(ClientWorld level, double x, double y, double z, IAnimatedSprite spriteSet) {
         super(level, x, y, z);
         this.lifetime = 800;
         this.gravity = 1E-4f;
@@ -37,21 +41,21 @@ public class FireflyParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public IParticleRenderType getRenderType() {
+        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    public void render(VertexConsumer vertexConsumer, Camera camera, float patialTicks) {
-        Vec3 vec3 = camera.getPosition();
-        float f = (float) (Mth.lerp(patialTicks, this.xo, this.x) - vec3.x());
-        float f1 = (float) (Mth.lerp(patialTicks, this.yo, this.y) - vec3.y());
-        float f2 = (float) (Mth.lerp(patialTicks, this.zo, this.z) - vec3.z());
+    public void render(IVertexBuilder vertexConsumer, ActiveRenderInfo camera, float patialTicks) {
+        Vector3d vec3 = camera.getPosition();
+        float f = (float) (MathHelper.lerp(patialTicks, this.xo, this.x) - vec3.x());
+        float f1 = (float) (MathHelper.lerp(patialTicks, this.yo, this.y) - vec3.y());
+        float f2 = (float) (MathHelper.lerp(patialTicks, this.zo, this.z) - vec3.z());
         Quaternion quaternionf;
         if (this.roll == 0.0F) {
             quaternionf = camera.rotation();
         } else {
             quaternionf = new Quaternion(camera.rotation());
-            quaternionf.mul(Vector3f.ZP.rotation(Mth.lerp(patialTicks, this.oRoll, this.roll)));
+            quaternionf.mul(Vector3f.ZP.rotation(MathHelper.lerp(patialTicks, this.oRoll, this.roll)));
         }
 
         Vector3f[] avector3f = new Vector3f[]{
@@ -112,13 +116,13 @@ public class FireflyParticle extends TextureSheetParticle {
             // Ecliptic.logger(spriteSet.get(this.age, this.lifetime));
             isBlink = this.age % 8 > 4 && this.age < this.lifetime * 0.8;
             // setSprite(spriteSet.get(isBlink ? 0 : 1, 1));
-            var nowPos = new Vec3(x, y, z);
-            var targetPosition =new BlockPos(x + xd, y + yd, z + zd);
+            Vector3d nowPos = new Vector3d(x, y, z);
+            BlockPos targetPosition = new BlockPos(x + xd, y + yd, z + zd);
 
-            Vec3 vec3 = Entity.collideBoundingBox((Entity) null, new Vec3(xd, yd, zd), this.getBoundingBox(), this.level, List.of());
+            Vector3d vec3 = Entity.collideBoundingBoxHeuristically((Entity) null, new Vector3d(xd, yd, zd), this.getBoundingBox(), this.level, ISelectionContext.empty(), new ReuseableStream<>(Stream.empty()));
             if (this.nextPos != null &&
-                    (!NaturalSpawner.isValidEmptySpawnBlock(level, targetPosition, level.getBlockState(targetPosition), level.getFluidState(targetPosition), EntityType.BAT)
-                            || targetPosition.getY() <= level.getMinBuildHeight()
+                    (!WorldEntitySpawner.isValidEmptySpawnBlock(level, targetPosition, level.getBlockState(targetPosition), level.getFluidState(targetPosition), EntityType.BAT)
+                            || targetPosition.getY() <= 0
                             || Math.abs(vec3.y) < (double) 1.0E-5F
                             || this.onGround
                             || level.getNearestPlayer(x + xd, y + yd, z + zd, 1f, false) != null
@@ -127,20 +131,20 @@ public class FireflyParticle extends TextureSheetParticle {
                 // this.stoppedByCollision=false;
             }
             if (nextPos == null || nextPos.closerThan(nowPos, 1f) || nextPos.distanceTo(nowPos) > 100) {
-                this.nextPos = Vec3.atCenterOf(findNextPosition());
-                var re = nextPos.subtract(nowPos).multiply(0.02d, 0.02d, 0.02d);
+                this.nextPos = Vector3d.atCenterOf(findNextPosition());
+                Vector3d re = nextPos.subtract(nowPos).multiply(0.02d, 0.02d, 0.02d);
                 this.xd = re.x;
                 this.yd = re.y;
                 this.zd = re.z;
             } else {
-                var re = nextPos.subtract(nowPos).multiply(0.02d, 0.02d, 0.02d);
+                Vector3d re = nextPos.subtract(nowPos).multiply(0.02d, 0.02d, 0.02d);
                 this.xd = 0.78 * this.xd + 0.3 * Math.abs(random.nextGaussian()) * re.x;
                 this.yd = 0.8 * this.yd + 0.25 * Math.abs(random.nextGaussian()) * re.y;
                 this.zd = 0.78 * this.zd + 0.3 * Math.abs(random.nextGaussian()) * re.z;
             }
 
-            var pos = new BlockPos(x, y - 0.1f, z);
-            if (!NaturalSpawner.isValidEmptySpawnBlock(level, pos, level.getBlockState(pos), level.getFluidState(pos), EntityType.BAT)) {
+            BlockPos pos = new BlockPos(x, y - 0.1f, z);
+            if (!WorldEntitySpawner.isValidEmptySpawnBlock(level, pos, level.getBlockState(pos), level.getFluidState(pos), EntityType.BAT)) {
                 this.yd = 0.05f;
             }
 
@@ -151,7 +155,7 @@ public class FireflyParticle extends TextureSheetParticle {
 
     protected BlockPos findNextPosition() {
 
-        var blockpos$mutableblockpos = new BlockPos.MutableBlockPos(x, y, z);
+        BlockPos.Mutable blockpos$mutableblockpos = new BlockPos.Mutable(x, y, z);
 
         do {
             // int b = random.nextGaussian()*7;
@@ -161,7 +165,7 @@ public class FireflyParticle extends TextureSheetParticle {
             blockpos$mutableblockpos.set(i, j, k);
             // Ecliptic.logger(blockpos$mutableblockpos);
         }
-        while (!NaturalSpawner.isValidEmptySpawnBlock(level, blockpos$mutableblockpos, level.getBlockState(blockpos$mutableblockpos), level.getFluidState(blockpos$mutableblockpos), EntityType.BAT));
+        while (!WorldEntitySpawner.isValidEmptySpawnBlock(level, blockpos$mutableblockpos, level.getBlockState(blockpos$mutableblockpos), level.getFluidState(blockpos$mutableblockpos), EntityType.BAT));
 
 
         return blockpos$mutableblockpos;

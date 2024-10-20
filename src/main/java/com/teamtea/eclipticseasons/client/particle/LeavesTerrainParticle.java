@@ -1,11 +1,14 @@
 package com.teamtea.eclipticseasons.client.particle;
 
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.DiggingParticle;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
 
-public class LeavesTerrainParticle extends TerrainParticle {
+
+public class LeavesTerrainParticle extends DiggingParticle {
     private static final float ACCELERATION_SCALE = 0.0025F;
     private static final int INITIAL_LIFETIME = 300;
     private static final int CURVE_ENDPOINT_TIME = 300;
@@ -15,12 +18,12 @@ public class LeavesTerrainParticle extends TerrainParticle {
     private final float particleRandom;
     private final float spinAcceleration;
 
-    public LeavesTerrainParticle(ClientLevel clientLevel, double p_108283_, double p_108284_, double p_108285_, double p_108286_, double p_108287_, double p_108288_, BlockState p_108289_) {
+    public LeavesTerrainParticle(ClientWorld clientLevel, double p_108283_, double p_108284_, double p_108285_, double p_108286_, double p_108287_, double p_108288_, BlockState p_108289_) {
         this(clientLevel, p_108283_, p_108284_, p_108285_, p_108286_, p_108287_, p_108288_, p_108289_,new BlockPos(p_108283_, p_108284_, p_108285_));
     }
 
-    public LeavesTerrainParticle(ClientLevel clientLevel, double p_172452_, double p_172453_, double p_172454_, double p_172455_, double p_172456_, double p_172457_, BlockState state, BlockPos pos) {
-        super(clientLevel, p_172452_, p_172453_, p_172454_, p_172455_, p_172456_, p_172457_, state, pos);
+    public LeavesTerrainParticle(ClientWorld clientLevel, double p_172452_, double p_172453_, double p_172454_, double p_172455_, double p_172456_, double p_172457_, BlockState state, BlockPos pos) {
+        super(clientLevel, p_172452_, p_172453_, p_172454_, p_172455_, p_172456_, p_172457_, state);
 
         this.rotSpeed = (float)Math.toRadians(this.random.nextBoolean() ? -30.0D : 30.0D);
         this.particleRandom = this.random.nextFloat();
@@ -30,7 +33,7 @@ public class LeavesTerrainParticle extends TerrainParticle {
         float f = this.random.nextBoolean() ? 0.05F : 0.075F;
         this.quadSize = f;
         this.setSize(f, f);
-        this.friction = 1.0F;
+        // this.friction = 1.0F;
     }
 
     @Override
@@ -59,10 +62,16 @@ public class LeavesTerrainParticle extends TerrainParticle {
             }
 
             if (!this.removed) {
-                this.xd *= (double)this.friction;
-                this.yd *= (double)this.friction;
-                this.zd *= (double)this.friction;
+                // this.xd *= (double)this.friction;
+                // this.yd *= (double)this.friction;
+                // this.zd *= (double)this.friction;
             }
         }
+    }
+
+    public Particle updateSprite(BlockState blockState,BlockPos pos) { //FORGE: we cannot assume that the x y z of the particles match the block pos of the block.
+        if (pos != null) // There are cases where we are not able to obtain the correct source pos, and need to fallback to the non-model data version
+            this.setSprite(Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getTexture(blockState, level, pos));
+        return this;
     }
 }

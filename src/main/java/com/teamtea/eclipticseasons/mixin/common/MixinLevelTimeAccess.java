@@ -3,12 +3,12 @@ package com.teamtea.eclipticseasons.mixin.common;
 
 
 import com.teamtea.eclipticseasons.common.core.solar.SolarAngelHelper;
-import net.minecraft.world.level.LevelTimeAccess;
+import net.minecraft.world.IDayTimeReader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin({LevelTimeAccess.class})
-public interface MixinLevelTimeAccess extends LevelTimeAccess{
+@Mixin({IDayTimeReader.class})
+public interface MixinLevelTimeAccess extends IDayTimeReader {
 
     // @Shadow(remap = false) long dayTime();
 
@@ -21,7 +21,7 @@ public interface MixinLevelTimeAccess extends LevelTimeAccess{
     @Override
     default float getTimeOfDay(float p_46943_) {
         // TeaStory.logger(p_46943_,dayTime());
-        return SolarAngelHelper.getSeasonCelestialAngle((LevelTimeAccess)(Object)this, dayTime());
+        return SolarAngelHelper.getSeasonCelestialAngle((IDayTimeReader)(Object)this, dayTime());
     }
 
     // @Override

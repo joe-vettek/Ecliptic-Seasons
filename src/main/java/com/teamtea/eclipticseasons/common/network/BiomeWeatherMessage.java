@@ -2,7 +2,7 @@ package com.teamtea.eclipticseasons.common.network;
 
 
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 
 public class BiomeWeatherMessage {
     public final byte[] rain;
@@ -10,7 +10,7 @@ public class BiomeWeatherMessage {
     public final byte[] clear;
     public final byte[] snowDepth;
 
-    public BiomeWeatherMessage(FriendlyByteBuf buf) {
+    public BiomeWeatherMessage(PacketBuffer buf) {
         rain = buf.readByteArray();
         thuder = buf.readByteArray();
         clear = buf.readByteArray();
@@ -26,7 +26,7 @@ public class BiomeWeatherMessage {
 
 
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeByteArray(rain);
         buf.writeByteArray(thuder);
         buf.writeByteArray(clear);

@@ -1,36 +1,32 @@
 package com.teamtea.eclipticseasons;
 
 
+import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.common.misc.HeatStrokeEffect;
 import com.teamtea.eclipticseasons.common.network.SimpleNetworkHandler;
 import com.teamtea.eclipticseasons.compat.CompatModule;
 import com.teamtea.eclipticseasons.config.ClientConfig;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.teamtea.eclipticseasons.data.start;
-import net.minecraft.core.Registry;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SlabBlock;
-import net.minecraft.world.level.block.StairBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.block.*;
+import net.minecraft.particles.BasicParticleType;
+import net.minecraft.particles.ParticleType;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -118,10 +114,10 @@ public class EclipticSeasons {
 
     public static class ModContents {
         public static final DeferredRegister<Block> ModBlocks = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-        public static RegistryObject<Block> snowySlab = ModBlocks.register("snowy_slab", () -> new SlabBlock(BlockBehaviour.Properties.copy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
-        public static RegistryObject<Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairBlock(Blocks.OAK_PLANKS::defaultBlockState, BlockBehaviour.Properties.copy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
-        public static RegistryObject<Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
-        public static RegistryObject<Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(BlockBehaviour.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+        public static RegistryObject<Block> snowySlab = ModBlocks.register("snowy_slab", () -> new SlabBlock(AbstractBlock.Properties.copy(Blocks.OAK_SLAB).dynamicShape().noOcclusion()));
+        public static RegistryObject<Block> snowyStairs = ModBlocks.register("snowy_stairs", () -> new StairsBlock(Blocks.OAK_PLANKS::defaultBlockState, AbstractBlock.Properties.copy(Blocks.OAK_STAIRS).dynamicShape().noOcclusion()));
+        public static RegistryObject<Block> snowyBlock = ModBlocks.register("snowy_block", () -> new Block(AbstractBlock.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
+        public static RegistryObject<Block> snowyLeaves = ModBlocks.register("snowy_leaves", () -> new Block(AbstractBlock.Properties.copy(Blocks.SNOW_BLOCK).dynamicShape().noOcclusion()));
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -158,14 +154,21 @@ public class EclipticSeasons {
                     winter_cold
             );
         }
+
+
+        @SubscribeEvent
+        public static void onServerAboutToStartEvent(FMLCommonSetupEvent event) {
+            WeatherManager.BIOME_WEATHER_LIST.clear();
+            WeatherManager.NEXT_CHECK_BIOME_MAP.clear();
+        }
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class EffectRegistry {
-        public static final MobEffect HEAT_STROKE = new HeatStrokeEffect(MobEffectCategory.NEUTRAL, 0xf9d27d);
+        public static final Effect HEAT_STROKE = new HeatStrokeEffect(EffectType.NEUTRAL, 0xf9d27d);
 
         @SubscribeEvent
-        public static void blockRegister(RegistryEvent.Register<MobEffect> event) {
+        public static void blockRegister(RegistryEvent.Register<Effect> event) {
             // event.register(Registry.MOB_EFFECT.key(), soundEventRegisterHelper -> {
             //     soundEventRegisterHelper.register(rl("heat_stroke"), HEAT_STROKE);
             // });
@@ -178,8 +181,8 @@ public class EclipticSeasons {
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static final class ParticleRegistry {
-        public static final SimpleParticleType FIREFLY = new SimpleParticleType(false);
-        public static final SimpleParticleType WILD_GOOSE = new SimpleParticleType(false);
+        public static final BasicParticleType FIREFLY = new BasicParticleType(false);
+        public static final BasicParticleType WILD_GOOSE = new BasicParticleType(false);
 
         @SubscribeEvent
         public static void blockRegister(RegistryEvent.Register<ParticleType<?>> event) {

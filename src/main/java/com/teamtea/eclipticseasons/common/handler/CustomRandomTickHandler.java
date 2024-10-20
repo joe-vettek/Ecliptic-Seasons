@@ -5,14 +5,15 @@ import com.teamtea.eclipticseasons.api.CustomRandomTick;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import com.teamtea.eclipticseasons.config.ServerConfig;
 import com.google.common.collect.Lists;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.server.ChunkHolder;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 
 import java.util.Collections;
@@ -23,8 +24,8 @@ import java.util.Optional;
 public final class CustomRandomTickHandler {
     private static final CustomRandomTick SNOW_MELT = (state, world, pos) ->
     {
-        BlockPos blockpos = new BlockPos(pos.getX(), world.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
-        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).value().getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
+        BlockPos blockpos = new BlockPos(pos.getX(), world.getHeight(Heightmap.Type.MOTION_BLOCKING, pos.getX(), pos.getZ()), pos.getZ());
+        if (world.isAreaLoaded(blockpos, 1) && world.getBiome(blockpos).getTemperature(pos) >= 0.15F && !WeatherManager.onCheckWarmEnoughToRain(pos)) {
             BlockState topState = world.getBlockState(blockpos);
             if (topState.getBlock().equals(Blocks.SNOW)) {
                 world.setBlockAndUpdate(blockpos, Blocks.AIR.defaultBlockState());
@@ -39,22 +40,22 @@ public final class CustomRandomTickHandler {
 
     public static void onWorldTick(TickEvent.WorldTickEvent event) {
         if (event.phase.equals(TickEvent.Phase.END) && ServerConfig.Temperature.iceMelt.get() && !event.world.isClientSide()) {
-            ServerLevel level = (ServerLevel) event.world;
+            ServerWorld level = (ServerWorld) event.world;
             int randomTickSpeed = level.getGameRules().getInt(GameRules.RULE_RANDOMTICKING);
             if (randomTickSpeed > 0) {
-                List<ChunkHolder> list = Lists.newArrayList(((ServerLevel) level).getChunkSource().chunkMap.getChunks());
+                List<ChunkHolder> list = Lists.newArrayList(((ServerWorld) level).getChunkSource().chunkMap.getChunks());
                 Collections.shuffle(list);
                 level.getChunkSource().chunkMap.getChunks().forEach(chunkHolder ->
                 {
 
-                    Optional<LevelChunk> optional = chunkHolder.getTickingChunkFuture().getNow(ChunkHolder.UNLOADED_LEVEL_CHUNK).left();
+                    Optional<Chunk> optional = chunkHolder.getTickingChunkFuture().getNow(ChunkHolder.UNLOADED_LEVEL_CHUNK).left();
                     if (optional.isPresent()) {
-                        LevelChunk chunk = optional.get();
-                        for (var chunksection : chunk.getSections()) {
+                        Chunk chunk = optional.get();
+                        for (ChunkSection chunksection : chunk.getSections()) {
                             if (chunksection.isRandomlyTicking()) {
                                 int i = chunk.getPos().getMinBlockX();
                                 int j = chunk.getPos().getMinBlockZ();
-                                BlockPos blockpos1 = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, level.getBlockRandomPos(i, 0, j, 15));
+                                BlockPos blockpos1 = level.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, level.getBlockRandomPos(i, 0, j, 15));
                                 // BlockPos blockpos2 = blockpos1.below();
                                 // Biome biome = level.getBiome(blockpos1).value();
                                 if (level.isAreaLoaded(blockpos1, 1)) // Forge: check area to avoid loading neighbors in unloaded chunks
@@ -76,7 +77,7 @@ public final class CustomRandomTickHandler {
         }
     }
 
-    private static void doCustomRandomTick(ServerLevel world, int x, int y, int z) {
+    private static void doCustomRandomTick(ServerWorld world, int x, int y, int z) {
         if (ServerConfig.Temperature.iceMelt.get()) {
             SNOW_MELT.tick(null, world, new BlockPos(x, y, z));
         }

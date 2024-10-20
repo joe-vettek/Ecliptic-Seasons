@@ -1,11 +1,11 @@
 package com.teamtea.eclipticseasons.api;
 
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.server.ServerWorld;
 
 public interface CustomRandomTick
 {
-    void tick(BlockState state, ServerLevel worldIn, BlockPos pos);
+    void tick(BlockState state, ServerWorld worldIn, BlockPos pos);
 }

@@ -1,32 +1,31 @@
 package com.teamtea.eclipticseasons.client.debug;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.teamtea.eclipticseasons.api.constant.solar.SolarTerm;
 import com.teamtea.eclipticseasons.common.AllListener;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.Holder;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.server.ServerWorld;
 import org.lwjgl.opengl.GL11;
 
-public final class DebugInfoRenderer extends Gui {
+public final class DebugInfoRenderer extends AbstractGui {
     private final Minecraft mc;
 
     public DebugInfoRenderer(Minecraft mc) {
-        super(mc);
+        super();
 
         this.mc = mc;
     }
 
-    public void renderStatusBar(PoseStack matrixStack, int screenWidth, int screenHeight, ClientLevel clientLevel, LocalPlayer player, SolarTerm solar, long dayTime, double env, int solarTime) {
+    public void renderStatusBar(MatrixStack matrixStack, int screenWidth, int screenHeight, ClientWorld clientLevel, ClientPlayerEntity player, SolarTerm solar, long dayTime, double env, int solarTime) {
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // RenderSystem.enableAlphaTest();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -43,16 +42,16 @@ public final class DebugInfoRenderer extends Gui {
         drawInfo(matrixStack, screenWidth, screenHeight, envS, index++);
         drawInfo(matrixStack, screenWidth, screenHeight, solarTimeS, index++);
 
-        for (Level level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
-            if (level.dimension() == Level.OVERWORLD && level instanceof ServerLevel) {
+        for (World level : WeatherManager.BIOME_WEATHER_LIST.keySet()) {
+            if (level.dimension() == World.OVERWORLD && level instanceof ServerWorld) {
                 {
-                    var standBiome = level.getBiome(player.getOnPos());
+                    Biome standBiome = level.getBiome(player.blockPosition());
                     for (WeatherManager.BiomeWeather biomeWeather : WeatherManager.getBiomeList(level)) {
-                        if (((Holder.Reference<Biome>) biomeWeather.biomeHolder).key().location().equals(((Holder.Reference<Biome>) standBiome).key().location())) {
-                            var solarTerm = AllListener.getSaveData(level).getSolarTerm();
+                        if (biomeWeather.biomeHolder.equals(standBiome)) {
+                            SolarTerm solarTerm = AllListener.getSaveData(level).getSolarTerm();
                             String solarTermS = "Solar Term: " + solarTerm.getTranslation().getString();
-                            String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.biomeHolder);
-                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder.value());
+                            String biomeRainS = "Biome Rain: " + solarTerm.getBiomeRain(biomeWeather.getBiomeKey());
+                            String snowTermS = "Snow Term: " + SolarTerm.getSnowTerm(biomeWeather.biomeHolder);
                             drawInfo(matrixStack, screenWidth, screenHeight, "", index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, solarTermS, index++);
                             drawInfo(matrixStack, screenWidth, screenHeight, biomeRainS, index++);
@@ -81,11 +80,11 @@ public final class DebugInfoRenderer extends Gui {
 
         RenderSystem.enableBlend();
         // RenderSystem.disableAlphaTest();
-        mc.getTextureManager().bindForSetup(OverlayEventHandler.DEFAULT);
+        // mc.getTextureManager().bindForSetup(OverlayEventHandler.DEFAULT);
 
     }
 
-    private void drawInfo(PoseStack matrixStack, int screenWidth, int screenHeight, String s, int index) {
+    private void drawInfo(MatrixStack matrixStack, int screenWidth, int screenHeight, String s, int index) {
         drawString(matrixStack,mc.font, s, screenWidth / 2 - mc.font.width(s) / 2, index * 9 + 3, 0xFFFFFF);
     }
 

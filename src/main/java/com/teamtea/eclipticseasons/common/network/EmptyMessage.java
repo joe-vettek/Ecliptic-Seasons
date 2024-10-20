@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.common.network;
 
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer;
 
 public class EmptyMessage {
 
@@ -9,12 +9,12 @@ public class EmptyMessage {
 
     }
 
-    public EmptyMessage(FriendlyByteBuf buf) {
+    public EmptyMessage(PacketBuffer buf) {
 
     }
 
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer  buf) {
 
     }
 

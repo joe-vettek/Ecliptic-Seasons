@@ -1,14 +1,14 @@
 package com.teamtea.eclipticseasons.common.misc;
 
 
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectType;
 
-public class HeatStrokeEffect extends MobEffect  {
+public class HeatStrokeEffect extends Effect {
 
 
-    public HeatStrokeEffect(MobEffectCategory neutral, int i) {
+    public HeatStrokeEffect(EffectType neutral, int i) {
         super(neutral, i);
     }
 

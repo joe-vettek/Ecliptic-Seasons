@@ -5,82 +5,63 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.storage.ServerLevelData;
-import net.minecraft.world.level.storage.WritableLevelData;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.function.Supplier;
-
-@Mixin({ServerLevel.class})
+@Mixin({ServerWorld.class})
 public abstract class MixinServerLevel {
 
-    // @Shadow @Final private ServerLevelData serverLevelData;
-    //
-    //
-    // protected MixinServerLevel(WritableLevelData p_270739_, ResourceKey<Level> p_270683_, RegistryAccess p_270200_, Holder<DimensionType> p_270240_, Supplier<ProfilerFiller> p_270692_, boolean p_270904_, boolean p_270470_, long p_270248_, int p_270466_) {
-    //     super(p_270739_, p_270683_, p_270200_, p_270240_, p_270692_, p_270904_, p_270470_, p_270248_, p_270466_);
-    // }
-
     // 早晨有可能继续下雨
-    @Inject(at = {@At("HEAD")}, method = {"resetWeatherCycle"}, cancellable = true)
+    @Inject(at = {@At("HEAD")}, method = {"stopWeather"}, cancellable = true)
     public void ecliptic$resetWeatherCycle(CallbackInfo ci) {
         ci.cancel();
     }
 
-    @Inject(at = {@At("HEAD")}, method = {"advanceWeatherCycle"}, cancellable = true)
+    @Inject(at = {@At("HEAD")}, method = {"tick"})
     public void ecliptic$advanceWeatherCycle(CallbackInfo ci) {
-        boolean cancel = WeatherManager.agentAdvanceWeatherCycle((ServerLevel) (Object) this, null, null, ((ServerLevel) (Object) this).getRandom());
-        if (cancel)
-            ci.cancel();
+        boolean cancel = WeatherManager.agentAdvanceWeatherCycle((ServerWorld) (Object) this, null, null, ((ServerWorld) (Object) this).getRandom());
+
     }
 
     @WrapOperation(
             method = "tickChunk",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitation()Lnet/minecraft/world/level/biome/Biome$Precipitation;")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation()Lnet/minecraft/world/biome/Biome$RainType;")
     )
-    private Biome.Precipitation ecliptic$tickChunk_getPrecipitationAt(Biome biome, Operation<Biome.Precipitation> original) {
-        return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome,BlockPos.ZERO);
+    private Biome.RainType ecliptic$tickChunk_getPrecipitationAt(Biome biome, Operation<Biome.RainType> original) {
+        return WeatherManager.getPrecipitationAt((ServerWorld) (Object) this, biome,BlockPos.ZERO);
     }
 
 
     @WrapOperation(
             method = "tickChunk",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/server/ServerWorld;isRaining()Z")
     )
-    private boolean ecliptic$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        var chunkpos = levelChunk.getPos();
-        int i = chunkpos.getMiddleBlockX();
-        int j = chunkpos.getMiddleBlockZ();
-        BlockPos blockpos1 = ((ServerLevel) (Object) this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
-        return WeatherManager.isRainingAt((ServerLevel) (Object) this, blockpos1);
+    private boolean ecliptic$tickChunk_isRaining(ServerWorld instance, Operation<Boolean> original, @Local(ordinal = 0, argsOnly = true) Chunk levelChunk) {
+        ChunkPos chunkpos = levelChunk.getPos();
+        int i = (chunkpos.getMaxBlockX()/2+chunkpos.getMinBlockX()/2);
+        int j = (chunkpos.getMaxBlockZ()/2+chunkpos.getMinBlockZ()/2);
+        BlockPos blockpos1 = ((ServerWorld) (Object) this).getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, new BlockPos(i, 0, j));
+        return WeatherManager.isRainingAt((ServerWorld) (Object) this, blockpos1);
     }
 
-    @WrapOperation(
+    @Redirect(
             method = "tickChunk",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/server/ServerWorld;isThundering()Z")
     )
-    private boolean ecliptic$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        var chunkpos = levelChunk.getPos();
-        int i = chunkpos.getMiddleBlockX();
-        int j = chunkpos.getMiddleBlockZ();
-        BlockPos blockpos1 = ((ServerLevel) (Object) this).getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(i, 0, j));
-        return WeatherManager.isThunderAt((ServerLevel) (Object) this, blockpos1);
+    private boolean ecliptic$tickChunk_isThundering(ServerWorld instance, @Local(ordinal = 0) Chunk levelChunk) {
+        ChunkPos chunkpos = levelChunk.getPos();
+        int i = (chunkpos.getMaxBlockX()/2+chunkpos.getMinBlockX()/2);
+        int j = (chunkpos.getMaxBlockZ()/2+chunkpos.getMinBlockZ()/2);
+        BlockPos blockpos1 = ((ServerWorld) (Object) this).getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, new BlockPos(i, 0, j));
+        return WeatherManager.isThunderAt((ServerWorld) (Object) this, blockpos1);
     }
 }

@@ -4,32 +4,32 @@ package com.teamtea.eclipticseasons.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.teamtea.eclipticseasons.client.core.ClientWeatherChecker;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.entity.animal.Panda;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.passive.PandaEntity;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(Panda.class)
+@Mixin(PandaEntity.class)
 public class MixinClientPanda {
 
     @WrapOperation(
             method = "tick",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isThundering()Z")
     )
-    private boolean ecliptic$tick(Level instance, Operation<Boolean> original) {
-        if (instance instanceof ClientLevel clientLevel)
-            return ClientWeatherChecker.isThunderAt(clientLevel, ((Panda) (Object) this).blockPosition());
+    private boolean ecliptic$tick(World instance, Operation<Boolean> original) {
+        if (instance instanceof ClientWorld )
+            return ClientWeatherChecker.isThunderAt((ClientWorld) instance, ((PandaEntity) (Object) this).blockPosition());
         return original.call(instance);
     }
 
     @WrapOperation(
             method = "isScared",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;isThundering()Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isThundering()Z")
     )
-    private boolean ecliptic$isScared(Level instance, Operation<Boolean> original) {
-        if (instance instanceof ClientLevel clientLevel)
-            return ClientWeatherChecker.isThunderAt(clientLevel, ((Panda) (Object) this).blockPosition());
+    private boolean ecliptic$isScared(World instance, Operation<Boolean> original) {
+        if (instance instanceof ClientWorld )
+            return ClientWeatherChecker.isThunderAt((ClientWorld) instance, ((PandaEntity) (Object) this).blockPosition());
         return original.call(instance);
     }
 }

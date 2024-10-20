@@ -3,11 +3,7 @@ package com.teamtea.eclipticseasons.api.constant.crop;
 
 
 import com.teamtea.eclipticseasons.api.constant.biome.Humidity;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,13 +46,13 @@ public class CropHumidityInfo
         }
     }
 
-    public List<Component> getTooltip()
+    public List<ITextComponent> getTooltip()
     {
-        List<Component> list = new ArrayList<>();
-        list.add(new TranslatableComponent("info.teastory.environment.humidity").withStyle(ChatFormatting.GRAY));
+        List<ITextComponent> list = new ArrayList<>();
+        list.add(new TranslationTextComponent("info.teastory.environment.humidity").withStyle(TextFormatting.GRAY));
         if (min != max)
         {
-            list.add(((MutableComponent) min.getTranslation()).append(new TextComponent(" - ").withStyle(ChatFormatting.GRAY)).append(max.getTranslation()));
+            list.add(((TranslationTextComponent) min.getTranslation()).append(new StringTextComponent(" - ").withStyle(TextFormatting.GRAY)).append(max.getTranslation()));
         }
         else
         {

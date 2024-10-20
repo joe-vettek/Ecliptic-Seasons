@@ -2,36 +2,38 @@ package com.teamtea.eclipticseasons.api.util;
 
 import com.teamtea.eclipticseasons.api.constant.tag.SeasonTypeBiomeTags;
 import com.teamtea.eclipticseasons.common.core.biome.WeatherManager;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.registry.MutableRegistry;
+import net.minecraft.util.registry.WorldGenRegistries;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class EclipticTagTool {
+    public static final Map<Biome, BiomeDictionary.Type> BIOME_TAG_KEY_MAP = new HashMap<>(128);
 
-
-    public static final Map<Biome, TagKey<Biome>> BIOME_TAG_KEY_MAP = new HashMap<>(128);
-
-
-    public static TagKey<Biome> getTag(Biome biome) {
-        return getTag(WeatherManager.getMainServerLevel(), biome);
+    public static BiomeDictionary.Type getTag(Biome biome) {
+        return getTag(WeatherManager.getMainServerWorld(), biome);
     }
 
-    public static TagKey<Biome> getTag(Level level, Biome biome) {
-        var bt = BIOME_TAG_KEY_MAP.getOrDefault(biome, null);
+    public static BiomeDictionary.Type getTag(World level, Biome biome) {
+        BiomeDictionary.Type bt = BIOME_TAG_KEY_MAP.getOrDefault(biome, null);
 
         if (bt == null && level != null) {
-            var biomes = level.registryAccess().registry(BuiltinRegistries.BIOME.key());
+            Optional<MutableRegistry<Biome>> biomes = level.registryAccess().registry(WorldGenRegistries.BIOME.key());
             if (biomes.isPresent()) {
-                for (Map.Entry<ResourceKey<Biome>, Biome> resourceKeyBiomeEntry : biomes.get().entrySet()) {
+                for (Map.Entry<RegistryKey<Biome>, Biome> resourceKeyBiomeEntry : biomes.get().entrySet()) {
                     if (resourceKeyBiomeEntry.getValue() == biome) {
-                        var holder = biomes.get().getHolder(resourceKeyBiomeEntry.getKey());
+                        Optional<RegistryKey<Biome>> holder = biomes.get().getResourceKey(resourceKeyBiomeEntry.getValue());
+
                         if (holder.isPresent()) {
-                            var tag = holder.get().tags().filter(SeasonTypeBiomeTags.BIOMES::contains).findFirst();
+
+                            // BiomeDictionary.getTypes(holder.getBiomeCategory());
+                            Optional<BiomeDictionary.Type> tag = BiomeDictionary.getTypes(holder.get()).stream().findFirst();
                             if (tag.isPresent()) {
                                 bt = tag.get();
                             }

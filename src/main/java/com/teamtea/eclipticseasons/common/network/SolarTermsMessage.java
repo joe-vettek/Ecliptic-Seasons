@@ -1,7 +1,7 @@
 package com.teamtea.eclipticseasons.common.network;
 
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.PacketBuffer ;
 
 public class SolarTermsMessage {
     public int solarDay;
@@ -10,12 +10,12 @@ public class SolarTermsMessage {
         this.solarDay = solarDay;
     }
 
-    public SolarTermsMessage(FriendlyByteBuf buf) {
+    public SolarTermsMessage(PacketBuffer  buf) {
         solarDay = buf.readInt();
     }
 
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer  buf) {
         buf.writeInt(solarDay);
     }
 
