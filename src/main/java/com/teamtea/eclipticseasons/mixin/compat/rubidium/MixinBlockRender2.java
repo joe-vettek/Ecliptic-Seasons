@@ -1,8 +1,9 @@
-package com.teamtea.eclipticseasons.mixin.compat.embeddium;
+package com.teamtea.eclipticseasons.mixin.compat.rubidium;
 
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.teamtea.eclipticseasons.client.core.ModelManager;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderContext;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -12,7 +13,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import com.teamtea.eclipticseasons.client.core.ModelManager;
 
 import java.util.List;
 
