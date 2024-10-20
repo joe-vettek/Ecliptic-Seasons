@@ -20,6 +20,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -86,12 +87,14 @@ public class ModelManager {
 
 
     public static boolean shouldCutoutMipped(BlockState state) {
-        if (Minecraft.getInstance().level != null) {
-            var onBlock = state.getBlock();
-            if (!(onBlock instanceof FenceBlock)) {
-                if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
-                        || onBlock.isOcclusionShapeFullBlock(state, Minecraft.getInstance().level, BlockPos.ZERO)) {
-                    return true;
+        if (ClientConfig.Renderer.snowyWinter.get()) {
+            if (Minecraft.getInstance().level != null) {
+                var onBlock = state.getBlock();
+                if (!(onBlock instanceof FenceBlock)) {
+                    if (onBlock instanceof SlabBlock || onBlock instanceof FarmBlock || onBlock instanceof DirtPathBlock || onBlock instanceof StairBlock
+                            || state.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -334,7 +337,7 @@ public class ModelManager {
                     // isFlowerAbove=false;
                     var useMap = isFlowerAbove ? quadMap_1 : quadMap;
                     List<BakedQuad> cc =
-                             EclipticSeasonsMixinPlugin.isOptLoad() ? null : useMap.getOrDefault(list, null);
+                            EclipticSeasonsMixinPlugin.isOptLoad() ? null : useMap.getOrDefault(list, null);
                     if (cc != null) {
                         return cc;
                     } else {
@@ -407,7 +410,7 @@ public class ModelManager {
                                 }
                             }
 
-                            if (! EclipticSeasonsMixinPlugin.isOptLoad())
+                            if (!EclipticSeasonsMixinPlugin.isOptLoad())
                                 useMap.putIfAbsent(list, newList);
 
                             list = newList;
@@ -430,7 +433,7 @@ public class ModelManager {
                             && random.nextInt(weight * 4) == 0
                             && blockAndTintGetter.getBlockState(pos.above()).isAir()) {
                         List<BakedQuad> cc =
-                                 EclipticSeasonsMixinPlugin.isOptLoad() ? null : quadMap_GRASS.getOrDefault(list, null);
+                                EclipticSeasonsMixinPlugin.isOptLoad() ? null : quadMap_GRASS.getOrDefault(list, null);
                         if (cc != null) {
                             return cc;
                         } else {
@@ -442,7 +445,7 @@ public class ModelManager {
                                 newList = new ArrayList<BakedQuad>(size + snowList.size());
                                 newList.addAll(list);
                                 newList.addAll(snowList);
-                                if (! EclipticSeasonsMixinPlugin.isOptLoad())
+                                if (!EclipticSeasonsMixinPlugin.isOptLoad())
                                     quadMap_GRASS.putIfAbsent(list, newList);
                                 list = newList;
                             }
