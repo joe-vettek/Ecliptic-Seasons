@@ -93,7 +93,6 @@ public class AllListener {
             {
                 SolarHolders.DATA_MANAGER_MAP.remove(level);
             }
-            ClientMapFixer.clearAll();
         }
 
     }
