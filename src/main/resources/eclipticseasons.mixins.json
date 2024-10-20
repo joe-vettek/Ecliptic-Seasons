@@ -38,6 +38,7 @@
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
+    "compat.rubidium.MixinBlockRender2",
     "compat.embeddium.MixinBlockRender2",
     "compat.optifine.MixinBlockModelCustomizer"
   ],
