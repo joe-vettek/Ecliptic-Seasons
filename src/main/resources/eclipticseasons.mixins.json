@@ -25,7 +25,6 @@
     "common.loot.MixinWeatherCheck"
   ],
   "client": [
-    "client.ItemBlockRenderTypes",
     "client.MixinBlockRenderVanilla",
     "client.MixinClientBiome",
     "client.MixinClientClientLevel",
@@ -33,14 +32,16 @@
     "client.MixinClientLevelChunk",
     "client.MixinClientPanda",
     "client.MixinGameRenderer",
+    "client.MixinItemBlockRenderTypes",
     "client.MixinLevelRender",
     "client.MixinLocalPlayer",
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
-    "compat.rubidium.MixinBlockRender2",
+    "compat.embeddium.MixinBlockRenderTask",
     "compat.embeddium.MixinBlockRender2",
-    "compat.optifine.MixinBlockModelCustomizer"
+    "compat.optifine.MixinBlockModelCustomizer",
+    "compat.rubidium.MixinBlockRender2"
   ],
   "injectors": {
     "defaultRequire": 1

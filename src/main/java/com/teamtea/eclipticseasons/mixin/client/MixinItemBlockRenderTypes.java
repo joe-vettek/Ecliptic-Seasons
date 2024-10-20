@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin({net.minecraft.client.renderer.ItemBlockRenderTypes.class})
-public abstract class ItemBlockRenderTypes {
+public abstract class MixinItemBlockRenderTypes {
 
     // ctx.world().world.getBlockState(ctx.pos)
     @Inject(at = {@At("HEAD")}, method = {"getRenderLayers"}, cancellable = true, remap = false)
