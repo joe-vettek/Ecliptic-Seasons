@@ -24,7 +24,6 @@
     "common.loot.MixinWeatherCheck"
   ],
   "client": [
-    "client.MixinItemBlockRenderTypes",
     "client.MixinBlockRenderVanilla",
     "client.MixinClientBiome",
     "client.MixinClientClientLevel",
@@ -32,10 +31,12 @@
     "client.MixinClientLevelChunk",
     "client.MixinClientPanda",
     "client.MixinGameRenderer",
+    "client.MixinItemBlockRenderTypes",
     "client.MixinLevelRender",
     "client.MixinLocalPlayer",
     "client.block.MixinLeavesBlock",
     "client.sound.MixinMusicManager",
+    "compat.rubidium.MixinBlockRender2",
     "compat.embeddium.MixinBlockRender2",
     "compat.optifine.MixinBlockModelCustomizer"
   ],
