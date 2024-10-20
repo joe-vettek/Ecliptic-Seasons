@@ -10,7 +10,6 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DimensionSavedDataManager;
-import net.minecraftforge.common.util.Constants;
 import oculus.org.antlr.v4.runtime.misc.NotNull;
 
 import java.lang.ref.WeakReference;
@@ -24,24 +23,6 @@ public class ClientSolarDataManager extends SolarDataManager {
         this.levelWeakReference = new WeakReference<>(level);
     }
 
-    public ClientSolarDataManager(World level, CompoundNBT nbt) {
-        this(level);
-        setSolarTermsDay(nbt.getInt("SolarTermsDay"));
-        setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
-        ListNBT listTag = nbt.getList("biomes", Constants.NBT.TAG_COMPOUND);
-        if (this.levelWeakReference.get() != null) {
-            ArrayList<WeatherManager.BiomeWeather> biomeWeathers = WeatherManager.getBiomeList(this.levelWeakReference.get());
-            for (int i = 0; i < listTag.size(); i++) {
-                String location = listTag.getCompound(i).getString("biome");
-                for (WeatherManager.BiomeWeather biomeWeather : biomeWeathers) {
-                    if (location.equals(biomeWeather.location.toString())) {
-                        biomeWeather.deserializeNBT(listTag.getCompound(i));
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     @Override
     public @NotNull CompoundNBT save(CompoundNBT compound) {

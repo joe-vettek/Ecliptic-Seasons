@@ -51,7 +51,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements IAmbientSoundHandler {
     }
 
     public void tick() {
-        this.loopSounds.values().removeIf(TickableSound::isStopped);
+        this.loopSounds.values().removeIf(LoopSoundInstance::isStopped);
 
         // boolean indoor = (player.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(player.blockPosition()) < 12);
         boolean indoor = (player.level.getLightEngine().getLayerListener(LightType.SKY).getLightValue(player.blockPosition())) < 11;

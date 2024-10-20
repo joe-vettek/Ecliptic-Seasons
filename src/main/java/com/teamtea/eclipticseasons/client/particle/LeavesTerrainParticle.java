@@ -33,6 +33,7 @@ public class LeavesTerrainParticle extends DiggingParticle {
         float f = this.random.nextBoolean() ? 0.05F : 0.075F;
         this.quadSize = f;
         this.setSize(f, f);
+        this.init(pos);
         // this.friction = 1.0F;
     }
 

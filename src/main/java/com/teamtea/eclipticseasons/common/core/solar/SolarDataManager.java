@@ -22,9 +22,6 @@ import oculus.org.antlr.v4.runtime.misc.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 public class SolarDataManager extends WorldSavedData {
@@ -39,8 +36,8 @@ public class SolarDataManager extends WorldSavedData {
         levelWeakReference = new WeakReference<>(level);
     }
 
-    public SolarDataManager(World level, CompoundNBT nbt) {
-        this(level);
+    @Override
+    public void load(CompoundNBT nbt) {
         setSolarTermsDay(nbt.getInt("SolarTermsDay"));
         setSolarTermsTicks(nbt.getInt("SolarTermsTicks"));
         ListNBT listTag = nbt.getList("biomes", Constants.NBT.TAG_COMPOUND);
@@ -57,11 +54,6 @@ public class SolarDataManager extends WorldSavedData {
                 }
             }
         }
-    }
-
-    @Override
-    public void load(CompoundNBT p_76184_1_) {
-
     }
 
     @Override

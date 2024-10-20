@@ -182,7 +182,8 @@ repositories {
 }
 
 configurations {
-    implementation.extendsFrom shadow
+    shade
+    implementation.extendsFrom shade
 }
 
 dependencies {
@@ -193,7 +194,7 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    shadow(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    shade (annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
 
     compileOnly fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.16.5:0.10.5")
     compileOnly fg.deobf("curse.maven:embeddium-908741:5322311")
@@ -211,13 +212,10 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3765350")
 
 }
-shadowJar {
-    configurations = [project.configurations.shadow]
-    relocate("com.llamalad7.mixinextras", "your.package.goes.here.mixinextras")
-    mergeServiceFiles() // Very important!
-}
+
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
+    archiveClassifier = 'slim'
     manifest {
         attributes([
                 "Specification-Title"     : mod_id,
@@ -253,14 +251,29 @@ tasks.named('processResources', ProcessResources).configure {
     }
 }
 
+shadowJar {
+    configurations = [project.configurations.shade]
+    finalizedBy 'reobfShadowJar'
+    relocate("com.llamalad7.mixinextras", "com.teamtea.eclipticseasons.mixinextras")
+    mergeServiceFiles() // Very important!
+}
+
 tasks.register('deleteCache') {
     delete 'src/generated/resources/.cache'
+}
+
+assemble.dependsOn shadowJar
+
+reobf {
+    shadowJar {}
 }
 
 jar.dependsOn deleteCache
 // Example configuration to allow publishing using the maven-publish plugin
 // This is the preferred method to reobfuscate your jar file
 jar.finalizedBy('reobfJar')
+
+
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
 
