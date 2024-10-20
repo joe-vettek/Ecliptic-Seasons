@@ -33,7 +33,9 @@ public class EclipticTagTool {
                         if (holder.isPresent()) {
 
                             // BiomeDictionary.getTypes(holder.getBiomeCategory());
-                            Optional<BiomeDictionary.Type> tag = BiomeDictionary.getTypes(holder.get()).stream().findFirst();
+                            Optional<BiomeDictionary.Type> tag = BiomeDictionary.getTypes(holder.get()).stream()
+                                    .filter(SeasonTypeBiomeTags.BIOMES::contains)
+                                    .findFirst();
                             if (tag.isPresent()) {
                                 bt = tag.get();
                             }

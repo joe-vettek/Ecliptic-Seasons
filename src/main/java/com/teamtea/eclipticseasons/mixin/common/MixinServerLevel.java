@@ -14,7 +14,6 @@ import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({ServerWorld.class})
@@ -53,11 +52,11 @@ public abstract class MixinServerLevel {
         return WeatherManager.isRainingAt((ServerWorld) (Object) this, blockpos1);
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "tickChunk",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/server/ServerWorld;isThundering()Z")
     )
-    private boolean ecliptic$tickChunk_isThundering(ServerWorld instance, @Local(ordinal = 0) Chunk levelChunk) {
+    private boolean ecliptic$tickChunk_isThundering(ServerWorld instance, Operation<Boolean> original, @Local(ordinal = 0) Chunk levelChunk) {
         ChunkPos chunkpos = levelChunk.getPos();
         int i = (chunkpos.getMaxBlockX()/2+chunkpos.getMinBlockX()/2);
         int j = (chunkpos.getMaxBlockZ()/2+chunkpos.getMinBlockZ()/2);

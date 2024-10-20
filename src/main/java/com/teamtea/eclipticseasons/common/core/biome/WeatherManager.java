@@ -532,14 +532,17 @@ public class WeatherManager {
         byte[] thunders = new byte[levelBiomeWeather.size()];
         byte[] clears = new byte[levelBiomeWeather.size()];
         byte[] snows = new byte[levelBiomeWeather.size()];
-        for (BiomeWeather biomeWeather : levelBiomeWeather) {
-            int index = biomeWeather.id;
-            rains[index] = (byte) (biomeWeather.shouldRain() ? 1 : 0);
-            thunders[index] = (byte) (biomeWeather.shouldThunder() ? 1 : 0);
-            clears[index] = (byte) (biomeWeather.shouldClear() ? 1 : 0);
-            snows[index] = biomeWeather.snowDepth;
+        int[] ids = new int[levelBiomeWeather.size()];
+        for (int i = 0; i < levelBiomeWeather.size(); i++) {
+            BiomeWeather biomeWeather =levelBiomeWeather.get(i);
+            rains[i] = (byte) (biomeWeather.shouldRain() ? 1 : 0);
+            thunders[i] = (byte) (biomeWeather.shouldThunder() ? 1 : 0);
+            clears[i] = (byte) (biomeWeather.shouldClear() ? 1 : 0);
+            snows[i] = biomeWeather.snowDepth;
+            ids[i]=  biomeWeather.id;
         }
-        BiomeWeatherMessage msg = new BiomeWeatherMessage(rains, thunders, clears, snows);
+
+        BiomeWeatherMessage msg = new BiomeWeatherMessage(rains, thunders, clears, snows,ids);
         SimpleNetworkHandler.send(players, msg);
     }
 

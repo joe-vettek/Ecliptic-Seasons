@@ -17,6 +17,7 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
@@ -180,6 +181,10 @@ repositories {
     }
 }
 
+configurations {
+    implementation.extendsFrom shadow
+}
+
 dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
@@ -188,10 +193,7 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-//    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
-//    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.2.0")) {
-//        jarJar.ranged(it, "[0.2.0,)")
-//    }
+    shadow(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
 
     compileOnly fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.16.5:0.10.5")
     compileOnly fg.deobf("curse.maven:embeddium-908741:5322311")
@@ -209,7 +211,11 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:farmers-delight-398521:3765350")
 
 }
-
+shadowJar {
+    configurations = [project.configurations.shadow]
+    relocate("com.llamalad7.mixinextras", "your.package.goes.here.mixinextras")
+    mergeServiceFiles() // Very important!
+}
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
     manifest {

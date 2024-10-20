@@ -15,11 +15,16 @@ public class BiomeClimateManager {
 
 
     public static void resetBiomeTemps() {
+
         BIOME_DEFAULT_TEMPERATURE_MAP.clear();
         WorldGenRegistries.BIOME.forEach(biome ->
         {
             BIOME_DEFAULT_TEMPERATURE_MAP.put(biome, biome.climateSettings.temperature);
+//             biome.getBiomeCategory()
+// Biome.Category
         });
+        EclipticTagTool.BIOME_TAG_KEY_MAP.clear();
+        SeasonTypeBiomeTags.init();
     }
 
     public static float getDefaultTemperature(Biome biome) {

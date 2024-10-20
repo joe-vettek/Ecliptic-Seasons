@@ -20,39 +20,16 @@ public abstract class MixinLevelRender {
 
     @Shadow
     @Nullable
-    public ClientWorld level;
+    private ClientWorld level;
 
 
-    // 我们注释这个写法，因为它会让光影模组无法正常渲染
-    // @Inject(at = {@At("HEAD")}, method = {"renderSnowAndRain"}, cancellable = true)
-    // private void mixin_renderSnowAndRain(LightTexture p_109704_, float p_109705_, double p_109706_, double p_109707_, double p_109708_, CallbackInfo ci) {
-    //     if (minecraft == null || minecraft.level == null) ci.cancel();
-    //     if (level.effects().renderSnowAndRain(level, ticks, p_109705_, p_109704_, p_109706_, p_109707_, p_109708_))
-    //         return;
-    //     boolean re = ClientWeatherChecker.renderSnowAndRain((LevelRenderer) (Object) this, ticks, rainSizeX, rainSizeZ, RAIN_LOCATION, SNOW_LOCATION, p_109704_, p_109705_, p_109706_, p_109707_, p_109708_);
-    //     if (re)
-    //         ci.cancel();
-    // }
-
-
-    // @WrapOperation(
-    //         method = "renderSnowAndRain",
-    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;getRainLevel(F)F")
-    // )
-    // private float ecliptic$renderSnowAndRainCheckRain(ClientLevel clientLevel,float p_109705_,Operation<Float> original) {
-    //     // var anyRain = WeatherManager.getBiomeList(Minecraft.getInstance().level).stream().anyMatch(WeatherManager.BiomeWeather::shouldRain);
-    //     // return WeatherManager.getMaximumRainLevel(clientLevel,p_109705_);
-    //     return ClientWeatherChecker.getRainLevel(level, 1.0f);
-    // }
-
-
-    // ModifyExpressionValue may cost much time than it
     @WrapOperation(
             method = "renderSnowAndRain",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getPrecipitation()Lnet/minecraft/world/biome/Biome$RainType;")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/Biome;getTemperature(Lnet/minecraft/util/math/BlockPos;)F")
     )
-    private Biome.RainType ecliptic$renderSnowAndRain_getPrecipitationAt(Biome instance, Operation<Biome.RainType> original) {
-        return WeatherManager.getPrecipitationAt(level,instance,BlockPos.ZERO);
+    private float ecliptic$renderSnowAndRain_getPrecipitationAt(Biome instance, BlockPos blockPos, Operation<Float> original) {
+        return WeatherManager.getPrecipitationAt(level,instance,BlockPos.ZERO)== Biome.RainType.SNOW?
+                0f:1f;
     }
 
     @WrapOperation(

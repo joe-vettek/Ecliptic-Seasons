@@ -93,6 +93,7 @@ public class SeasonalBiomeAmbientSoundsHandler implements IAmbientSoundHandler {
                         if (!(sets.contains(BiomeDictionary.Type.SAVANNA)
                                 && !sets.contains(BiomeDictionary.Type.MESA)
                                 && !sets.contains(BiomeDictionary.Type.DEAD)
+                                && !sets.contains(BiomeDictionary.Type.SANDY)
                                 && !sets.contains(BiomeDictionary.Type.MOUNTAIN))) {
                             soundEvent = EclipticSeasons.SoundEventsRegistry.night_river;
                         }
