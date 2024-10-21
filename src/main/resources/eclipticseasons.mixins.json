@@ -26,6 +26,7 @@
   ],
   "client": [
     "client.MixinBlockRenderVanilla",
+    "client.MixinChunkRenderDispatcher",
     "client.MixinClientBiome",
     "client.MixinClientClientLevel",
     "client.MixinClientLevel",
@@ -38,8 +39,8 @@
     "client.block.MixinLeavesBlock",
     "client.block.MixinLightningRodBlock",
     "client.sound.MixinMusicManager",
-    "compat.embeddium.MixinBlockRenderTask",
     "compat.embeddium.MixinBlockRender2",
+    "compat.embeddium.MixinBlockRenderTask",
     "compat.optifine.MixinBlockModelCustomizer",
     "compat.rubidium.MixinBlockRender2"
   ],
