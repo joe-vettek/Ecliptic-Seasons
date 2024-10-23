@@ -113,7 +113,7 @@ public abstract class MixinLevelRender {
     )
     private void ecliptic$renderSnowAndRain_ModifySnowAmount(LightTexture pLightTexture, float pPartialTick, double pCamX, double pCamY, double pCamZ, CallbackInfo ci, @Local(ordinal = 3) LocalIntRef integerLocalRef) {
         if (ServerConfig.Debug.useSolarWeather.get())
-            integerLocalRef.set(ClientWeatherChecker.ModifySnowAmount(integerLocalRef.get(),pPartialTick));
+            integerLocalRef.set(ClientWeatherChecker.ModifySnowAmount(integerLocalRef.get(),pPartialTick, level));
     }
 
     @WrapOperation(
@@ -122,7 +122,7 @@ public abstract class MixinLevelRender {
     )
     private void ecliptic$tickRain_modifySound(ClientLevel instance, BlockPos blockPos, SoundEvent soundEvent, SoundSource soundSource, float pVolume, float pPitch, boolean pDistanceDelay, Operation<Void> original) {
         if (ServerConfig.Debug.useSolarWeather.get()) {
-            original.call(instance, blockPos, soundEvent, soundSource, ClientWeatherChecker.modifyVolume(soundEvent, pVolume), ClientWeatherChecker.modifyPitch(soundEvent, pPitch), pDistanceDelay);
+            original.call(instance, blockPos, soundEvent, soundSource, ClientWeatherChecker.modifyVolume(soundEvent, pVolume, level), ClientWeatherChecker.modifyPitch(soundEvent, pPitch, level), pDistanceDelay);
         } else {
             original.call(instance, blockPos, soundEvent, soundSource, pVolume, pPitch, pDistanceDelay);
         }
@@ -135,7 +135,7 @@ public abstract class MixinLevelRender {
     )
     private int ecliptic$tickRain_modifyAmount(int originalNum) {
         if (ServerConfig.Debug.useSolarWeather.get()) {
-            return  ClientWeatherChecker.modifyRainAmount(originalNum);
+            return  ClientWeatherChecker.modifyRainAmount(originalNum, level);
         } else return originalNum;
     }
 

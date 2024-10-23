@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = Level.class,priority = 2000)
 public class MixinTeaconLevel {
 
-    @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)
-    private void teacon$isRainingAt(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof ServerLevel serverLevel) {
-            if (TeaconCheckTool.isValidPos((Level) (Object) this, blockPos))
-                cir.setReturnValue(WeatherManager.isRainingAt(serverLevel, blockPos));
-        }
-    }
+    // @Inject(at = {@At("HEAD")}, method = {"isRainingAt"}, cancellable = true)
+    // private void teacon$isRainingAt(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
+    //     if ((Object) this instanceof ServerLevel serverLevel) {
+    //         if (TeaconCheckTool.isValidPos((Level) (Object) this, blockPos))
+    //             cir.setReturnValue(WeatherManager.isRainingAt(serverLevel, blockPos));
+    //     }
+    // }
 
 }

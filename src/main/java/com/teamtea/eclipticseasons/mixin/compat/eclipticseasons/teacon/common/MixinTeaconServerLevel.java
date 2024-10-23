@@ -29,53 +29,53 @@ public abstract class MixinTeaconServerLevel extends Level {
         super(p_270739_, p_270683_, p_270200_, p_270240_, p_270692_, p_270904_, p_270470_, p_270248_, p_270466_);
     }
 
-    @WrapOperation(
-            method = "tickPrecipitation",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
-    )
-    private boolean teacon$tickPrecipitation_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0, argsOnly = true) BlockPos pos) {
-        if (TeaconCheckTool.isValidPos(serverLevel, pos))
-            return WeatherManager.isRainingAt((ServerLevel) (Object) this, pos);
-        else return original.call(serverLevel);
-    }
-
-    @WrapOperation(
-            method = "tickPrecipitation",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
-    )
-    private Biome.Precipitation teacon$tickPrecipitation_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
-        if (TeaconCheckTool.isValidPos(this, pos))
-            return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
-        else return original.call(biome, pos);
-    }
-
-    @WrapOperation(
-            method = "tickChunk",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
-    )
-    private boolean teacon$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        if (TeaconCheckTool.isValidPos(this, levelChunk))
-            return true;
-        else return original.call(serverLevel);
-    }
-
-    @WrapOperation(
-            method = "tickChunk",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z")
-    )
-    private boolean teacon$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        if (TeaconCheckTool.isValidPos(this, levelChunk))
-            return true;
-        else return original.call(serverLevel);
-    }
-
-    @WrapOperation(
-            method = "tickChunk",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRainingAt(Lnet/minecraft/core/BlockPos;)Z")
-    )
-    private boolean teacon$tickChunk_isRainingAt(ServerLevel serverLevel, BlockPos pos, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
-        if (TeaconCheckTool.isValidPos(this, levelChunk))
-            return WeatherManager.isThunderAt(serverLevel, pos) && WeatherManager.isRainingAt(serverLevel, pos);
-        else return original.call(serverLevel, pos);
-    }
+    // @WrapOperation(
+    //         method = "tickPrecipitation",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
+    // )
+    // private boolean teacon$tickPrecipitation_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0, argsOnly = true) BlockPos pos) {
+    //     if (TeaconCheckTool.isValidPos(serverLevel, pos))
+    //         return WeatherManager.isRainingAt((ServerLevel) (Object) this, pos);
+    //     else return original.call(serverLevel);
+    // }
+    //
+    // @WrapOperation(
+    //         method = "tickPrecipitation",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;getPrecipitationAt(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/biome/Biome$Precipitation;")
+    // )
+    // private Biome.Precipitation teacon$tickPrecipitation_getPrecipitationAt(Biome biome, BlockPos pos, Operation<Biome.Precipitation> original) {
+    //     if (TeaconCheckTool.isValidPos(this, pos))
+    //         return WeatherManager.getPrecipitationAt((ServerLevel) (Object) this, biome, pos);
+    //     else return original.call(biome, pos);
+    // }
+    //
+    // @WrapOperation(
+    //         method = "tickChunk",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRaining()Z")
+    // )
+    // private boolean teacon$tickChunk_isRaining(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+    //     if (TeaconCheckTool.isValidPos(this, levelChunk))
+    //         return true;
+    //     else return original.call(serverLevel);
+    // }
+    //
+    // @WrapOperation(
+    //         method = "tickChunk",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z")
+    // )
+    // private boolean teacon$tickChunk_isThundering(ServerLevel serverLevel, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+    //     if (TeaconCheckTool.isValidPos(this, levelChunk))
+    //         return true;
+    //     else return original.call(serverLevel);
+    // }
+    //
+    // @WrapOperation(
+    //         method = "tickChunk",
+    //         at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isRainingAt(Lnet/minecraft/core/BlockPos;)Z")
+    // )
+    // private boolean teacon$tickChunk_isRainingAt(ServerLevel serverLevel, BlockPos pos, Operation<Boolean> original, @Local(ordinal = 0) LevelChunk levelChunk) {
+    //     if (TeaconCheckTool.isValidPos(this, levelChunk))
+    //         return WeatherManager.isThunderAt(serverLevel, pos) && WeatherManager.isRainingAt(serverLevel, pos);
+    //     else return original.call(serverLevel, pos);
+    // }
 }

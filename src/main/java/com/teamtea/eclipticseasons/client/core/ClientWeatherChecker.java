@@ -10,6 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 
@@ -228,21 +229,25 @@ public class ClientWeatherChecker {
     }
 
     // 0-》15
-    public static int ModifySnowAmount(int constant, float pPartialTick) {
-        return (int) (constant * Mth.clamp(lastBiomeRainLevel * 0.6f, 0.6f, 1f));
+    public static int ModifySnowAmount(int constant, float pPartialTick, Level level) {
+        if (level == null) return constant;
+        return (int) (constant * Mth.clamp(level.getRainLevel(pPartialTick) * 0.6f, 0.6f, 1f));
     }
 
-    public static float modifyVolume(SoundEvent soundEvent, float pVolume) {
-        return pVolume * lastBiomeRainLevel * 0.55f;
+    public static float modifyVolume(SoundEvent soundEvent, float pVolume, Level level) {
+        if (level == null) return pVolume;
+        return pVolume * level.getRainLevel(1.0f) * 0.55f;
     }
 
-    public static float modifyPitch(SoundEvent soundEvent, float pPitch) {
-        return pPitch * lastBiomeRainLevel;
+    public static float modifyPitch(SoundEvent soundEvent, float pPitch, Level level) {
+        if (level == null) return pPitch;
+        return pPitch * level.getRainLevel(1.0f);
         // return pPitch;
     }
 
-    public static int modifyRainAmount(int originalNum) {
-        return (int) (originalNum * lastBiomeRainLevel * 0.6f);
+    public static int modifyRainAmount(int originalNum, Level level) {
+        if (level == null) return originalNum;
+        return (int) (originalNum * level.getRainLevel(1.0f) * 0.6f);
     }
 
     public static void unloadLevel(ClientLevel clientLevel) {
