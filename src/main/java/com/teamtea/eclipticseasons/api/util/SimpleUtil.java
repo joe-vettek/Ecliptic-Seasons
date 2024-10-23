@@ -23,6 +23,12 @@ public class SimpleUtil {
         return SolarTerm.NONE;
     }
 
+    public static int getNowSolarDay(Level level) {
+        var sd = AllListener.getSaveData(level);
+        if (sd != null) return sd.getSolarTermsDay();
+        return 0;
+    }
+
     public static boolean isDay(Level level) {
         long dayTime = level.dimensionType().fixedTime().orElse(SolarAngelHelper.getSolarAngelTime(level, level.getDayTime()));
         long termTime = getNowSolarTerm(level).getDayTime();

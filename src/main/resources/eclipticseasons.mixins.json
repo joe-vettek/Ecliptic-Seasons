@@ -41,8 +41,12 @@
     "client.sound.MixinMusicManager",
     "compat.embeddium.MixinBlockRender2",
     "compat.embeddium.MixinBlockRenderTask",
+    "compat.legendarysurvivaloverhaul.MixinClientForgeEvents",
+    "compat.legendarysurvivaloverhaul.MixinClientModBusEvents",
+    "compat.legendarysurvivaloverhaul.MixinRenderSeasonCards",
     "compat.optifine.MixinBlockModelCustomizer",
-    "compat.rubidium.MixinBlockRender2"
+    "compat.rubidium.MixinBlockRender2",
+    "compat.legendarysurvivaloverhaul.MixinModCore"
   ],
   "injectors": {
     "defaultRequire": 1
