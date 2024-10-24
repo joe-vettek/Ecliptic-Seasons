@@ -45,7 +45,7 @@ public class LSO_ESUtil {
 
     public static int getTimeInSolarTerm(Level level) {
         return SimpleUtil.getNowSolarDay(level) -
-                ServerConfig.Season.lastingDaysOfEachTerm.get() * SimpleUtil.getNowSolarTerm(level).ordinal();
+                ServerConfig.Season.lastingDaysOfEachTerm.get() * SimpleUtil.getNowSolarTerm(level).ordinal()+1;
     }
 
     public static SereneSeasonsUtil.SeasonType getSeasonType(Holder<Biome> biome) {

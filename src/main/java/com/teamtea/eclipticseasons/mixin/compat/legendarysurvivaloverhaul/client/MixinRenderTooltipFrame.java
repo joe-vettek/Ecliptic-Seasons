@@ -26,11 +26,11 @@ import sfiomn.legendarysurvivaloverhaul.registry.ItemRegistry;
 @Mixin({RenderTooltipFrame.class})
 public abstract class MixinRenderTooltipFrame {
 
-    @Shadow
+    @Shadow(remap = false)
     public static void render(ForgeGui forgeGui, GuiGraphics guiGraphics, int width, int height, Component text) {
     }
 
-    @Shadow
+    @Shadow(remap = false)
     private static Entity ENTITY_LOOKED_AT;
 
     @Inject(

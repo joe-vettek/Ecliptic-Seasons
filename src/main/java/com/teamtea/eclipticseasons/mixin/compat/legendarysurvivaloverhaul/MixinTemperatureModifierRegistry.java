@@ -17,12 +17,12 @@ import sfiomn.legendarysurvivaloverhaul.registry.TemperatureModifierRegistry;
 @Mixin({TemperatureModifierRegistry.class})
 public abstract class MixinTemperatureModifierRegistry {
 
-    @Shadow @Final public static DeferredRegister<ModifierBase> MODIFIERS;
+    @Shadow(remap = false) @Final public static DeferredRegister<ModifierBase> MODIFIERS;
 
     @Inject(
             remap = false,
             method = "<clinit>",
-            at = @At(value = "HEAD")
+            at = @At(value = "TAIL")
     )
     private static void ecliptic$lambda$onLoadComplete$1(CallbackInfo ci) {
         LSO_ESUtil.ecliptic$EclipticSeasons = MODIFIERS.register("integration/" + EclipticSeasons.MODID, LSO_ESModifier::new);

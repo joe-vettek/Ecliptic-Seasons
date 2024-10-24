@@ -19,9 +19,7 @@ public class LSO_ESModifier extends ModifierBase {
     }
 
     public float getWorldInfluence(Player player, Level level, BlockPos pos) {
-        if (!LegendarySurvivalOverhaul.sereneSeasonsLoaded) {
-            return 0.0F;
-        } else if (!Config.Baked.seasonTemperatureEffects) {
+         if (!Config.Baked.seasonTemperatureEffects) {
             return 0.0F;
         } else {
             try {
