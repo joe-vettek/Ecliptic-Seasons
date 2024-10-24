@@ -170,7 +170,7 @@ public class WeatherManager {
         return isRainingAtBiome(serverLevel, biome.get());
     }
 
-    public static Boolean isRainingAtBiome(ServerLevel serverLevel, Biome biome) {
+    public static Boolean isRainingAtBiome(Level serverLevel, Biome biome) {
         var ws = getBiomeList(serverLevel);
         if (ws != null)
             for (BiomeWeather biomeWeather : ws) {

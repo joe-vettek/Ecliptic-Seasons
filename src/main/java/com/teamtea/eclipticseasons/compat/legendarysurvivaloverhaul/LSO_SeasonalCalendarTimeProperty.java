@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class ESSeasonalCalendarTimeProperty implements ClampedItemPropertyFunction {
+public class LSO_SeasonalCalendarTimeProperty implements ClampedItemPropertyFunction {
 
     @OnlyIn(Dist.CLIENT)
     @Override

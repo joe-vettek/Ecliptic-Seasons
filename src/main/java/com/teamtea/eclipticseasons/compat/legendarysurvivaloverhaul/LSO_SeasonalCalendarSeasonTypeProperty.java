@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import sfiomn.legendarysurvivaloverhaul.common.integration.sereneseasons.SereneSeasonsUtil;
 
 
-public class ESSeasonalCalendarSeasonTypeProperty implements ClampedItemPropertyFunction {
+public class LSO_SeasonalCalendarSeasonTypeProperty implements ClampedItemPropertyFunction {
 
     @OnlyIn(Dist.CLIENT)
     @Override
@@ -35,10 +35,10 @@ public class ESSeasonalCalendarSeasonTypeProperty implements ClampedItemProperty
         {
             try
             {
-                if (!ESSereneSeasonsUtil.hasSeasons(level))
+                if (!LSO_ESUtil.hasSeasons(level))
                     return 0.2f;
 
-                SereneSeasonsUtil.SeasonType seasonType = ESSereneSeasonsUtil.getSeasonType(level.getBiome(holder.blockPosition()));
+                SereneSeasonsUtil.SeasonType seasonType = LSO_ESUtil.getSeasonType(level.getBiome(holder.blockPosition()));
 
                 return seasonType.propertyValue;
             }

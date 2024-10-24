@@ -16,7 +16,7 @@ import sfiomn.legendarysurvivaloverhaul.config.Config;
 import sfiomn.legendarysurvivaloverhaul.util.RenderUtil;
 
 
-public abstract class ESRenderSeasonCards {
+public abstract class LSO_RenderSeasonCards {
 
     private static final ResourceLocation SPRING_CARD = new ResourceLocation("legendarysurvivaloverhaul", "textures/cards/spring.png");
     private static final ResourceLocation AUTUMN_CARD = new ResourceLocation("legendarysurvivaloverhaul", "textures/cards/autumn.png");
@@ -46,7 +46,7 @@ public abstract class ESRenderSeasonCards {
             forgeGui.setupOverlayRenderState(true, false);
             Minecraft.getInstance().getProfiler().push("season_card");
             RenderSystem.setShaderTexture(0, seasonCard);
-            RenderUtil.drawTexturedModelRectWithAlpha(guiGraphics.pose().last().pose(), (float) (x + Config.Baked.seasonCardsDisplayOffsetX), (float) (y + Config.Baked.seasonCardsDisplayOffsetY), 128, 128, 0, 0, 256, 256, fadeLevel);
+            RenderUtil.drawTexturedModelRectWithAlpha(guiGraphics.pose().last().pose(), (float) (x + Config.Baked.seasonCardsDisplayOffsetX), (float) (y + Config.Baked.seasonCardsDisplayOffsetY), CARD_WIDTH, CARD_HEIGHT, 0, 0, 256, 256, fadeLevel);
             Minecraft.getInstance().getProfiler().pop();
         }
     };
@@ -58,7 +58,7 @@ public abstract class ESRenderSeasonCards {
             if (lastDimension == null || lastDimension != level.dimension()) {
                 delayTimer = Config.Baked.seasonCardsSpawnDimensionDelayInTicks;
                 lastDimension = level.dimension();
-                isDimensionSeasonal = ESSereneSeasonsUtil.hasSeasons(level);
+                isDimensionSeasonal = LSO_ESUtil.hasSeasons(level);
             }
 
             if (isDimensionSeasonal) {
@@ -85,6 +85,7 @@ public abstract class ESRenderSeasonCards {
                             }
                         } else {
                             if (currentSeason != ecliptic$lastSeason) {
+                                ecliptic$lastSeason = currentSeason;
                                 boolean currentTropicalSeasonDry = currentSeason == Season.SPRING || currentSeason == Season.WINTER;
                                 if (currentTropicalSeasonDry != ecliptic$lastTropicalSeasonDry) {
                                     ecliptic$lastTropicalSeasonDry = currentTropicalSeasonDry;

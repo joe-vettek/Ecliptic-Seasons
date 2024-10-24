@@ -1,7 +1,7 @@
-package com.teamtea.eclipticseasons.mixin.compat.legendarysurvivaloverhaul;
+package com.teamtea.eclipticseasons.mixin.compat.legendarysurvivaloverhaul.client;
 
 
-import com.teamtea.eclipticseasons.compat.legendarysurvivaloverhaul.ESRenderSeasonCards;
+import com.teamtea.eclipticseasons.compat.legendarysurvivaloverhaul.LSO_RenderSeasonCards;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
@@ -21,12 +21,12 @@ public abstract class MixinClientForgeEvents {
             method = "onClientTick",
             at = @At(value = "HEAD")
     )
-    private static void mixin_lambda$static$0(TickEvent.ClientTickEvent event, CallbackInfo ci) {
+    private static void ecliptic$lambda$static$0(TickEvent.ClientTickEvent event, CallbackInfo ci) {
         if (event.phase == TickEvent.Phase.END) {
             Player player = Minecraft.getInstance().player;
             if (!Minecraft.getInstance().isPaused() && player != null) {
                 if (Config.Baked.seasonCardsEnabled) {
-                    ESRenderSeasonCards.updateSeasonCardFading(player);
+                    LSO_RenderSeasonCards.updateSeasonCardFading(player);
                 }
             }
         }
@@ -37,9 +37,9 @@ public abstract class MixinClientForgeEvents {
             method = "onPlayerJoinWorld",
             at = @At(value = "HEAD")
     )
-    private static void mixin_onPlayerJoinWorld(EntityJoinLevelEvent event, CallbackInfo ci) {
+    private static void ecliptic$onPlayerJoinWorld(EntityJoinLevelEvent event, CallbackInfo ci) {
         if (event.getLevel().isClientSide && event.getEntity() instanceof Player) {
-            ESRenderSeasonCards.init();
+            LSO_RenderSeasonCards.init();
         }
     }
 }
