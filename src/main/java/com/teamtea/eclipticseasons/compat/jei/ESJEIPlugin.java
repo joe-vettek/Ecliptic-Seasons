@@ -72,10 +72,10 @@ public class ESJEIPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
-        level.registryAccess().registry(ESRegistries.HUMIDITY_CONTROL)
-                .ifPresent(controls -> registration.addRecipes(HUMIDITY_CONTROL_RECIPE_TYPE, ESSortInfo.sorted2(controls)));
-        level.registryAccess().registry(ESRegistries.WETTER)
-                .ifPresent(controls -> registration.addRecipes(WETTER_TYPE, ESSortInfo.sorted2(controls)));
+        // level.registryAccess().registry(ESRegistries.HUMIDITY_CONTROL)
+        //         .ifPresent(controls -> registration.addRecipes(HUMIDITY_CONTROL_RECIPE_TYPE, ESSortInfo.sorted2(controls)));
+        // level.registryAccess().registry(ESRegistries.WETTER)
+        //         .ifPresent(controls -> registration.addRecipes(WETTER_TYPE, ESSortInfo.sorted2(controls)));
         // level.registryAccess().registry(ESRegistries.SEASON_QUEST)
         //         .ifPresent(controls -> registration.addRecipes(SEASON_QUEST_TYPE,
         //                 ESSortInfo.sorted2(controls)
